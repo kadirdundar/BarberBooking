@@ -1,0 +1,28 @@
+﻿<Project>
+  <ItemGroup>
+    <StaticWebAssetEndpoint Include="_content/BerberApp1/app.css">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\app.css'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-ku2I5P4JAz6Kf3HrmysWD0M2iPq8U8JrhenWWqCsHb8="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"26438"},{"Name":"Content-Type","Value":"text/css"},{"Name":"ETag","Value":"\u0022ku2I5P4JAz6Kf3HrmysWD0M2iPq8U8JrhenWWqCsHb8=\u0022"},{"Name":"Last-Modified","Value":"Sun, 15 Jun 2025 08:27:32 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/BerberApp1/app.us2pgmhkgt.css">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\app.css'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"us2pgmhkgt"},{"Name":"integrity","Value":"sha256-ku2I5P4JAz6Kf3HrmysWD0M2iPq8U8JrhenWWqCsHb8="},{"Name":"label","Value":"_content/BerberApp1/app.css"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"26438"},{"Name":"Content-Type","Value":"text/css"},{"Name":"ETag","Value":"\u0022ku2I5P4JAz6Kf3HrmysWD0M2iPq8U8JrhenWWqCsHb8=\u0022"},{"Name":"Last-Modified","Value":"Sun, 15 Jun 2025 08:27:32 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/BerberApp1/BerberApp1.bundle.scp.css">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\BerberApp1.wso7j74qv5.bundle.scp.css'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-UKgoGa/a0vED7FHeemmJDxdvhi/uEcMvsg/NYjeqiIk="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"4691"},{"Name":"Content-Type","Value":"text/css"},{"Name":"ETag","Value":"\u0022UKgoGa/a0vED7FHeemmJDxdvhi/uEcMvsg/NYjeqiIk=\u0022"},{"Name":"Last-Modified","Value":"Sun, 15 Jun 2025 08:28:15 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/BerberApp1/BerberApp1.wso7j74qv5.bundle.scp.css">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\BerberApp1.wso7j74qv5.bundle.scp.css'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"wso7j74qv5"},{"Name":"integrity","Value":"sha256-UKgoGa/a0vED7FHeemmJDxdvhi/uEcMvsg/NYjeqiIk="},{"Name":"label","Value":"_content/BerberApp1/BerberApp1.bundle.scp.css"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"4691"},{"Name":"Content-Type","Value":"text/css"},{"Name":"ETag","Value":"\u0022UKgoGa/a0vED7FHeemmJDxdvhi/uEcMvsg/NYjeqiIk=\u0022"},{"Name":"Last-Modified","Value":"Sun, 15 Jun 2025 08:28:15 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+  </ItemGroup>
+</Project>

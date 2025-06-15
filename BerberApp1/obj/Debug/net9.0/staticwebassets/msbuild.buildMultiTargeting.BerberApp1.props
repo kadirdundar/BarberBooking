@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="../build/BerberApp1.props" />
+</Project>

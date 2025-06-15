@@ -1,0 +1,157 @@
+@page "/booking"
+@using Microsoft.Extensions.Logging Logger
+@inject ILogger<Booking> Logger
+@rendermode InteractiveServer 
+
+
+<div class="booking-container">
+    <div class="booking-header">
+        <h2 class="section-title">Randevu Al</h2>
+        <p class="section-subtitle">Tarih ve saat seçerek randevunuzu kolayca oluşturun.</p>
+    </div>
+
+    <div class="booking-content">
+        <div class="calendar-container">
+            <div class="calendar-header">
+                <button class="nav-btn" @onclick="PreviousMonth"></button>
+                <button  @onclick="PreviousMonth"></button>
+                <span class="month-display">@currentMonth.ToString("MMMM yyyy")</span>
+                <button class="nav-btn" @onclick="NextMonth"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            <div class="calendar-grid">
+                <div class="day-name">Pzt</div>
+                <div class="day-name">Sal</div>
+                <div class="day-name">Çar</div>
+                <div class="day-name">Per</div>
+                <div class="day-name">Cum</div>
+                <div class="day-name">Cmt</div>
+                <div class="day-name">Paz</div>
+
+                @foreach (var day in daysInMonth)
+                {
+                    <div class="@GetDayClass(day)" @onclick="() => SelectDate(day)">
+                        @if (day != DateTime.MinValue)
+                        {
+                            <span>@day.Day</span>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="time-slots-container">
+            <h3 class="time-slots-title">Müsait Saatler (@selectedDate.ToShortDateString())</h3>
+            @if (availableSlots.Any())
+            {
+                <div class="time-slots-grid">
+                    @foreach (var slot in availableSlots)
+                    {
+                        <button class="time-slot-btn @(selectedSlot == slot ? "selected" : "")" @onclick="() => SelectSlot(slot)">
+                            @slot
+                        </button>
+                    }
+                </div>
+                <button class="btn btn-primary confirm-btn">Randevuyu Onayla</button>
+            }
+            else
+            {
+                <p>Bu tarih için müsait saat bulunmamaktadır.</p>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private DateTime currentMonth = DateTime.Today;
+    private DateTime selectedDate = DateTime.Today;
+    private string selectedSlot = string.Empty;
+    private List<DateTime> daysInMonth = new List<DateTime>();
+    private List<string> availableSlots = new List<string>();
+
+    protected override void OnInitialized()
+    {
+        GenerateCalendar(currentMonth);
+        GenerateAvailableSlots(selectedDate);
+    }
+
+    private void GenerateCalendar(DateTime month)
+    {
+        daysInMonth.Clear();
+        var firstDayOfMonth = new DateTime(month.Year, month.Month, 1);
+        int daysInMonthCount = DateTime.DaysInMonth(month.Year, month.Month);
+        
+        int offset = ((int)firstDayOfMonth.DayOfWeek + 6) % 7; // Monday as first day
+
+        for (int i = 0; i < offset; i++)
+        {
+            daysInMonth.Add(DateTime.MinValue); // Placeholder for empty days
+        }
+
+        for (int i = 1; i <= daysInMonthCount; i++)
+        {
+            daysInMonth.Add(new DateTime(month.Year, month.Month, i));
+        }
+    }
+
+    private void GenerateAvailableSlots(DateTime date)
+    {
+        // Placeholder logic for generating time slots
+        availableSlots.Clear();
+        if (date.DayOfWeek != DayOfWeek.Sunday) // Closed on Sundays
+        {
+            for (int i = 9; i <= 18; i++)
+            {
+                if (date.Date == DateTime.Today && i < DateTime.Now.Hour) continue;
+                
+                // Randomly make some slots unavailable for demonstration
+                if (new Random().Next(0, 4) > 0)
+                {
+                    availableSlots.Add($"{i:00}:00");
+                    availableSlots.Add($"{i:00}:30");
+                }
+            }
+        }
+    }
+
+    private void SelectDate(DateTime date)
+    {
+        if (date == DateTime.MinValue || date.Date < DateTime.Today.Date) return; // Disable past dates
+        selectedDate = date;
+        GenerateAvailableSlots(date);
+    }
+
+    private void SelectSlot(string slot)
+    {
+        selectedSlot = slot;
+    }
+
+    private void PreviousMonth()
+    {
+        currentMonth = currentMonth.AddMonths(-1);
+        GenerateCalendar(currentMonth);
+        Console.WriteLine($"Previous Month clicked. Current month: {currentMonth.ToString("MMMM yyyy")}");
+   
+        StateHasChanged();
+    }
+
+    private void NextMonth()
+    {
+        currentMonth = currentMonth.AddMonths(1);
+        GenerateCalendar(currentMonth);
+        Console.WriteLine($"Next Month clicked. Current month: {currentMonth.ToString("MMMM yyyy")}");
+        StateHasChanged();
+    }
+
+    private string GetDayClass(DateTime day)
+    {
+        if (day == DateTime.MinValue) return "day-cell empty";
+        string cssClass = "day-cell";
+        if (day.Date == DateTime.Today) cssClass += " today";
+        if (day.Date == selectedDate.Date) cssClass += " selected";
+        if (day.Date < DateTime.Today.Date) cssClass += " disabled"; // Add disabled class for past dates
+        if (day.Month != currentMonth.Month) cssClass += " other-month";
+        return cssClass;
+    }
+
+    
+}
