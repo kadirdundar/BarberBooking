@@ -1076,3 +1076,17 @@ body {
         grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
     }
 }
+
+/* Register Salon Page Styles */
+.register-salon-container {
+    padding-top: 100px; /* Adjust for fixed header */
+    padding-bottom: 4rem;
+    background-color: var(--background-color);
+    min-height: 100vh;
+}
+
+.register-salon-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding: 0 2rem;
+}

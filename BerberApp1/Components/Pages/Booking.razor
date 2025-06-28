@@ -1,6 +1,9 @@
-@page "/booking"
-@using Microsoft.Extensions.Logging Logger
+@page "/booking/{SalonId:int}"
+@using Microsoft.Extensions.Logging
+@using BerberApp1.Data
+@using Microsoft.EntityFrameworkCore
 @inject ILogger<Booking> Logger
+@inject ApplicationDbContext DbContext
 @rendermode InteractiveServer 
 
 
@@ -13,8 +16,7 @@
     <div class="booking-content">
         <div class="calendar-container">
             <div class="calendar-header">
-                <button class="nav-btn" @onclick="PreviousMonth"></button>
-                <button  @onclick="PreviousMonth"></button>
+                <button class="nav-btn" @onclick="PreviousMonth"><i class="fas fa-chevron-left"></i></button>
                 <span class="month-display">@currentMonth.ToString("MMMM yyyy")</span>
                 <button class="nav-btn" @onclick="NextMonth"><i class="fas fa-chevron-right"></i></button>
             </div>
@@ -68,10 +70,28 @@
     private List<DateTime> daysInMonth = new List<DateTime>();
     private List<string> availableSlots = new List<string>();
 
-    protected override void OnInitialized()
+    [Parameter]
+    public int SalonId { get; set; }
+    private Salon? CurrentSalon { get; set; }
+    private List<SalonWorkingHours> salonWorkingHours = new();
+
+    protected override async Task OnInitializedAsync()
     {
+        CurrentSalon = await DbContext.Salons
+                                    .Include(s => s.WorkingHours)
+                                    .FirstOrDefaultAsync(s => s.Id == SalonId);
+
+        if (CurrentSalon == null)
+        {
+            Logger.LogWarning("Salon with ID {SalonId} not found.", SalonId);
+            // Optionally, redirect to an error page or display a message
+            // NavigationManager.NavigateTo("/error");
+            return;
+        }
+        salonWorkingHours = CurrentSalon.WorkingHours.ToList();
+
         GenerateCalendar(currentMonth);
-        GenerateAvailableSlots(selectedDate);
+        await GenerateAvailableSlots(selectedDate);
     }
 
     private void GenerateCalendar(DateTime month)
@@ -93,31 +113,81 @@
         }
     }
 
-    private void GenerateAvailableSlots(DateTime date)
+    private async Task GenerateAvailableSlots(DateTime date)
     {
-        // Placeholder logic for generating time slots
         availableSlots.Clear();
-        if (date.DayOfWeek != DayOfWeek.Sunday) // Closed on Sundays
+
+        if (CurrentSalon == null)
         {
-            for (int i = 9; i <= 18; i++)
+            Logger.LogWarning("Cannot generate slots: CurrentSalon is null.");
+            return;
+        }
+
+        var todayWorkingHours = salonWorkingHours.FirstOrDefault(swh => swh.DayOfWeek == date.DayOfWeek);
+
+        if (todayWorkingHours == null || todayWorkingHours.IsClosed)
+        {
+            // Salon is closed on this day or no working hours defined
+            return;
+        }
+
+        // Get existing appointments for the selected date and salon
+        var existingAppointments = await DbContext.Appointments
+            .Where(a => a.SalonId == SalonId && a.AppointmentDate.Date == date.Date)
+            .ToListAsync();
+
+        TimeSpan minimumAllowedTime = TimeSpan.Zero;
+        if (date.Date == DateTime.Today)
+        {
+            TimeSpan now = DateTime.Now.TimeOfDay;
+            // Truncate to the nearest minute or 30-minute interval to avoid precision issues
+            now = new TimeSpan(now.Hours, now.Minutes, 0); // Remove seconds and milliseconds
+
+            int totalMinutes = (int)now.TotalMinutes;
+            int minutesIntoInterval = totalMinutes % 30;
+
+            if (minutesIntoInterval == 0) // Tam olarak 30 dakikalık bir aralığın başlangıcındaysa
             {
-                if (date.Date == DateTime.Today && i < DateTime.Now.Hour) continue;
-                
-                // Randomly make some slots unavailable for demonstration
-                if (new Random().Next(0, 4) > 0)
+                minimumAllowedTime = now;
+            }
+            else // Aralığın ortasındaysa, bir sonraki 30 dakikalık aralığa yuvarla
+            {
+                int minutesToAdd = 30 - minutesIntoInterval;
+                minimumAllowedTime = now.Add(TimeSpan.FromMinutes(minutesToAdd));
+            }
+        }
+
+        TimeSpan currentTime = todayWorkingHours.OpeningTime;
+
+        while (currentTime < todayWorkingHours.ClosingTime)
+        {
+            bool isBooked = existingAppointments.Any(ea => ea.AppointmentTime.Hours == currentTime.Hours && ea.AppointmentTime.Minutes == currentTime.Minutes);
+            bool isPast = false;
+
+            if (date.Date == DateTime.Today)
+            {
+                if (currentTime < minimumAllowedTime)
                 {
-                    availableSlots.Add($"{i:00}:00");
-                    availableSlots.Add($"{i:00}:30");
+                    isPast = true;
                 }
             }
+
+            if (!isBooked && !isPast)
+            {
+                availableSlots.Add($"{currentTime.Hours:D2}:{currentTime.Minutes:D2}");
+            }
+                
+            currentTime = currentTime.Add(TimeSpan.FromMinutes(30)); // 30-minute intervals
         }
     }
 
-    private void SelectDate(DateTime date)
+    private async Task SelectDate(DateTime date)
     {
         if (date == DateTime.MinValue || date.Date < DateTime.Today.Date) return; // Disable past dates
         selectedDate = date;
-        GenerateAvailableSlots(date);
+        // Ensure GenerateAvailableSlots is awaited as it's now async
+        await GenerateAvailableSlots(date);
+        StateHasChanged(); // Explicitly trigger UI re-render
     }
 
     private void SelectSlot(string slot)
@@ -129,8 +199,6 @@
     {
         currentMonth = currentMonth.AddMonths(-1);
         GenerateCalendar(currentMonth);
-        Console.WriteLine($"Previous Month clicked. Current month: {currentMonth.ToString("MMMM yyyy")}");
-   
         StateHasChanged();
     }
 
@@ -138,7 +206,6 @@
     {
         currentMonth = currentMonth.AddMonths(1);
         GenerateCalendar(currentMonth);
-        Console.WriteLine($"Next Month clicked. Current month: {currentMonth.ToString("MMMM yyyy")}");
         StateHasChanged();
     }
 
@@ -152,6 +219,6 @@
         if (day.Month != currentMonth.Month) cssClass += " other-month";
         return cssClass;
     }
-
-    
 }
+
+

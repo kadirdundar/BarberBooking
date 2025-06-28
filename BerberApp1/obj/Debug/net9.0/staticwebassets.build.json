@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "M47C3oPlRIUQVKixC1sTM96pf833NulOxQJm/2NlTOI=",
+  "Hash": "bIj2DXxuV+HnY6vK6RVYDOPg8VtQ+T5XlLK6Lh3mfPM=",
   "Source": "BerberApp1",
   "BasePath": "_content/BerberApp1",
   "Mode": "Default",
@@ -38,12 +38,12 @@
       "OriginalItemSpec": "/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/scopedcss/projectbundle/BerberApp1.bundle.scp.css"
     },
     {
-      "Identity": "/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/mqc9x62763-us2pgmhkgt.gz",
+      "Identity": "/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/mqc9x62763-rxv5gcjxwb.gz",
       "SourceId": "BerberApp1",
       "SourceType": "Discovered",
       "ContentRoot": "/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/",
       "BasePath": "_content/BerberApp1",
-      "RelativePath": "app#[.{fingerprint=us2pgmhkgt}]?.css.gz",
+      "RelativePath": "app#[.{fingerprint=rxv5gcjxwb}]?.css.gz",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Alternative",
@@ -52,8 +52,8 @@
       "RelatedAsset": "/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/wwwroot/app.css",
       "AssetTraitName": "Content-Encoding",
       "AssetTraitValue": "gzip",
-      "Fingerprint": "7lo0ki30lo",
-      "Integrity": "e8gyk+i6OFgXkgjQWBKcT37vHf73dFpr3EX1Q9k6XI4=",
+      "Fingerprint": "hgf93mkn7k",
+      "Integrity": "f06mzBM1mcrOTrlmdKg48L1BuivbK+nswofemJtXiII=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/wwwroot/app.css"
@@ -136,8 +136,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "us2pgmhkgt",
-      "Integrity": "ku2I5P4JAz6Kf3HrmysWD0M2iPq8U8JrhenWWqCsHb8=",
+      "Fingerprint": "rxv5gcjxwb",
+      "Integrity": "EZ/h/U2rrU6crspE56/Lbe3ElGdYJMhhoCS1w/HN8CY=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/app.css"
@@ -146,12 +146,12 @@
   "Endpoints": [
     {
       "Route": "app.css",
-      "AssetFile": "/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/mqc9x62763-us2pgmhkgt.gz",
+      "AssetFile": "/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/mqc9x62763-rxv5gcjxwb.gz",
       "Selectors": [
         {
           "Name": "Content-Encoding",
           "Value": "gzip",
-          "Quality": "0.000174003828"
+          "Quality": "0.000173580976"
         }
       ],
       "ResponseHeaders": [
@@ -161,15 +161,15 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "5746"
+          "Value": "5760"
         },
         {
           "Name": "ETag",
-          "Value": "\"e8gyk+i6OFgXkgjQWBKcT37vHf73dFpr3EX1Q9k6XI4=\""
+          "Value": "\"f06mzBM1mcrOTrlmdKg48L1BuivbK+nswofemJtXiII=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 15 Jun 2025 08:27:32 GMT"
+          "Value": "Thu, 19 Jun 2025 19:21:01 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -189,13 +189,13 @@
         },
         {
           "Name": "ETag",
-          "Value": "W/\"ku2I5P4JAz6Kf3HrmysWD0M2iPq8U8JrhenWWqCsHb8=\""
+          "Value": "W/\"EZ/h/U2rrU6crspE56/Lbe3ElGdYJMhhoCS1w/HN8CY=\""
         }
       ],
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-ku2I5P4JAz6Kf3HrmysWD0M2iPq8U8JrhenWWqCsHb8="
+          "Value": "sha256-EZ/h/U2rrU6crspE56/Lbe3ElGdYJMhhoCS1w/HN8CY="
         }
       ]
     },
@@ -210,7 +210,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "26438"
+          "Value": "26715"
         },
         {
           "Name": "Content-Type",
@@ -218,11 +218,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"ku2I5P4JAz6Kf3HrmysWD0M2iPq8U8JrhenWWqCsHb8=\""
+          "Value": "\"EZ/h/U2rrU6crspE56/Lbe3ElGdYJMhhoCS1w/HN8CY=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 15 Jun 2025 08:27:32 GMT"
+          "Value": "Thu, 19 Jun 2025 19:21:01 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -232,13 +232,13 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-ku2I5P4JAz6Kf3HrmysWD0M2iPq8U8JrhenWWqCsHb8="
+          "Value": "sha256-EZ/h/U2rrU6crspE56/Lbe3ElGdYJMhhoCS1w/HN8CY="
         }
       ]
     },
     {
       "Route": "app.css.gz",
-      "AssetFile": "/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/mqc9x62763-us2pgmhkgt.gz",
+      "AssetFile": "/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/mqc9x62763-rxv5gcjxwb.gz",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -247,7 +247,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "5746"
+          "Value": "5760"
         },
         {
           "Name": "Content-Type",
@@ -255,11 +255,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"e8gyk+i6OFgXkgjQWBKcT37vHf73dFpr3EX1Q9k6XI4=\""
+          "Value": "\"f06mzBM1mcrOTrlmdKg48L1BuivbK+nswofemJtXiII=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 15 Jun 2025 08:27:32 GMT"
+          "Value": "Thu, 19 Jun 2025 19:21:01 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -277,18 +277,18 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-e8gyk+i6OFgXkgjQWBKcT37vHf73dFpr3EX1Q9k6XI4="
+          "Value": "sha256-f06mzBM1mcrOTrlmdKg48L1BuivbK+nswofemJtXiII="
         }
       ]
     },
     {
-      "Route": "app.us2pgmhkgt.css",
-      "AssetFile": "/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/mqc9x62763-us2pgmhkgt.gz",
+      "Route": "app.rxv5gcjxwb.css",
+      "AssetFile": "/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/mqc9x62763-rxv5gcjxwb.gz",
       "Selectors": [
         {
           "Name": "Content-Encoding",
           "Value": "gzip",
-          "Quality": "0.000174003828"
+          "Quality": "0.000173580976"
         }
       ],
       "ResponseHeaders": [
@@ -298,15 +298,15 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "5746"
+          "Value": "5760"
         },
         {
           "Name": "ETag",
-          "Value": "\"e8gyk+i6OFgXkgjQWBKcT37vHf73dFpr3EX1Q9k6XI4=\""
+          "Value": "\"f06mzBM1mcrOTrlmdKg48L1BuivbK+nswofemJtXiII=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 15 Jun 2025 08:27:32 GMT"
+          "Value": "Thu, 19 Jun 2025 19:21:01 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -326,13 +326,13 @@
         },
         {
           "Name": "ETag",
-          "Value": "W/\"ku2I5P4JAz6Kf3HrmysWD0M2iPq8U8JrhenWWqCsHb8=\""
+          "Value": "W/\"EZ/h/U2rrU6crspE56/Lbe3ElGdYJMhhoCS1w/HN8CY=\""
         }
       ],
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "us2pgmhkgt"
+          "Value": "rxv5gcjxwb"
         },
         {
           "Name": "label",
@@ -340,12 +340,12 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-ku2I5P4JAz6Kf3HrmysWD0M2iPq8U8JrhenWWqCsHb8="
+          "Value": "sha256-EZ/h/U2rrU6crspE56/Lbe3ElGdYJMhhoCS1w/HN8CY="
         }
       ]
     },
     {
-      "Route": "app.us2pgmhkgt.css",
+      "Route": "app.rxv5gcjxwb.css",
       "AssetFile": "/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/wwwroot/app.css",
       "Selectors": [],
       "ResponseHeaders": [
@@ -355,7 +355,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "26438"
+          "Value": "26715"
         },
         {
           "Name": "Content-Type",
@@ -363,11 +363,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"ku2I5P4JAz6Kf3HrmysWD0M2iPq8U8JrhenWWqCsHb8=\""
+          "Value": "\"EZ/h/U2rrU6crspE56/Lbe3ElGdYJMhhoCS1w/HN8CY=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 15 Jun 2025 08:27:32 GMT"
+          "Value": "Thu, 19 Jun 2025 19:21:01 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -377,7 +377,7 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "us2pgmhkgt"
+          "Value": "rxv5gcjxwb"
         },
         {
           "Name": "label",
@@ -385,13 +385,13 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-ku2I5P4JAz6Kf3HrmysWD0M2iPq8U8JrhenWWqCsHb8="
+          "Value": "sha256-EZ/h/U2rrU6crspE56/Lbe3ElGdYJMhhoCS1w/HN8CY="
         }
       ]
     },
     {
-      "Route": "app.us2pgmhkgt.css.gz",
-      "AssetFile": "/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/mqc9x62763-us2pgmhkgt.gz",
+      "Route": "app.rxv5gcjxwb.css.gz",
+      "AssetFile": "/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/mqc9x62763-rxv5gcjxwb.gz",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -400,7 +400,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "5746"
+          "Value": "5760"
         },
         {
           "Name": "Content-Type",
@@ -408,11 +408,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"e8gyk+i6OFgXkgjQWBKcT37vHf73dFpr3EX1Q9k6XI4=\""
+          "Value": "\"f06mzBM1mcrOTrlmdKg48L1BuivbK+nswofemJtXiII=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 15 Jun 2025 08:27:32 GMT"
+          "Value": "Thu, 19 Jun 2025 19:21:01 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -430,7 +430,7 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "us2pgmhkgt"
+          "Value": "rxv5gcjxwb"
         },
         {
           "Name": "label",
@@ -438,7 +438,7 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-e8gyk+i6OFgXkgjQWBKcT37vHf73dFpr3EX1Q9k6XI4="
+          "Value": "sha256-f06mzBM1mcrOTrlmdKg48L1BuivbK+nswofemJtXiII="
         }
       ]
     },

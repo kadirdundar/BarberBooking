@@ -5,7 +5,7 @@
     <header class="main-header">
         <div class="header-content">
             <NavLink href="/" class="logo">
-                <div class="logo-icon"></div>
+                <div class="logo-icon"><i class="fas fa-cut"></i></div>
                 <span class="logo-text">BarberBooking</span>
             </NavLink>
             
@@ -60,10 +60,13 @@
         mobileMenuOpen = !mobileMenuOpen;
     }
 
-    [Inject] public IJSRuntime JSRuntime { get; set; }
+    [Inject] public IJSRuntime? JSRuntime { get; set; }
 
     private async Task DismissError()
     {
+        if (JSRuntime is not null)
+    {
         await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('blazor-error-ui').style.display = 'none';");
+        }
     }
 }
