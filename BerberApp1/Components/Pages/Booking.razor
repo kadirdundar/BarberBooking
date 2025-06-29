@@ -1,4 +1,3 @@
-@page "/booking/{SalonId:int}"
 @using Microsoft.Extensions.Logging
 @using BerberApp1.Data
 @using Microsoft.EntityFrameworkCore
@@ -9,7 +8,7 @@
 
 <div class="booking-container">
     <div class="booking-header">
-        <h2 class="section-title">Randevu Al</h2>
+        <h2 class="section-title">@CurrentSalon?.Name İçin Randevu Al</h2>
         <p class="section-subtitle">Tarih ve saat seçerek randevunuzu kolayca oluşturun.</p>
     </div>
 
@@ -53,7 +52,7 @@
                         </button>
                     }
                 </div>
-                <button class="btn btn-primary confirm-btn">Randevuyu Onayla</button>
+                <button class="btn btn-primary confirm-btn" @onclick="ConfirmAppointment" disabled="@(string.IsNullOrEmpty(selectedSlot))">Randevuyu Onayla</button>
             }
             else
             {
@@ -193,6 +192,46 @@
     private void SelectSlot(string slot)
     {
         selectedSlot = slot;
+    }
+
+    private async Task ConfirmAppointment()
+    {
+        if (string.IsNullOrEmpty(selectedSlot) || CurrentSalon == null)
+        {
+            // Add some user feedback here, e.g., a toast notification
+            Logger.LogWarning("Appointment confirmation failed: No slot selected or salon is null.");
+            return;
+        }
+
+        try
+        {
+            var appointmentTime = TimeSpan.Parse(selectedSlot);
+            var newAppointment = new Appointment
+            {
+                SalonId = CurrentSalon.Id,
+                AppointmentDate = selectedDate.Date,
+                AppointmentTime = appointmentTime,
+                CustomerName = "Dummy User", // As requested
+                CustomerPhone = "0000000000", // Dummy phone
+                Notes = "Randevu sistem üzerinden oluşturuldu."
+            };
+
+            DbContext.Appointments.Add(newAppointment);
+            await DbContext.SaveChangesAsync();
+
+            // Reset state and show success message
+            Logger.LogInformation("Appointment created successfully for {Date} at {Time}", selectedDate.ToShortDateString(), selectedSlot);
+            selectedSlot = string.Empty;
+            await GenerateAvailableSlots(selectedDate); // Refresh slots
+            StateHasChanged();
+            // Optionally, navigate to a confirmation page
+            // NavigationManager.NavigateTo("/booking-success");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error creating appointment.");
+            // Add user feedback for error
+        }
     }
 
     private void PreviousMonth()

@@ -30,8 +30,6 @@
 /Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/BerberApp1.genruntimeconfig.cache
 /Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/ref/BerberApp1.dll
 /Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/scopedcss/Components/Pages/Payment.razor.rz.scp.css
-/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/u4ptrcu2nl-wso7j74qv5.gz
-/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/f6nc8b14uf-wso7j74qv5.gz
 /Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/bin/Debug/net9.0/Azure.Core.dll
 /Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/bin/Debug/net9.0/Azure.Identity.dll
 /Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/bin/Debug/net9.0/Humanizer.dll
@@ -168,3 +166,6 @@
 /Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/BerberApp1.sourcelink.json
 /Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/BerberApp1.csproj.Up2Date
 /Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/mqc9x62763-rxv5gcjxwb.gz
+/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/scopedcss/Components/Pages/SalonDetail.razor.rz.scp.css
+/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/u4ptrcu2nl-ik5uu72fc8.gz
+/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/f6nc8b14uf-ik5uu72fc8.gz

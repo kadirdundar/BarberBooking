@@ -63,3 +63,7 @@ build_metadata.AdditionalFiles.CssScope = b-djnzvyvq3b
 [/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/Components/Pages/Payment.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9QYXltZW50LnJhem9y
 build_metadata.AdditionalFiles.CssScope = b-qsnywhg0qk
+
+[/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/Components/Pages/SalonDetail.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9TYWxvbkRldGFpbC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-8dp92ld032

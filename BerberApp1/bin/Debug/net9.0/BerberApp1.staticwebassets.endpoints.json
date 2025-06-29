@@ -3,13 +3,174 @@
   "ManifestType": "Build",
   "Endpoints": [
     {
+      "Route": "BerberApp1.ik5uu72fc8.styles.css",
+      "AssetFile": "BerberApp1.styles.css.gz",
+      "Selectors": [
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip",
+          "Quality": "0.000571102227"
+        }
+      ],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1750"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"+KTPirC2K3HvmuEpW3mIquURiwj+DrVu6js/rVq0Ers=\""
+        },
+        {
+          "Name": "ETag",
+          "Value": "W/\"srEwgN6iXpQfi2U24PAg2fuLFEAw4UXltORsWhlBd8E=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 29 Jun 2025 16:53:48 GMT"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "ik5uu72fc8"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-srEwgN6iXpQfi2U24PAg2fuLFEAw4UXltORsWhlBd8E="
+        },
+        {
+          "Name": "label",
+          "Value": "BerberApp1.styles.css"
+        }
+      ]
+    },
+    {
+      "Route": "BerberApp1.ik5uu72fc8.styles.css",
+      "AssetFile": "BerberApp1.styles.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "6790"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"srEwgN6iXpQfi2U24PAg2fuLFEAw4UXltORsWhlBd8E=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 29 Jun 2025 16:53:48 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "ik5uu72fc8"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-srEwgN6iXpQfi2U24PAg2fuLFEAw4UXltORsWhlBd8E="
+        },
+        {
+          "Name": "label",
+          "Value": "BerberApp1.styles.css"
+        }
+      ]
+    },
+    {
+      "Route": "BerberApp1.ik5uu72fc8.styles.css.gz",
+      "AssetFile": "BerberApp1.styles.css.gz",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1750"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"+KTPirC2K3HvmuEpW3mIquURiwj+DrVu6js/rVq0Ers=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 29 Jun 2025 16:53:48 GMT"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "ik5uu72fc8"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-+KTPirC2K3HvmuEpW3mIquURiwj+DrVu6js/rVq0Ers="
+        },
+        {
+          "Name": "label",
+          "Value": "BerberApp1.styles.css.gz"
+        }
+      ]
+    },
+    {
       "Route": "BerberApp1.styles.css",
       "AssetFile": "BerberApp1.styles.css.gz",
       "Selectors": [
         {
           "Name": "Content-Encoding",
           "Value": "gzip",
-          "Quality": "0.000743494424"
+          "Quality": "0.000571102227"
         }
       ],
       "ResponseHeaders": [
@@ -27,7 +188,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "1344"
+          "Value": "1750"
         },
         {
           "Name": "Content-Type",
@@ -35,15 +196,15 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"aLaZXFqrAtq6quciYuoaCFleaputJTNeLPaoDk8g7BM=\""
+          "Value": "\"+KTPirC2K3HvmuEpW3mIquURiwj+DrVu6js/rVq0Ers=\""
         },
         {
           "Name": "ETag",
-          "Value": "W/\"UKgoGa/a0vED7FHeemmJDxdvhi/uEcMvsg/NYjeqiIk=\""
+          "Value": "W/\"srEwgN6iXpQfi2U24PAg2fuLFEAw4UXltORsWhlBd8E=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 15 Jun 2025 08:28:15 GMT"
+          "Value": "Sun, 29 Jun 2025 16:53:48 GMT"
         },
         {
           "Name": "Vary",
@@ -53,7 +214,7 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-UKgoGa/a0vED7FHeemmJDxdvhi/uEcMvsg/NYjeqiIk="
+          "Value": "sha256-srEwgN6iXpQfi2U24PAg2fuLFEAw4UXltORsWhlBd8E="
         }
       ]
     },
@@ -72,7 +233,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "4691"
+          "Value": "6790"
         },
         {
           "Name": "Content-Type",
@@ -80,17 +241,17 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"UKgoGa/a0vED7FHeemmJDxdvhi/uEcMvsg/NYjeqiIk=\""
+          "Value": "\"srEwgN6iXpQfi2U24PAg2fuLFEAw4UXltORsWhlBd8E=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 15 Jun 2025 08:28:15 GMT"
+          "Value": "Sun, 29 Jun 2025 16:53:48 GMT"
         }
       ],
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-UKgoGa/a0vED7FHeemmJDxdvhi/uEcMvsg/NYjeqiIk="
+          "Value": "sha256-srEwgN6iXpQfi2U24PAg2fuLFEAw4UXltORsWhlBd8E="
         }
       ]
     },
@@ -113,7 +274,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "1344"
+          "Value": "1750"
         },
         {
           "Name": "Content-Type",
@@ -121,11 +282,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"aLaZXFqrAtq6quciYuoaCFleaputJTNeLPaoDk8g7BM=\""
+          "Value": "\"+KTPirC2K3HvmuEpW3mIquURiwj+DrVu6js/rVq0Ers=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 15 Jun 2025 08:28:15 GMT"
+          "Value": "Sun, 29 Jun 2025 16:53:48 GMT"
         },
         {
           "Name": "Vary",
@@ -135,168 +296,7 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-aLaZXFqrAtq6quciYuoaCFleaputJTNeLPaoDk8g7BM="
-        }
-      ]
-    },
-    {
-      "Route": "BerberApp1.wso7j74qv5.styles.css",
-      "AssetFile": "BerberApp1.styles.css.gz",
-      "Selectors": [
-        {
-          "Name": "Content-Encoding",
-          "Value": "gzip",
-          "Quality": "0.000743494424"
-        }
-      ],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "max-age=31536000, immutable"
-        },
-        {
-          "Name": "Content-Encoding",
-          "Value": "gzip"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "1344"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/css"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"aLaZXFqrAtq6quciYuoaCFleaputJTNeLPaoDk8g7BM=\""
-        },
-        {
-          "Name": "ETag",
-          "Value": "W/\"UKgoGa/a0vED7FHeemmJDxdvhi/uEcMvsg/NYjeqiIk=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Sun, 15 Jun 2025 08:28:15 GMT"
-        },
-        {
-          "Name": "Vary",
-          "Value": "Content-Encoding"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "fingerprint",
-          "Value": "wso7j74qv5"
-        },
-        {
-          "Name": "integrity",
-          "Value": "sha256-UKgoGa/a0vED7FHeemmJDxdvhi/uEcMvsg/NYjeqiIk="
-        },
-        {
-          "Name": "label",
-          "Value": "BerberApp1.styles.css"
-        }
-      ]
-    },
-    {
-      "Route": "BerberApp1.wso7j74qv5.styles.css",
-      "AssetFile": "BerberApp1.styles.css",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "max-age=31536000, immutable"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "4691"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/css"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"UKgoGa/a0vED7FHeemmJDxdvhi/uEcMvsg/NYjeqiIk=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Sun, 15 Jun 2025 08:28:15 GMT"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "fingerprint",
-          "Value": "wso7j74qv5"
-        },
-        {
-          "Name": "integrity",
-          "Value": "sha256-UKgoGa/a0vED7FHeemmJDxdvhi/uEcMvsg/NYjeqiIk="
-        },
-        {
-          "Name": "label",
-          "Value": "BerberApp1.styles.css"
-        }
-      ]
-    },
-    {
-      "Route": "BerberApp1.wso7j74qv5.styles.css.gz",
-      "AssetFile": "BerberApp1.styles.css.gz",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "max-age=31536000, immutable"
-        },
-        {
-          "Name": "Content-Encoding",
-          "Value": "gzip"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "1344"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/css"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"aLaZXFqrAtq6quciYuoaCFleaputJTNeLPaoDk8g7BM=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Sun, 15 Jun 2025 08:28:15 GMT"
-        },
-        {
-          "Name": "Vary",
-          "Value": "Content-Encoding"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "fingerprint",
-          "Value": "wso7j74qv5"
-        },
-        {
-          "Name": "integrity",
-          "Value": "sha256-aLaZXFqrAtq6quciYuoaCFleaputJTNeLPaoDk8g7BM="
-        },
-        {
-          "Name": "label",
-          "Value": "BerberApp1.styles.css.gz"
+          "Value": "sha256-+KTPirC2K3HvmuEpW3mIquURiwj+DrVu6js/rVq0Ers="
         }
       ]
     },

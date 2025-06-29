@@ -1,0 +1,86 @@
+@page "/salon/{SalonId:int}"
+@using BerberApp1.Data
+@using Microsoft.EntityFrameworkCore
+@inject ApplicationDbContext DbContext
+@inject ILogger<SalonDetail> Logger
+
+@if (salon == null)
+{
+    <p>Salon bulunamadı.</p>
+}
+else
+{
+    <div class="salon-detail-container">
+        <div class="container">
+            <div class="salon-header">
+                <h1>@salon.Name</h1>
+                <p><i class="fas fa-map-marker-alt"></i> @salon.Address</p>
+            </div>
+
+            <div class="content-tabs">
+                <button class="tab-button @(activeTab == "booking" ? "active" : "")" @onclick="@(() => SetActiveTab("booking"))">Randevu Al</button>
+                <button class="tab-button @(activeTab == "prices" ? "active" : "")" @onclick="@(() => SetActiveTab("prices"))">Fiyat Listesi</button>
+            </div>
+
+            <div class="tab-content @(activeTab == "booking" ? "active" : "")">
+                <Booking SalonId="@SalonId" />
+            </div>
+
+            <div class="tab-content @(activeTab == "prices" ? "active" : "")">
+                <div class="price-list-container">
+                    @if (salon.Services.Any())
+                    {
+                        <table class="price-table">
+                            <thead>
+                                <tr>
+                                    <th>Hizmet</th>
+                                    <th>Fiyat</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var service in salon.Services)
+                                {
+                                    <tr>
+                                        <td class="service-name">@service.Name</td>
+                                        <td class="service-price">@service.Price.ToString("C")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p>Bu salon için henüz bir hizmet (fiyat) bilgisi girilmemiş.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int SalonId { get; set; }
+
+    private Salon? salon;
+    private string activeTab = "booking"; // Default tab
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            salon = await DbContext.Salons
+                                 .Include(s => s.Services)
+                                 .FirstOrDefaultAsync(s => s.Id == SalonId);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading salon details for SalonId {SalonId}", SalonId);
+        }
+    }
+
+    private void SetActiveTab(string tabName)
+    {
+        activeTab = tabName;
+    }
+}
