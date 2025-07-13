@@ -13,6 +13,17 @@
     </div>
 
     <div class="booking-content">
+        <div class="service-selection-container">
+            <h4 class="mb-3">Hizmet Seçimi</h4>
+            <div class="service-buttons">
+                @foreach (var service in services)
+                {
+                    <button class="btn @(selectedServices.Contains(service) ? "btn-primary" : "btn-outline-primary")" @onclick="() => ToggleServiceSelection(service)">
+                        @service.Name
+                    </button>
+                }
+            </div>
+        </div>
         <div class="calendar-container">
             <div class="calendar-header">
                 <button class="nav-btn" @onclick="PreviousMonth"><i class="fas fa-chevron-left"></i></button>
@@ -71,6 +82,8 @@
 
     [Parameter]
     public int SalonId { get; set; }
+    private List<Service> services = new();
+    private List<Service> selectedServices = new();
     private Salon? CurrentSalon { get; set; }
     private List<SalonWorkingHours> salonWorkingHours = new();
 
@@ -78,7 +91,13 @@
     {
         CurrentSalon = await DbContext.Salons
                                     .Include(s => s.WorkingHours)
+                                    .Include(s => s.Services)
                                     .FirstOrDefaultAsync(s => s.Id == SalonId);
+
+        if (CurrentSalon != null)
+        {
+            services = CurrentSalon.Services.ToList();
+        }
 
         if (CurrentSalon == null)
         {
@@ -90,6 +109,19 @@
         salonWorkingHours = CurrentSalon.WorkingHours.ToList();
 
         GenerateCalendar(currentMonth);
+        await GenerateAvailableSlots(selectedDate);
+    }
+
+    private async Task ToggleServiceSelection(Service service)
+    {
+        if (selectedServices.Contains(service))
+        {
+            selectedServices.Remove(service);
+        }
+        else
+        {
+            selectedServices.Add(service);
+        }
         await GenerateAvailableSlots(selectedDate);
     }
 
@@ -116,9 +148,9 @@
     {
         availableSlots.Clear();
 
-        if (CurrentSalon == null)
+        if (CurrentSalon == null || !selectedServices.Any())
         {
-            Logger.LogWarning("Cannot generate slots: CurrentSalon is null.");
+            Logger.LogWarning("Cannot generate slots: CurrentSalon is null or no services selected.");
             return;
         }
 
@@ -126,57 +158,57 @@
 
         if (todayWorkingHours == null || todayWorkingHours.IsClosed)
         {
-            // Salon is closed on this day or no working hours defined
             return;
         }
 
-        // Get existing appointments for the selected date and salon
         var existingAppointments = await DbContext.Appointments
+            .Include(a => a.AppointmentServices)
+            .ThenInclude(aps => aps.Service)
             .Where(a => a.SalonId == SalonId && a.AppointmentDate.Date == date.Date)
             .ToListAsync();
 
-        TimeSpan minimumAllowedTime = TimeSpan.Zero;
+        int totalDuration = selectedServices.Sum(s => s.DurationInMinutes);
+
+        TimeOnly minimumAllowedTime = TimeOnly.MinValue;
         if (date.Date == DateTime.Today)
         {
-            TimeSpan now = DateTime.Now.TimeOfDay;
-            // Truncate to the nearest minute or 30-minute interval to avoid precision issues
-            now = new TimeSpan(now.Hours, now.Minutes, 0); // Remove seconds and milliseconds
-
-            int totalMinutes = (int)now.TotalMinutes;
-            int minutesIntoInterval = totalMinutes % 30;
-
-            if (minutesIntoInterval == 0) // Tam olarak 30 dakikalık bir aralığın başlangıcındaysa
-            {
-                minimumAllowedTime = now;
-            }
-            else // Aralığın ortasındaysa, bir sonraki 30 dakikalık aralığa yuvarla
-            {
-                int minutesToAdd = 30 - minutesIntoInterval;
-                minimumAllowedTime = now.Add(TimeSpan.FromMinutes(minutesToAdd));
-            }
+            TimeOnly now = TimeOnly.FromDateTime(DateTime.Now);
+            now = new TimeOnly(now.Hour, now.Minute);
+            minimumAllowedTime = now;
         }
 
-        TimeSpan currentTime = todayWorkingHours.OpeningTime;
+        TimeOnly currentTime = todayWorkingHours.OpeningTime;
+        TimeOnly closingTime = todayWorkingHours.ClosingTime;
 
-        while (currentTime < todayWorkingHours.ClosingTime)
+        while (currentTime.AddMinutes(totalDuration) <= closingTime)
         {
-            bool isBooked = existingAppointments.Any(ea => ea.AppointmentTime.Hours == currentTime.Hours && ea.AppointmentTime.Minutes == currentTime.Minutes);
-            bool isPast = false;
-
-            if (date.Date == DateTime.Today)
+            bool isSlotAvailable = true;
+            if (currentTime < minimumAllowedTime && date.Date == DateTime.Today)
             {
-                if (currentTime < minimumAllowedTime)
+                isSlotAvailable = false;
+            }
+            else
+            {
+                foreach (var appointment in existingAppointments)
                 {
-                    isPast = true;
+                    TimeOnly appointmentStart = TimeOnly.FromTimeSpan(appointment.AppointmentTime);
+                    int appointmentDuration = appointment.AppointmentServices.Sum(aps => aps.Service.DurationInMinutes);
+                    TimeOnly appointmentEnd = appointmentStart.AddMinutes(appointmentDuration);
+
+                    if (currentTime < appointmentEnd && currentTime.AddMinutes(totalDuration) > appointmentStart)
+                    {
+                        isSlotAvailable = false;
+                        break;
+                    }
                 }
             }
 
-            if (!isBooked && !isPast)
+            if (isSlotAvailable)
             {
-                availableSlots.Add($"{currentTime.Hours:D2}:{currentTime.Minutes:D2}");
+                availableSlots.Add(currentTime.ToString("HH:mm"));
             }
-                
-            currentTime = currentTime.Add(TimeSpan.FromMinutes(30)); // 30-minute intervals
+
+            currentTime = currentTime.AddMinutes(15); // Check every 15 minutes for a slot
         }
     }
 
@@ -196,10 +228,9 @@
 
     private async Task ConfirmAppointment()
     {
-        if (string.IsNullOrEmpty(selectedSlot) || CurrentSalon == null)
+        if (string.IsNullOrEmpty(selectedSlot) || CurrentSalon == null || !selectedServices.Any())
         {
-            // Add some user feedback here, e.g., a toast notification
-            Logger.LogWarning("Appointment confirmation failed: No slot selected or salon is null.");
+            Logger.LogWarning("Appointment confirmation failed: No slot selected, salon is null, or no services selected.");
             return;
         }
 
@@ -211,26 +242,27 @@
                 SalonId = CurrentSalon.Id,
                 AppointmentDate = selectedDate.Date,
                 AppointmentTime = appointmentTime,
-                CustomerName = "Dummy User", // As requested
-                CustomerPhone = "0000000000", // Dummy phone
+                CustomerName = "Dummy User",
+                CustomerPhone = "0000000000",
                 Notes = "Randevu sistem üzerinden oluşturuldu."
             };
+
+            foreach (var service in selectedServices)
+            {
+                newAppointment.AppointmentServices.Add(new AppointmentService { ServiceId = service.Id });
+            }
 
             DbContext.Appointments.Add(newAppointment);
             await DbContext.SaveChangesAsync();
 
-            // Reset state and show success message
             Logger.LogInformation("Appointment created successfully for {Date} at {Time}", selectedDate.ToShortDateString(), selectedSlot);
             selectedSlot = string.Empty;
-            await GenerateAvailableSlots(selectedDate); // Refresh slots
+            await GenerateAvailableSlots(selectedDate);
             StateHasChanged();
-            // Optionally, navigate to a confirmation page
-            // NavigationManager.NavigateTo("/booking-success");
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error creating appointment.");
-            // Add user feedback for error
         }
     }
 

@@ -4,6 +4,7 @@ using BerberApp1.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BerberApp1.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250712112510_ChangeWorkingHoursToTimeOnly")]
+    partial class ChangeWorkingHoursToTimeOnly
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -59,21 +62,6 @@ namespace BerberApp1.Migrations
                     b.HasIndex("SalonId");
 
                     b.ToTable("Appointments");
-                });
-
-            modelBuilder.Entity("BerberApp1.Data.AppointmentService", b =>
-                {
-                    b.Property<int>("AppointmentId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ServiceId")
-                        .HasColumnType("int");
-
-                    b.HasKey("AppointmentId", "ServiceId");
-
-                    b.HasIndex("ServiceId");
-
-                    b.ToTable("AppointmentServices");
                 });
 
             modelBuilder.Entity("BerberApp1.Data.Salon", b =>
@@ -189,25 +177,6 @@ namespace BerberApp1.Migrations
                     b.Navigation("Salon");
                 });
 
-            modelBuilder.Entity("BerberApp1.Data.AppointmentService", b =>
-                {
-                    b.HasOne("BerberApp1.Data.Appointment", "Appointment")
-                        .WithMany("AppointmentServices")
-                        .HasForeignKey("AppointmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BerberApp1.Data.Service", "Service")
-                        .WithMany("AppointmentServices")
-                        .HasForeignKey("ServiceId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Appointment");
-
-                    b.Navigation("Service");
-                });
-
             modelBuilder.Entity("BerberApp1.Data.SalonWorkingHours", b =>
                 {
                     b.HasOne("BerberApp1.Data.Salon", "Salon")
@@ -230,11 +199,6 @@ namespace BerberApp1.Migrations
                     b.Navigation("Salon");
                 });
 
-            modelBuilder.Entity("BerberApp1.Data.Appointment", b =>
-                {
-                    b.Navigation("AppointmentServices");
-                });
-
             modelBuilder.Entity("BerberApp1.Data.Salon", b =>
                 {
                     b.Navigation("Appointments");
@@ -242,11 +206,6 @@ namespace BerberApp1.Migrations
                     b.Navigation("Services");
 
                     b.Navigation("WorkingHours");
-                });
-
-            modelBuilder.Entity("BerberApp1.Data.Service", b =>
-                {
-                    b.Navigation("AppointmentServices");
                 });
 #pragma warning restore 612, 618
         }

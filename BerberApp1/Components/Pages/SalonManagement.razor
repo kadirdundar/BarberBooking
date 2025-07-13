@@ -1,0 +1,217 @@
+@page "/salon-management/{SalonId:int}"
+@using BerberApp1.Data
+@using Microsoft.EntityFrameworkCore
+@inject ApplicationDbContext DbContext
+@inject ILogger<SalonManagement> Logger
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-lg">
+                <div class="card-header">
+                    <h3>Salon Yönetimi</h3>
+                </div>
+                <div class="card-body">
+                    @if (salon == null)
+                    {
+                        <p>Salon bulunamadı.</p>
+                    }
+                    else
+                    {
+                        <h4>Hizmetler</h4>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Hizmet Adı</th>
+                                    <th>Fiyat</th>
+                                    <th>Süre (Dakika)</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var service in salon.Services)
+                                {
+                                    <tr>
+                                        <td><InputText @bind-Value="service.Name" class="form-control" /></td>
+                                        <td><InputNumber @bind-Value="service.Price" class="form-control" /></td>
+                                        <td><InputNumber @bind-Value="service.DurationInMinutes" class="form-control" /></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary" @onclick="() => UpdateService(service)">Güncelle</button>
+                                            <button class="btn btn-sm btn-danger" @onclick="() => DeleteService(service.Id)">Sil</button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                        <hr />
+
+                        <h4>Yeni Hizmet Ekle</h4>
+                        <EditForm Model="@newService" OnValidSubmit="AddService">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary />
+
+                            <div class="form-group">
+                                <label>Hizmet Adı</label>
+                                <InputText @bind-Value="newService.Name" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label>Fiyat</label>
+                                <InputNumber @bind-Value="newService.Price" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label>Süre (Dakika)</label>
+                                <InputNumber @bind-Value="newService.DurationInMinutes" class="form-control" />
+                            </div>
+                            <button type="submit" class="btn btn-primary">Ekle</button>
+                        </EditForm>
+
+                        <hr />
+
+                        <h4>Çalışma Saatleri</h4>
+                        @foreach (var wh in salon.WorkingHours.OrderBy(wh => wh.DayOfWeek))
+                        {
+                            <EditForm Model="wh" OnValidSubmit="@(() => UpdateWorkingHour(wh))">
+                                <div class="row mb-2 align-items-center">
+                                    <div class="col-md-2">@wh.DayOfWeek</div>
+                                    <div class="col-md-3"><input type="time" @bind="wh.OpeningTime" @bind:format="HH:mm" class="form-control" /></div>
+                                    <div class="col-md-3"><input type="time" @bind="wh.ClosingTime" @bind:format="HH:mm" class="form-control" /></div>
+                                    <div class="col-md-2"><InputCheckbox @bind-Value="wh.IsClosed" /> Kapalı</div>
+                                    <div class="col-md-2"><button type="submit" class="btn btn-sm btn-primary">Güncelle</button></div>
+                                </div>
+                            </EditForm>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(statusMessage))
+{
+    <div class="modal fade show" style="display: block;" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Bildirim</h5>
+                    <button type="button" class="close" @onclick="() => statusMessage = null">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="@(isSuccess ? "text-success" : "text-danger")">@statusMessage</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+    [Parameter]
+    public int SalonId { get; set; }
+
+    private Salon? salon;
+    private Service newService = new();
+    private string? statusMessage;
+    private bool isSuccess;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSalon();
+    }
+
+    private async Task LoadSalon()
+    {
+        try
+        {
+            salon = await DbContext.Salons
+                                 .AsNoTracking()
+                                 .Include(s => s.Services)
+                                 .Include(s => s.WorkingHours)
+                                 .FirstOrDefaultAsync(s => s.Id == SalonId);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading salon details for SalonId {SalonId}", SalonId);
+        }
+    }
+
+    private async Task AddService()
+    {
+        if (salon is not null)
+        {
+            try
+            {
+                newService.SalonId = salon.Id;
+                DbContext.Services.Add(newService);
+                await DbContext.SaveChangesAsync();
+                newService = new();
+                await LoadSalon();
+                isSuccess = true;
+                statusMessage = "Hizmet başarıyla eklendi.";
+            }
+            catch (Exception ex)
+            {
+                isSuccess = false;
+                statusMessage = $"Hizmet eklenirken bir hata oluştu: {ex.Message}";
+            }
+        }
+    }
+
+    private async Task UpdateWorkingHour(SalonWorkingHours workingHour)
+    {
+        try
+        {
+            DbContext.Update(workingHour);
+            await DbContext.SaveChangesAsync();
+            await LoadSalon();
+            isSuccess = true;
+            statusMessage = "Çalışma saati başarıyla güncellendi.";
+        }
+        catch (Exception ex)
+        {
+            isSuccess = false;
+            statusMessage = $"Çalışma saati güncellenirken bir hata oluştu: {ex.Message}";
+        }
+    }
+
+    private async Task UpdateService(Service service)
+    {
+        try
+        {
+            DbContext.Services.Update(service);
+            await DbContext.SaveChangesAsync();
+            await LoadSalon();
+            isSuccess = true;
+            statusMessage = "Hizmet başarıyla güncellendi.";
+        }
+        catch (Exception ex)
+        {
+            isSuccess = false;
+            statusMessage = $"Hizmet güncellenirken bir hata oluştu: {ex.Message}";
+        }
+    }
+
+    private async Task DeleteService(int serviceId)
+    {
+        try
+        {
+            var service = await DbContext.Services.FindAsync(serviceId);
+            if (service is not null)
+            {
+                DbContext.Services.Remove(service);
+                await DbContext.SaveChangesAsync();
+                await LoadSalon();
+                isSuccess = true;
+                statusMessage = "Hizmet başarıyla silindi.";
+            }
+        }
+        catch (Exception ex)
+        {
+            isSuccess = false;
+            statusMessage = $"Hizmet silinirken bir hata oluştu: {ex.Message}";
+        }
+    }
+}

@@ -13,12 +13,27 @@ namespace BerberApp1.Data
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<SalonWorkingHours> SalonWorkingHours { get; set; }
         public DbSet<Service> Services { get; set; }
+        public DbSet<AppointmentService> AppointmentServices { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             // Configure relationships and constraints here
+            modelBuilder.Entity<AppointmentService>()
+                .HasKey(asl => new { asl.AppointmentId, asl.ServiceId });
+
+            modelBuilder.Entity<AppointmentService>()
+                .HasOne(asl => asl.Appointment)
+                .WithMany(a => a.AppointmentServices)
+                .HasForeignKey(asl => asl.AppointmentId);
+
+            modelBuilder.Entity<AppointmentService>()
+                .HasOne(asl => asl.Service)
+                .WithMany(s => s.AppointmentServices)
+                .HasForeignKey(asl => asl.ServiceId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<Appointment>()
                 .HasOne(a => a.Salon)
                 .WithMany(s => s.Appointments)

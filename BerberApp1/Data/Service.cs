@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -21,6 +22,10 @@ namespace BerberApp1.Data
         [Column(TypeName = "decimal(18,2)")]
         public decimal Price { get; set; }
 
+        [Required]
+        public int DurationInMinutes { get; set; }
+
         public Salon? Salon { get; set; }
+        public ICollection<AppointmentService> AppointmentServices { get; set; } = new List<AppointmentService>();
     }
 }

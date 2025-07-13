@@ -167,5 +167,7 @@
 /Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/BerberApp1.csproj.Up2Date
 /Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/mqc9x62763-rxv5gcjxwb.gz
 /Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/scopedcss/Components/Pages/SalonDetail.razor.rz.scp.css
-/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/u4ptrcu2nl-ik5uu72fc8.gz
-/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/f6nc8b14uf-ik5uu72fc8.gz
+/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/scopedcss/Components/Pages/SalonManagement.razor.rz.scp.css
+/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/scopedcss/Components/Pages/Booking.razor.rz.scp.css
+/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/u4ptrcu2nl-v4poznww2u.gz
+/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/f6nc8b14uf-v4poznww2u.gz

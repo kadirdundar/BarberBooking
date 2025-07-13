@@ -14,10 +14,10 @@ namespace BerberApp1.Data
         public DayOfWeek DayOfWeek { get; set; }
 
         [Required]
-        public TimeSpan OpeningTime { get; set; }
+        public TimeOnly OpeningTime { get; set; }
 
         [Required]
-        public TimeSpan ClosingTime { get; set; }
+        public TimeOnly ClosingTime { get; set; }
 
         public bool IsClosed { get; set; } = false;
 
