@@ -12,63 +12,73 @@
         <p class="section-subtitle">Tarih ve saat seçerek randevunuzu kolayca oluşturun.</p>
     </div>
 
-    <div class="booking-content">
-        <div class="service-selection-container">
-            <h4 class="mb-3">Hizmet Seçimi</h4>
-            <div class="service-buttons">
-                @foreach (var service in services)
-                {
-                    <button class="btn @(selectedServices.Contains(service) ? "btn-primary" : "btn-outline-primary")" @onclick="() => ToggleServiceSelection(service)">
-                        @service.Name
-                    </button>
-                }
-            </div>
-        </div>
-        <div class="calendar-container">
-            <div class="calendar-header">
-                <button class="nav-btn" @onclick="PreviousMonth"><i class="fas fa-chevron-left"></i></button>
-                <span class="month-display">@currentMonth.ToString("MMMM yyyy")</span>
-                <button class="nav-btn" @onclick="NextMonth"><i class="fas fa-chevron-right"></i></button>
-            </div>
-            <div class="calendar-grid">
-                <div class="day-name">Pzt</div>
-                <div class="day-name">Sal</div>
-                <div class="day-name">Çar</div>
-                <div class="day-name">Per</div>
-                <div class="day-name">Cum</div>
-                <div class="day-name">Cmt</div>
-                <div class="day-name">Paz</div>
-
-                @foreach (var day in daysInMonth)
-                {
-                    <div class="@GetDayClass(day)" @onclick="() => SelectDate(day)">
-                        @if (day != DateTime.MinValue)
-                        {
-                            <span>@day.Day</span>
-                        }
-                    </div>
-                }
-            </div>
-        </div>
-
-        <div class="time-slots-container">
-            <h3 class="time-slots-title">Müsait Saatler (@selectedDate.ToShortDateString())</h3>
-            @if (availableSlots.Any())
+    <div class="service-selection-container">
+        <h4 class="mb-3">Hizmet Seçimi</h4>
+        <div class="service-buttons">
+            @foreach (var service in services)
             {
-                <div class="time-slots-grid">
-                    @foreach (var slot in availableSlots)
+                <button class="btn @(selectedServices.Contains(service) ? "btn-primary" : "btn-outline-primary")" @onclick="() => ToggleServiceSelection(service)">
+                    @service.Name
+                </button>
+            }
+        </div>
+    </div>
+
+    <div class="booking-content-wrapper">
+        @if (!selectedServices.Any())
+        {
+            <div class="disabled-overlay">
+                <div class="alert alert-info text-center" role="alert">
+                    Lütfen randevu almak için en az bir hizmet seçin.
+                </div>
+            </div>
+        }
+        <div class="booking-content @(selectedServices.Any() ? "" : "disabled")">
+            <div class="calendar-container">
+                <div class="calendar-header">
+                    <button class="nav-btn" @onclick="PreviousMonth"><i class="fas fa-chevron-left"></i></button>
+                    <span class="month-display">@currentMonth.ToString("MMMM yyyy")</span>
+                    <button class="nav-btn" @onclick="NextMonth"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                <div class="calendar-grid">
+                    <div class="day-name">Pzt</div>
+                    <div class="day-name">Sal</div>
+                    <div class="day-name">Çar</div>
+                    <div class="day-name">Per</div>
+                    <div class="day-name">Cum</div>
+                    <div class="day-name">Cmt</div>
+                    <div class="day-name">Paz</div>
+
+                    @foreach (var day in daysInMonth)
                     {
-                        <button class="time-slot-btn @(selectedSlot == slot ? "selected" : "")" @onclick="() => SelectSlot(slot)">
-                            @slot
-                        </button>
+                        <div class="@GetDayClass(day)" @onclick="() => SelectDate(day)">
+                            @if (day != DateTime.MinValue)
+                            {
+                                <span>@day.Day</span>
+                            }
+                        </div>
                     }
                 </div>
-                <button class="btn btn-primary confirm-btn" @onclick="ConfirmAppointment" disabled="@(string.IsNullOrEmpty(selectedSlot))">Randevuyu Onayla</button>
-            }
-            else
-            {
-                <p>Bu tarih için müsait saat bulunmamaktadır.</p>
-            }
+            </div>
+            <div class="time-slots-container">
+                <h3 class="time-slots-title">Müsait Saatler (@selectedDate.ToShortDateString())</h3>
+                @if (availableSlots.Any())
+                {
+                    <div class="time-slots-grid">
+                        @foreach (var slot in availableSlots)
+                        {
+                            <button class="time-slot-btn @(selectedSlot == slot ? "selected" : "")" @onclick="() => SelectSlot(slot)">
+                                @slot
+                            </button>
+                        }
+                    </div>
+                    <button class="btn btn-primary confirm-btn mt-3" @onclick="ConfirmAppointment" disabled="@(string.IsNullOrEmpty(selectedSlot))">Randevuyu Onayla</button>
+                }
+                else
+                {
+                    <p>Bu tarih için müsait saat bulunmamaktadır.</p>
+                }
+            </div>
         </div>
     </div>
 </div>

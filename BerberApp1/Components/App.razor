@@ -16,7 +16,9 @@
 
 <body>
 <script src="_framework/blazor.web.js"></script>
-<Routes @rendermode="InteractiveServer" />
+<CascadingAuthenticationState>
+    <Routes @rendermode="InteractiveServer" />
+</CascadingAuthenticationState>
 </body>
 
 </html>

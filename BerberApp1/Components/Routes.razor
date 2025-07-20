@@ -1,6 +1,29 @@
-﻿<Router AppAssembly="typeof(Program).Assembly">
+﻿@using Microsoft.AspNetCore.Components.Authorization
+
+<Router AppAssembly="typeof(Program).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)"/>
-        <FocusOnNavigate RouteData="routeData" Selector="h1"/>
+        <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">
+            <NotAuthorized>
+                <div class="text-center p-4">
+                    <h4 class="text-danger">Bu Sayfaya Erişmek İçin Yetkiniz Yok</h4>
+                    <p>Lütfen devam etmek için giriş yapın.</p>
+                    
+                    @* Kullanıcıyı doğrudan Google ile girişe yönlendiren bir buton ekleyebilirsiniz *@
+                    <a href="api/auth/login" class="btn btn-primary">
+                        <i class="fa-brands fa-google"></i> Google ile Giriş Yap
+                    </a>
+                </div>
+            </NotAuthorized>
+            <Authorizing>
+                <p>Yetkiniz kontrol ediliyor, lütfen bekleyin...</p>
+            </Authorizing>
+        </AuthorizeRouteView>
+        <FocusOnNavigate RouteData="routeData" Selector="h1" />
     </Found>
+    <NotFound>
+        <PageTitle>Bulunamadı</PageTitle>
+        <LayoutView Layout="typeof(Layout.MainLayout)">
+            <p role="alert">Üzgünüz, bu adreste bir içerik bulunamadı.</p>
+        </LayoutView>
+    </NotFound>
 </Router>

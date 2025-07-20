@@ -25,6 +25,9 @@ namespace BerberApp1.Data
         [MaxLength(250)]
         public string Description { get; set; } = string.Empty;
 
+        public int UserId { get; set; }
+        public User User { get; set; }
+
         public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
         public ICollection<SalonWorkingHours> WorkingHours { get; set; } = new List<SalonWorkingHours>();
         public ICollection<Service> Services { get; set; } = new List<Service>();

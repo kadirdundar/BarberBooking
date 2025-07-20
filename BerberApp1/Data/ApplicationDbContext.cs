@@ -14,6 +14,7 @@ namespace BerberApp1.Data
         public DbSet<SalonWorkingHours> SalonWorkingHours { get; set; }
         public DbSet<Service> Services { get; set; }
         public DbSet<AppointmentService> AppointmentServices { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -48,6 +49,11 @@ namespace BerberApp1.Data
                 .HasOne(s => s.Salon)
                 .WithMany(s => s.Services)
                 .HasForeignKey(s => s.SalonId);
+
+            modelBuilder.Entity<Salon>()
+                .HasOne(s => s.User)
+                .WithMany(u => u.Salons)
+                .HasForeignKey(s => s.UserId);
         }
     }
 }

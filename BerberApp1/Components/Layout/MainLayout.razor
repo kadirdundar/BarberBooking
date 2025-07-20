@@ -32,7 +32,14 @@
                         </NavLink>
                     </li>
                 </ul>
-                
+                <AuthorizeView>
+                    <Authorized>
+                        <a href="api/auth/logout" class="btn btn-outline-primary">Logout</a>
+                    </Authorized>
+                    <NotAuthorized>
+                        <a href="login" class="btn btn-primary">Login</a>
+                    </NotAuthorized>
+                </AuthorizeView>
                 <div class="mobile-menu-toggle" @onclick="ToggleMobileMenu">
                     <i class="fas fa-bars"></i>
                 </div>

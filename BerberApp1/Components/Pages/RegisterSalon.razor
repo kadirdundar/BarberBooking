@@ -1,70 +1,80 @@
 @page "/registersalon"
+@attribute [Microsoft.AspNetCore.Authorization.Authorize]
+@using System.Security.Claims
 @using BerberApp1.Data
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.Authorization
 @inject ApplicationDbContext DbContext
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <PageTitle>Salon Kayıt</PageTitle>
 
-<div class="register-salon-container">
-    <div class="register-salon-header">
-        <h2 class="section-title">Yeni Salon Kaydı</h2>
-        <p class="section-subtitle">İşletmenizin bilgilerini kaydederek dijital yolculuğunuza başlayın.</p>
-    </div>
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-lg p-4 rounded-3">
-                <div class="card-body">
-                    <h2 class="card-title text-center mb-4 section-title" hidden>Yeni Salon Kaydı</h2>
-                    <EditForm Model="@Salon" OnValidSubmit="@HandleRegistration" FormName="RegisterSalonForm" class="needs-validation" Novalidate>
-                        <DataAnnotationsValidator />
-                        <ValidationSummary class="alert alert-danger" />
+<AuthorizeView Context="authContext">
+    <Authorized>
+        <div class="register-salon-container">
+            <div class="register-salon-header">
+                <h2 class="section-title">Hoş Geldin, @authContext.User.Identity.Name!</h2>
+                <p class="section-subtitle">Aşağıdaki formu doldurarak salonunu kaydet.</p>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card shadow-lg p-4 rounded-3">
+                        <div class="card-body">
+                            <h2 class="card-title text-center mb-4 section-title" hidden>Yeni Salon Kaydı</h2>
+                            <EditForm Model="@Salon" OnValidSubmit="@HandleRegistration" FormName="RegisterSalonForm" class="needs-validation" Novalidate>
+                                <DataAnnotationsValidator />
+                                <ValidationSummary class="alert alert-danger" />
 
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Salon Adı</label>
-                            <InputText id="name" class="form-control" @bind-Value="@Salon.Name" />
-                            <ValidationMessage For="@(() => Salon.Name)" />
-                        </div>
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Salon Adı</label>
+                                    <InputText id="name" class="form-control" @bind-Value="@Salon.Name" />
+                                    <ValidationMessage For="@(() => Salon.Name)" />
+                                </div>
 
-                        <div class="mb-3">
-                            <label for="address" class="form-label">Adres</label>
-                            <InputText id="address" class="form-control" @bind-Value="@Salon.Address" />
-                            <ValidationMessage For="@(() => Salon.Address)" />
-                        </div>
+                                <div class="mb-3">
+                                    <label for="address" class="form-label">Adres</label>
+                                    <InputText id="address" class="form-control" @bind-Value="@Salon.Address" />
+                                    <ValidationMessage For="@(() => Salon.Address)" />
+                                </div>
 
-                        <div class="mb-3">
-                            <label for="phone" class="form-label">Telefon Numarası</label>
-                            <InputText id="phone" class="form-control" @bind-Value="@Salon.PhoneNumber" />
-                            <ValidationMessage For="@(() => Salon.PhoneNumber)" />
-                        </div>
+                                <div class="mb-3">
+                                    <label for="phone" class="form-label">Telefon Numarası</label>
+                                    <InputText id="phone" class="form-control" @bind-Value="@Salon.PhoneNumber" />
+                                    <ValidationMessage For="@(() => Salon.PhoneNumber)" />
+                                </div>
 
-                        <div class="mb-3">
-                            <label for="email" class="form-label">E-posta</label>
-                            <InputText id="email" class="form-control" @bind-Value="@Salon.Email" />
-                            <ValidationMessage For="@(() => Salon.Email)" />
-                        </div>
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">E-posta</label>
+                                    <InputText id="email" class="form-control" @bind-Value="@Salon.Email" />
+                                    <ValidationMessage For="@(() => Salon.Email)" />
+                                </div>
 
-                        <div class="mb-3">
-                            <label for="description" class="form-label">Açıklama</label>
-                            <InputTextArea id="description" class="form-control" @bind-Value="@Salon.Description" rows="3" />
-                            <ValidationMessage For="@(() => Salon.Description)" />
-                        </div>
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Açıklama</label>
+                                    <InputTextArea id="description" class="form-control" @bind-Value="@Salon.Description" rows="3" />
+                                    <ValidationMessage For="@(() => Salon.Description)" />
+                                </div>
 
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg">Salonu Kaydet</button>
-                        </div>
-                    </EditForm>
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary btn-lg">Salonu Kaydet</button>
+                                </div>
+                            </EditForm>
 
-                    @if (!string.IsNullOrEmpty(statusMessage))
-                    {
-                        <div class="mt-3 alert @(isSuccess ? "alert-success" : "alert-danger")" role="alert">
-                            @statusMessage
+                            @if (!string.IsNullOrEmpty(statusMessage))
+                            {
+                                <div class="mt-3 alert @(isSuccess ? "alert-success" : "alert-danger")" role="alert">
+                                    @statusMessage
+                                </div>
+                            }
                         </div>
-                    }
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
+    </Authorized>
+</AuthorizeView>
+
 
 @code {
     private Salon Salon { get; set; } = new Salon();
@@ -73,25 +83,41 @@
 
     private async Task HandleRegistration()
     {
-        try
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
         {
-            DbContext.Salons.Add(Salon);
-            await DbContext.SaveChangesAsync();
+            var googleId = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            var email = user.FindFirst(c => c.Type == ClaimTypes.Email)?.Value;
+            var name = user.FindFirst(c => c.Type == ClaimTypes.Name)?.Value;
 
-            isSuccess = true;
-            statusMessage = "Salon başarıyla kaydedildi!";
+            var dbUser = await DbContext.Users.FirstOrDefaultAsync(u => u.GoogleId == googleId);
+            if (dbUser == null)
+            {
+                dbUser = new User { GoogleId = googleId, Email = email, Name = name };
+                DbContext.Users.Add(dbUser);
+                await DbContext.SaveChangesAsync();
+            }
 
-            // Optionally, redirect after successful registration
-            // NavigationManager.NavigateTo($"/salon-details/{Salon.Id}");
+            Salon.UserId = dbUser.Id;
 
-            // Reset the form for another entry
-            Salon = new Salon(); 
-        }
-        catch (Exception ex)
-        {
-            isSuccess = false;
-            statusMessage = $"Salon kaydedilirken bir hata oluştu: {ex.Message}";
-            Console.WriteLine($"Error saving salon: {ex.Message}");
+            try
+            {
+                DbContext.Salons.Add(Salon);
+                await DbContext.SaveChangesAsync();
+
+                isSuccess = true;
+                statusMessage = "Salon başarıyla kaydedildi!";
+                
+                NavigationManager.NavigateTo($"/salon/{Salon.Id}");
+            }
+            catch (Exception ex)
+            {
+                isSuccess = false;
+                statusMessage = $"Salon kaydedilirken bir hata oluştu: {ex.Message}";
+                Console.WriteLine($"Error saving salon: {ex.Message}");
+            }
         }
     }
-} 
+}
