@@ -1,3 +1,41 @@
+.employee-selection-container {
+    text-align: center;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.employee-avatars {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.employee-avatar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+}
+
+.employee-avatar img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    transition: border-color 0.3s;
+}
+
+.employee-avatar.selected img {
+    border-color: var(--primary-color);
+}
+
+.employee-avatar span {
+    margin-top: 10px;
+    font-weight: 500;
+}
+
 .booking-container {
     max-width: 900px;
     margin: 0 auto;
@@ -65,4 +103,74 @@
     border-radius: 50%;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    color: #333;
+}
+
+.day-name {
+    font-weight: bold;
+    color: #333;
+}
+
+.time-slots-title {
+    color: #333;
+}
+
+.time-slots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 10px;
+}
+
+.time-slot-btn {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    color: #495057;
+}
+
+.time-slot-btn:hover {
+    background-color: #f0f0f0;
+    border-color: #ccc;
+}
+
+.time-slot-btn.selected {
+    background-color: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
+}
+.service-buttons .btn {
+    transition: all 0.3s ease;
+    border-width: 2px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 20px;
+}
+
+/* Unselected button style */
+.service-buttons .btn.btn-outline-primary {
+    border-color: var(--secondary-color);
+    color: var(--secondary-color);
+    background-color: transparent;
+}
+
+/* Hover effect for unselected button */
+.service-buttons .btn.btn-outline-primary:hover {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+/* Selected button style */
+.service-buttons .btn.btn-primary {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+/* Override Bootstrap's focus shadow to match the theme */
+.service-buttons .btn:focus {
+    box-shadow: 0 0 0 0.25rem rgba(212, 178, 93, 0.5);
 }

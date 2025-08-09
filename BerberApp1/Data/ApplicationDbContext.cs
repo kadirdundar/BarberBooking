@@ -15,6 +15,7 @@ namespace BerberApp1.Data
         public DbSet<Service> Services { get; set; }
         public DbSet<AppointmentService> AppointmentServices { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Employee> Employees { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -54,6 +55,17 @@ namespace BerberApp1.Data
                 .HasOne(s => s.User)
                 .WithMany(u => u.Salons)
                 .HasForeignKey(s => s.UserId);
+
+            modelBuilder.Entity<Employee>()
+                .HasOne(e => e.Salon)
+                .WithMany(s => s.Employees)
+                .HasForeignKey(e => e.SalonId);
+
+            modelBuilder.Entity<Appointment>()
+                .HasOne(a => a.Employee)
+                .WithMany(e => e.Appointments)
+                .HasForeignKey(a => a.EmployeeId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

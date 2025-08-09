@@ -9,7 +9,7 @@
                 <span class="logo-text">BarberBooking</span>
             </NavLink>
             
-            <nav>
+            <nav class="d-flex align-items-center">
                 <ul class="nav-menu @(mobileMenuOpen ? "show" : "")" id="navMenu">
                     <li class="nav-item">
                         <NavLink href="/" class="nav-link" Match="NavLinkMatch.All">
@@ -32,14 +32,9 @@
                         </NavLink>
                     </li>
                 </ul>
-                <AuthorizeView>
-                    <Authorized>
-                        <a href="api/auth/logout" class="btn btn-outline-primary">Logout</a>
-                    </Authorized>
-                    <NotAuthorized>
-                        <a href="login" class="btn btn-primary">Login</a>
-                    </NotAuthorized>
-                </AuthorizeView>
+                <div class="ms-auto me-3">
+                    <UserProfile />
+                </div>
                 <div class="mobile-menu-toggle" @onclick="ToggleMobileMenu">
                     <i class="fas fa-bars"></i>
                 </div>

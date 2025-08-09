@@ -29,6 +29,8 @@ namespace BerberApp1.Data
         public string Notes { get; set; } = string.Empty;
 
         public Salon? Salon { get; set; }
+        public int EmployeeId { get; set; }
+        public Employee Employee { get; set; }
         public ICollection<AppointmentService> AppointmentServices { get; set; } = new List<AppointmentService>();
     }
 }

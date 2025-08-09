@@ -7,7 +7,7 @@
 
 .container[b-8dp92ld032] {
     max-width: 1200px;
-    margin: 0 auto;
+    margin: 0 auto; 
     padding: 2rem;
 }
 
@@ -81,7 +81,7 @@
 
 .price-table .service-name[b-8dp92ld032] {
     font-weight: 600;
-    color: var(--text-primary);
+    color: #333;
 }
 
 .price-table .service-price[b-8dp92ld032] {

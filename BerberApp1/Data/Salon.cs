@@ -31,5 +31,6 @@ namespace BerberApp1.Data
         public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
         public ICollection<SalonWorkingHours> WorkingHours { get; set; } = new List<SalonWorkingHours>();
         public ICollection<Service> Services { get; set; } = new List<Service>();
+        public ICollection<Employee> Employees { get; set; } = new List<Employee>();
     }
 }

@@ -69,18 +69,56 @@
                         <hr />
 
                         <h4>Çalışma Saatleri</h4>
-                        @foreach (var wh in salon.WorkingHours.OrderBy(wh => wh.DayOfWeek))
+                        @foreach (var wh in workingHours)
                         {
                             <EditForm Model="wh" OnValidSubmit="@(() => UpdateWorkingHour(wh))">
                                 <div class="row mb-2 align-items-center">
                                     <div class="col-md-2">@wh.DayOfWeek</div>
-                                    <div class="col-md-3"><input type="time" @bind="wh.OpeningTime" @bind:format="HH:mm" class="form-control" /></div>
-                                    <div class="col-md-3"><input type="time" @bind="wh.ClosingTime" @bind:format="HH:mm" class="form-control" /></div>
+                                    <div class="col-md-3"><input type="time" @bind="wh.OpeningTime" class="form-control" /></div>
+                                    <div class="col-md-3"><input type="time" @bind="wh.ClosingTime" class="form-control" /></div>
                                     <div class="col-md-2"><InputCheckbox @bind-Value="wh.IsClosed" /> Kapalı</div>
                                     <div class="col-md-2"><button type="submit" class="btn btn-sm btn-primary">Güncelle</button></div>
                                 </div>
                             </EditForm>
                         }
+
+                        <hr />
+
+                        <h4>Çalışanlar</h4>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Çalışan Adı</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var employee in salon.Employees)
+                                {
+                                    <tr>
+                                        <td>@employee.Name</td>
+                                        <td><button class="btn btn-sm btn-danger" @onclick="() => DeleteEmployee(employee.Id)">Sil</button></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                        <hr />
+
+                        <h4>Yeni Çalışan Ekle</h4>
+                        <EditForm Model="@newEmployee" OnValidSubmit="AddEmployee">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary />
+                            <div class="form-group">
+                                <label>Çalışan Adı</label>
+                                <InputText @bind-Value="newEmployee.Name" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label>Resim URL'si</label>
+                                <InputText @bind-Value="newEmployee.PictureUrl" class="form-control" />
+                            </div>
+                            <button type="submit" class="btn btn-primary">Ekle</button>
+                        </EditForm>
                     }
                 </div>
             </div>
@@ -114,12 +152,15 @@
 
     private Salon? salon;
     private Service newService = new();
+    private Employee newEmployee = new();
+    private List<WorkingHoursViewModel> workingHours = new();
     private string? statusMessage;
     private bool isSuccess;
 
     protected override async Task OnInitializedAsync()
     {
         await LoadSalon();
+        InitializeWorkingHours();
     }
 
     private async Task LoadSalon()
@@ -130,11 +171,28 @@
                                  .AsNoTracking()
                                  .Include(s => s.Services)
                                  .Include(s => s.WorkingHours)
+                                 .Include(s => s.Employees)
                                  .FirstOrDefaultAsync(s => s.Id == SalonId);
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error loading salon details for SalonId {SalonId}", SalonId);
+        }
+    }
+
+    private void InitializeWorkingHours()
+    {
+        workingHours = new List<WorkingHoursViewModel>();
+        foreach (DayOfWeek day in Enum.GetValues(typeof(DayOfWeek)))
+        {
+            var wh = salon?.WorkingHours.FirstOrDefault(w => w.DayOfWeek == day);
+            workingHours.Add(new WorkingHoursViewModel
+            {
+                DayOfWeek = day,
+                OpeningTime = wh?.OpeningTime ?? new TimeOnly(9, 0),
+                ClosingTime = wh?.ClosingTime ?? new TimeOnly(18, 0),
+                IsClosed = wh?.IsClosed ?? true
+            });
         }
     }
 
@@ -160,11 +218,28 @@
         }
     }
 
-    private async Task UpdateWorkingHour(SalonWorkingHours workingHour)
+    private async Task UpdateWorkingHour(WorkingHoursViewModel vm)
     {
+        if (salon is null) return;
+
         try
         {
-            DbContext.Update(workingHour);
+            var workingHour = await DbContext.SalonWorkingHours.FirstOrDefaultAsync(wh => wh.SalonId == salon.Id && wh.DayOfWeek == vm.DayOfWeek);
+
+            if (workingHour == null)
+            {
+                workingHour = new SalonWorkingHours
+                {
+                    SalonId = salon.Id,
+                    DayOfWeek = vm.DayOfWeek
+                };
+                DbContext.SalonWorkingHours.Add(workingHour);
+            }
+
+            workingHour.OpeningTime = vm.OpeningTime;
+            workingHour.ClosingTime = vm.ClosingTime;
+            workingHour.IsClosed = vm.IsClosed;
+
             await DbContext.SaveChangesAsync();
             await LoadSalon();
             isSuccess = true;
@@ -212,6 +287,49 @@
         {
             isSuccess = false;
             statusMessage = $"Hizmet silinirken bir hata oluştu: {ex.Message}";
+        }
+    }
+
+    private async Task AddEmployee()
+    {
+        if (salon is not null)
+        {
+            try
+            {
+                newEmployee.SalonId = salon.Id;
+                DbContext.Employees.Add(newEmployee);
+                await DbContext.SaveChangesAsync();
+                newEmployee = new();
+                await LoadSalon();
+                isSuccess = true;
+                statusMessage = "Çalışan başarıyla eklendi.";
+            }
+            catch (Exception ex)
+            {
+                isSuccess = false;
+                statusMessage = $"Çalışan eklenirken bir hata oluştu: {ex.Message}";
+            }
+        }
+    }
+
+    private async Task DeleteEmployee(int employeeId)
+    {
+        try
+        {
+            var employee = await DbContext.Employees.FindAsync(employeeId);
+            if (employee is not null)
+            {
+                DbContext.Employees.Remove(employee);
+                await DbContext.SaveChangesAsync();
+                await LoadSalon();
+                isSuccess = true;
+                statusMessage = "Çalışan başarıyla silindi.";
+            }
+        }
+        catch (Exception ex)
+        {
+            isSuccess = false;
+            statusMessage = $"Çalışan silinirken bir hata oluştu: {ex.Message}";
         }
     }
 }

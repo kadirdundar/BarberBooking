@@ -223,7 +223,119 @@
 .fade-in[b-djnzvyvq3b] {
     animation: fadeIn 0.6s ease-in;
 }
+/* _content/BerberApp1/Components/Layout/UserProfile.razor.rz.scp.css */
+.user-profile.dropdown[b-8j172auywp] {
+    position: relative;
+}
+
+.profile-picture.dropdown-toggle[b-8j172auywp] {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.3s;
+}
+
+.profile-picture.dropdown-toggle:hover[b-8j172auywp] {
+    border-color: var(--primary-color);
+}
+
+.dropdown-menu[b-8j172auywp] {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    padding-top: 10px;
+    background-color: transparent;
+    border: none;
+    min-width: 160px;
+    z-index: 1000;
+}
+
+.dropdown-content[b-8j172auywp] {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.user-profile:hover .dropdown-menu[b-8j172auywp],
+.dropdown-menu:hover[b-8j172auywp] {
+    display: block;
+}
+
+.dropdown-header[b-8j172auywp] {
+    padding: 10px 15px;
+    font-weight: 600;
+    color: #333;
+    border-bottom: 1px solid #eee;
+}
+
+.dropdown-item[b-8j172auywp] {
+    display: block;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #555;
+    font-size: 0.9rem;
+}
+
+.dropdown-item:hover[b-8j172auywp] {
+    background-color: #f8f9fa;
+}
+
+.profile-initials[b-8j172auywp] {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+    cursor: pointer;
+}
 /* _content/BerberApp1/Components/Pages/Booking.razor.rz.scp.css */
+.employee-selection-container[b-5tyq3w5e2t] {
+    text-align: center;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.employee-avatars[b-5tyq3w5e2t] {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.employee-avatar[b-5tyq3w5e2t] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+}
+
+.employee-avatar img[b-5tyq3w5e2t] {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    transition: border-color 0.3s;
+}
+
+.employee-avatar.selected img[b-5tyq3w5e2t] {
+    border-color: var(--primary-color);
+}
+
+.employee-avatar span[b-5tyq3w5e2t] {
+    margin-top: 10px;
+    font-weight: 500;
+}
+
 .booking-container[b-5tyq3w5e2t] {
     max-width: 900px;
     margin: 0 auto;
@@ -291,6 +403,76 @@
     border-radius: 50%;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    color: #333;
+}
+
+.day-name[b-5tyq3w5e2t] {
+    font-weight: bold;
+    color: #333;
+}
+
+.time-slots-title[b-5tyq3w5e2t] {
+    color: #333;
+}
+
+.time-slots-grid[b-5tyq3w5e2t] {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 10px;
+}
+
+.time-slot-btn[b-5tyq3w5e2t] {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    color: #495057;
+}
+
+.time-slot-btn:hover[b-5tyq3w5e2t] {
+    background-color: #f0f0f0;
+    border-color: #ccc;
+}
+
+.time-slot-btn.selected[b-5tyq3w5e2t] {
+    background-color: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
+}
+.service-buttons .btn[b-5tyq3w5e2t] {
+    transition: all 0.3s ease;
+    border-width: 2px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 20px;
+}
+
+/* Unselected button style */
+.service-buttons .btn.btn-outline-primary[b-5tyq3w5e2t] {
+    border-color: var(--secondary-color);
+    color: var(--secondary-color);
+    background-color: transparent;
+}
+
+/* Hover effect for unselected button */
+.service-buttons .btn.btn-outline-primary:hover[b-5tyq3w5e2t] {
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+/* Selected button style */
+.service-buttons .btn.btn-primary[b-5tyq3w5e2t] {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+/* Override Bootstrap's focus shadow to match the theme */
+.service-buttons .btn:focus[b-5tyq3w5e2t] {
+    box-shadow: 0 0 0 0.25rem rgba(212, 178, 93, 0.5);
 }
 /* _content/BerberApp1/Components/Pages/Payment.razor.rz.scp.css */
 .pricing-features[b-qsnywhg0qk] {
@@ -307,7 +489,7 @@
 
 .container[b-8dp92ld032] {
     max-width: 1200px;
-    margin: 0 auto;
+    margin: 0 auto; 
     padding: 2rem;
 }
 
@@ -381,7 +563,7 @@
 
 .price-table .service-name[b-8dp92ld032] {
     font-weight: 600;
-    color: var(--text-primary);
+    color: #333;
 }
 
 .price-table .service-price[b-8dp92ld032] {

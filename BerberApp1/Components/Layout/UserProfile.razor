@@ -1,0 +1,30 @@
+@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager NavigationManager
+
+<AuthorizeView>
+    <Authorized>
+        <div class="user-profile dropdown">
+            @if (context.User.Identity?.IsAuthenticated == true)
+            {
+                var pictureUrl = context.User.FindFirst("urn:google:picture")?.Value;
+                if (!string.IsNullOrEmpty(pictureUrl))
+                {
+                    <img src="@pictureUrl" alt="Profile Picture" class="profile-picture dropdown-toggle" />
+                }
+                else
+                {
+                    <div class="profile-initials dropdown-toggle">@context.User.Identity.Name.Substring(0, 1)</div>
+                }
+                <div class="dropdown-menu dropdown-menu-end">
+                    <div class="dropdown-content">
+                        <div class="dropdown-header">@context.User.Identity.Name</div>
+                        <a href="api/auth/logout" class="dropdown-item">Logout</a>
+                    </div>
+                </div>
+            }
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <a href="login" class="btn btn-primary">Login</a>
+    </NotAuthorized>
+</AuthorizeView>

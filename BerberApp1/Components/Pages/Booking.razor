@@ -12,6 +12,22 @@
         <p class="section-subtitle">Tarih ve saat seçerek randevunuzu kolayca oluşturun.</p>
     </div>
 
+    <div class="employee-selection-container">
+        <h4>Çalışan Seçimi</h4>
+        <div class="employee-avatars">
+            @if (CurrentSalon?.Employees != null)
+            {
+                @foreach (var employee in CurrentSalon.Employees)
+                {
+                    <div class="employee-avatar @(selectedEmployeeId == employee.Id ? "selected" : "")" @onclick="() => SelectEmployee(employee.Id)">
+                        <img src="@employee.PictureUrl" alt="@employee.Name" />
+                        <span>@employee.Name</span>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
     <div class="service-selection-container">
         <h4 class="mb-3">Hizmet Seçimi</h4>
         <div class="service-buttons">
@@ -94,14 +110,17 @@
     public int SalonId { get; set; }
     private List<Service> services = new();
     private List<Service> selectedServices = new();
+    private int? selectedEmployeeId;
     private Salon? CurrentSalon { get; set; }
     private List<SalonWorkingHours> salonWorkingHours = new();
 
     protected override async Task OnInitializedAsync()
     {
         CurrentSalon = await DbContext.Salons
+                                    .AsNoTracking()
                                     .Include(s => s.WorkingHours)
                                     .Include(s => s.Services)
+                                    .Include(s => s.Employees)
                                     .FirstOrDefaultAsync(s => s.Id == SalonId);
 
         if (CurrentSalon != null)
@@ -154,13 +173,19 @@
         }
     }
 
+    private async Task SelectEmployee(int employeeId)
+    {
+        selectedEmployeeId = employeeId;
+        await GenerateAvailableSlots(selectedDate);
+    }
+
     private async Task GenerateAvailableSlots(DateTime date)
     {
         availableSlots.Clear();
 
-        if (CurrentSalon == null || !selectedServices.Any())
+        if (CurrentSalon == null || !selectedServices.Any() || selectedEmployeeId == null)
         {
-            Logger.LogWarning("Cannot generate slots: CurrentSalon is null or no services selected.");
+            Logger.LogWarning("Cannot generate slots: CurrentSalon is null, no services selected, or no employee selected.");
             return;
         }
 
@@ -174,7 +199,7 @@
         var existingAppointments = await DbContext.Appointments
             .Include(a => a.AppointmentServices)
             .ThenInclude(aps => aps.Service)
-            .Where(a => a.SalonId == SalonId && a.AppointmentDate.Date == date.Date)
+            .Where(a => a.SalonId == SalonId && a.EmployeeId == selectedEmployeeId && a.AppointmentDate.Date == date.Date)
             .ToListAsync();
 
         int totalDuration = selectedServices.Sum(s => s.DurationInMinutes);
@@ -250,6 +275,7 @@
             var newAppointment = new Appointment
             {
                 SalonId = CurrentSalon.Id,
+                EmployeeId = selectedEmployeeId.Value,
                 AppointmentDate = selectedDate.Date,
                 AppointmentTime = appointmentTime,
                 CustomerName = "Dummy User",

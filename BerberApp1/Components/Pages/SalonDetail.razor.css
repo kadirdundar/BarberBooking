@@ -7,7 +7,7 @@
 
 .container {
     max-width: 1200px;
-    margin: 0 auto;
+    margin: 0 auto; 
     padding: 2rem;
 }
 
@@ -81,7 +81,7 @@
 
 .price-table .service-name {
     font-weight: 600;
-    color: var(--text-primary);
+    color: #333;
 }
 
 .price-table .service-price {

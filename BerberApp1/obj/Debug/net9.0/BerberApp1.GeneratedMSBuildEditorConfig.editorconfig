@@ -68,6 +68,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9MYXlvdXQvTWFpbkxheW91dC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-djnzvyvq3b
 
+[/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/Components/Layout/UserProfile.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9MYXlvdXQvVXNlclByb2ZpbGUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-8j172auywp
+
 [/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/Components/Pages/Booking.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9Cb29raW5nLnJhem9y
 build_metadata.AdditionalFiles.CssScope = b-5tyq3w5e2t
