@@ -1,0 +1,243 @@
+.timeline-container-horizontal {
+    padding: 2rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.timeline-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.timeline-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.timeline-controls {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    align-items: center;
+}
+
+.employee-selector {
+    max-width: 300px;
+}
+
+.date-scroller {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    justify-content: center;
+}
+
+.scroll-btn {
+    background-color: #f0f0f0;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+}
+
+.date-list {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    gap: 0.5rem;
+    flex-grow: 1;
+    max-width: 800px;
+    padding: 0 0.5rem;
+}
+
+.date-list.active {
+    cursor: grabbing;
+    cursor: -webkit-grabbing;
+}
+
+.date-list::-webkit-scrollbar {
+    display: none;
+}
+
+.date-item {
+    flex: 0 0 70px;
+    padding: 0.75rem 0.5rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.date-item.selected {
+    background-color: #343a40;
+    color: #fff;
+    border-color: #343a40;
+}
+
+.day-name-short {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+}
+
+.day-number {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.availability-indicator {
+    width: 20px;
+    height: 4px;
+    border-radius: 2px;
+    margin: 0 auto;
+}
+
+.availability-indicator.available {
+    background-color: #2ecc71;
+}
+
+.availability-indicator.unavailable {
+    background-color: #e74c3c;
+}
+
+.service-legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.legend-color-box {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+}
+
+.timeline-wrapper-horizontal {
+    display: flex;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.employee-list {
+    flex-shrink: 0;
+    width: 200px;
+    border-right: 1px solid #dee2e6;
+}
+
+.employee-info-header {
+    height: 38px; /* Match hour label height */
+    border-bottom: 1px solid #dee2e6;
+}
+
+.employee-info-horizontal {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    height: 60px; /* Match track height */
+    border-bottom: 1px solid #dee2e6;
+}
+
+.employee-info-horizontal:last-child {
+    border-bottom: none;
+}
+
+.employee-info-horizontal img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 1rem;
+}
+
+.employee-info-horizontal span {
+    font-weight: 600;
+}
+
+.timeline-grid-container {
+    flex-grow: 1;
+    overflow-x: auto;
+}
+
+.timeline-hours-horizontal {
+    display: flex;
+    border-bottom: 1px solid #dee2e6;
+    height: 38px;
+}
+
+.hour-label-horizontal {
+    flex-shrink: 0;
+    width: 120px;
+    padding: 0.5rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #333;
+    border-right: 1px solid #e9ecef;
+}
+
+.timeline-tracks {
+    position: relative;
+}
+
+.appointments-track-horizontal {
+    position: relative;
+    height: 60px; /* Match employee info height */
+    border-bottom: 1px solid #dee2e6;
+    background: repeating-linear-gradient(90deg, #f8f9fa, #f8f9fa 119px, #e9ecef 119px, #e9ecef 120px);
+}
+
+.appointments-track-horizontal:last-child {
+    border-bottom: none;
+}
+
+.appointment-block-horizontal {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 80%;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.service-bars {
+    display: flex;
+    height: 10px;
+    width: 100%;
+}
+
+.service-bar {
+    height: 100%;
+}
+
+.customer-initials {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    margin-top: 0.25rem;
+}

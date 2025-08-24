@@ -1,0 +1,44 @@
+@using BerberApp1.Data
+
+@if (IsVisible && Appointment != null)
+{
+    <div class="modal-backdrop" @onclick="Close"></div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Randevu Detayları</h5>
+                <button type="button" class="btn-close" @onclick="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Müşteri:</strong> @Appointment.CustomerName</p>
+                <p><strong>Saat:</strong> @Appointment.AppointmentTime.ToString("hh\\:mm")</p>
+                <p><strong>Hizmetler:</strong></p>
+                <ul>
+                    @foreach (var service in Appointment.AppointmentServices)
+                    {
+                        <li>@(service.Service?.Name ?? "Bilinmeyen Hizmet")</li>
+                    }
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="Close">Kapat</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public Appointment? Appointment { get; set; }
+
+    [Parameter]
+    public bool IsVisible { get; set; }
+
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+
+    private async Task Close()
+    {
+        await OnClose.InvokeAsync();
+    }
+}

@@ -1,0 +1,305 @@
+@page "/employee-timeline/{SalonId:int}"
+@using BerberApp1.Data
+@using Microsoft.EntityFrameworkCore
+@inject ApplicationDbContext DbContext
+@inject ILogger<EmployeeTimeline> Logger
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+
+<div class="timeline-container-horizontal">
+    <div class="timeline-header">
+        <h1>Çalışan Zaman Çizelgesi</h1>
+        <p>Çalışanların randevu durumlarını ve müsaitliklerini görüntüleyin.</p>
+    </div>
+
+    <div class="timeline-controls">
+        <div class="employee-selector">
+            <select @onchange="OnEmployeeSelected" class="form-select">
+                <option value="0">Tüm Çalışanlar</option>
+                @if (employees.Any())
+                {
+                    @foreach (var employee in employees)
+                    {
+                        <option value="@employee.Id">@employee.Name</option>
+                    }
+                }
+            </select>
+        </div>
+    </div>
+    
+    <div class="date-scroller">
+        <button class="scroll-btn" @onclick="ScrollLeft"><i class="fas fa-chevron-left"></i></button>
+        <div class="date-list" @ref="dateListElement">
+            @foreach (var day in datePickerDays)
+            {
+                <div id="date-@day.ToString("yyyy-MM-dd")" class="date-item @GetDayClass(day)" @onclick="() => SelectDate(day)">
+                    <div class="day-name-short">@day.ToString("ddd")</div>
+                    <div class="day-number">@day.Day</div>
+                    <div class="availability-indicator @(IsDayAvailable(day) ? "available" : "unavailable")"></div>
+                </div>
+            }
+        </div>
+        <button class="scroll-btn" @onclick="ScrollRight"><i class="fas fa-chevron-right"></i></button>
+    </div>
+
+    <div class="service-legend">
+        @foreach (var service in allServices)
+        {
+            <div class="legend-item">
+                <div class="legend-color-box" style="background-color: @GetServiceColor(service.Name);"></div>
+                <span>@service.Name</span>
+            </div>
+        }
+    </div>
+
+    <AppointmentDetailModal Appointment="selectedAppointment" IsVisible="isModalVisible" OnClose="CloseModal" />
+
+    <div class="timeline-wrapper-horizontal">
+        <div class="employee-list">
+            <div class="employee-info-header"></div>
+            @foreach (var employee in GetFilteredEmployees())
+            {
+                <div class="employee-info-horizontal">
+                    <img src="@(string.IsNullOrEmpty(employee.PictureUrl) ? "images/barber.png" : employee.PictureUrl)" alt="@employee.Name" />
+                    <span>@employee.Name</span>
+                </div>
+            }
+        </div>
+
+        <div class="timeline-grid-container">
+            <div class="timeline-hours-horizontal">
+                @if (openingTime.HasValue && closingTime.HasValue)
+                {
+                    @for (int hour = openingTime.Value.Hour; hour < closingTime.Value.Hour; hour++)
+                    {
+                        <div class="hour-label-horizontal" style="min-width: 120px;">@hour:00</div>
+                    }
+                }
+            </div>
+            <div class="timeline-tracks">
+                @foreach (var employee in GetFilteredEmployees())
+                {
+                    <div class="appointments-track-horizontal">
+                        @foreach (var appointment in GetAppointmentsForEmployee(employee.Id))
+                        {
+                            var totalDuration = appointment.AppointmentServices.Sum(s => s.Service?.DurationInMinutes ?? 0);
+                            var appointmentTitle = $"{appointment.CustomerName} - {string.Join(", ", appointment.AppointmentServices.Select(s => s.Service?.Name))}";
+
+                            <div class="appointment-block-horizontal" style="@GetAppointmentStyle(appointment, totalDuration)" title="@appointmentTitle" @onclick="() => ShowAppointmentDetails(appointment)">
+                                <div class="service-bars">
+                                    @foreach(var service in appointment.AppointmentServices)
+                                    {
+                                        var servicePercentage = (double)(service.Service?.DurationInMinutes ?? 0) / totalDuration * 100;
+                                        <div class="service-bar" style="background-color: @GetServiceColor(service.Service?.Name); width: @(servicePercentage.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture))%;"></div>
+                                    }
+                                </div>
+                                <span class="customer-initials">@GetInitials(appointment.CustomerName)</span>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int SalonId { get; set; }
+
+    private List<Employee> employees = new();
+    private List<Appointment> appointments = new();
+    private List<Service> allServices = new();
+    private int selectedEmployeeId = 0;
+    private DateTime selectedDate = DateTime.Today;
+    private Salon? CurrentSalon;
+    private TimeOnly? openingTime;
+    private TimeOnly? closingTime;
+    private Appointment? selectedAppointment;
+    private bool isModalVisible = false;
+    private List<DateTime> datePickerDays = new List<DateTime>();
+    private ElementReference dateListElement;
+    private Dictionary<DateTime, bool> dayAvailability = new Dictionary<DateTime, bool>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        GenerateDatePickerDays();
+        await LoadDataAsync();
+        await CheckDaysAvailability();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("bookingInterop.enableDragScroll", dateListElement);
+            await JSRuntime.InvokeVoidAsync("bookingInterop.scrollToElement", dateListElement, $"date-{selectedDate.ToString("yyyy-MM-dd")}");
+        }
+    }
+
+    private async Task LoadDataAsync()
+    {
+        try
+        {
+            CurrentSalon = await DbContext.Salons
+                .AsNoTracking()
+                .Include(s => s.WorkingHours)
+                .FirstOrDefaultAsync(s => s.Id == SalonId);
+
+            if (CurrentSalon != null)
+            {
+                var workingHours = CurrentSalon.WorkingHours.FirstOrDefault(wh => wh.DayOfWeek == selectedDate.DayOfWeek);
+                openingTime = workingHours?.IsClosed == false ? workingHours.OpeningTime : null;
+                closingTime = workingHours?.IsClosed == false ? workingHours.ClosingTime : null;
+            }
+
+            employees = await DbContext.Employees
+                .AsNoTracking()
+                .Where(e => e.SalonId == SalonId)
+                .ToListAsync();
+
+            allServices = await DbContext.Services
+                .AsNoTracking()
+                .Where(s => s.SalonId == SalonId)
+                .ToListAsync();
+
+            appointments = await DbContext.Appointments
+                .AsNoTracking()
+                .Include(a => a.AppointmentServices)
+                .ThenInclude(aps => aps.Service)
+                .Where(a => a.SalonId == SalonId && a.AppointmentDate.Date == selectedDate.Date)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading timeline data for Salon ID {SalonId} on date {Date}", SalonId, selectedDate);
+        }
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void GenerateDatePickerDays()
+    {
+        datePickerDays.Clear();
+        for (int i = -15; i < 15; i++)
+        {
+            datePickerDays.Add(DateTime.Today.AddDays(i));
+        }
+    }
+    
+    private async Task SelectDate(DateTime date)
+    {
+        selectedDate = date;
+        await LoadDataAsync();
+    }
+
+    private async Task OnEmployeeSelected(ChangeEventArgs e)
+    {
+        selectedEmployeeId = int.Parse(e.Value.ToString());
+        await LoadDataAsync();
+    }
+
+    private List<Employee> GetFilteredEmployees()
+    {
+        if (selectedEmployeeId == 0)
+        {
+            return employees;
+        }
+        return employees.Where(e => e.Id == selectedEmployeeId).ToList();
+    }
+
+    private List<Appointment> GetAppointmentsForEmployee(int employeeId)
+    {
+        return appointments.Where(a => a.EmployeeId == employeeId).ToList();
+    }
+
+    private string GetDayClass(DateTime day)
+    {
+        string cssClass = "date-item";
+        if (day.Date == DateTime.Today) cssClass += " today";
+        if (day.Date == selectedDate.Date) cssClass += " selected";
+        return cssClass;
+    }
+
+    private async Task CheckDaysAvailability()
+    {
+        dayAvailability.Clear();
+        foreach (var day in datePickerDays)
+        {
+            dayAvailability[day.Date] = await IsDayActuallyAvailable(day);
+        }
+    }
+
+    private async Task<bool> IsDayActuallyAvailable(DateTime date)
+    {
+        if (CurrentSalon == null)
+        {
+            CurrentSalon = await DbContext.Salons.AsNoTracking().Include(s => s.WorkingHours).FirstOrDefaultAsync(s => s.Id == SalonId);
+            if (CurrentSalon == null) return false;
+        }
+
+        var workingHours = CurrentSalon.WorkingHours.FirstOrDefault(wh => wh.DayOfWeek == date.DayOfWeek);
+        return workingHours != null && !workingHours.IsClosed;
+    }
+
+    private bool IsDayAvailable(DateTime day)
+    {
+        return dayAvailability.TryGetValue(day.Date, out bool isAvailable) && isAvailable;
+    }
+
+    private string GetAppointmentStyle(Appointment appointment, int totalDuration)
+    {
+        if (!openingTime.HasValue) return "";
+
+        var startMinute = (appointment.AppointmentTime.Hours - openingTime.Value.Hour) * 60 + appointment.AppointmentTime.Minutes;
+        
+        var left = (double)startMinute / 60 * 120;
+        var width = (double)totalDuration / 60 * 120;
+
+        return $"left: {left.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)}px; width: {width.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)}px;";
+    }
+
+    private string GetServiceColor(string serviceName)
+    {
+        if (string.IsNullOrEmpty(serviceName)) return "#e0e0e0";
+        
+        var hash = serviceName.GetHashCode();
+        var r = (hash & 0xFF0000) >> 16;
+        var g = (hash & 0x00FF00) >> 8;
+        var b = hash & 0x0000FF;
+        
+        return $"#{r:X2}{g:X2}{b:X2}";
+    }
+
+    private string GetInitials(string fullName)
+    {
+        if (string.IsNullOrWhiteSpace(fullName)) return "";
+        var parts = fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length > 1)
+        {
+            return $"{parts[0][0]}{parts[1][0]}".ToUpper();
+        }
+        return $"{parts[0][0]}".ToUpper();
+    }
+
+    private void ShowAppointmentDetails(Appointment appointment)
+    {
+        selectedAppointment = appointment;
+        isModalVisible = true;
+    }
+
+    private async Task ScrollLeft()
+    {
+        await JSRuntime.InvokeVoidAsync("bookingInterop.scroll", dateListElement, "left");
+    }
+
+    private async Task ScrollRight()
+    {
+        await JSRuntime.InvokeVoidAsync("bookingInterop.scroll", dateListElement, "right");
+    }
+
+    private void CloseModal()
+    {
+        isModalVisible = false;
+        selectedAppointment = null;
+    }
+}

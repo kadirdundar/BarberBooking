@@ -169,7 +169,13 @@
 /Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/scopedcss/Components/Pages/SalonManagement.razor.rz.scp.css
 /Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/scopedcss/Components/Pages/Booking.razor.rz.scp.css
 /Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/bin/Debug/net9.0/Microsoft.AspNetCore.Authentication.Google.dll
-/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/mqc9x62763-rxv5gcjxwb.gz
 /Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/scopedcss/Components/Layout/UserProfile.razor.rz.scp.css
-/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/u4ptrcu2nl-cquvm0axn4.gz
-/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/f6nc8b14uf-cquvm0axn4.gz
+/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/scopedcss/Components/VerticalStepper.razor.rz.scp.css
+/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/mqc9x62763-6gg2o2i69t.gz
+/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/scopedcss/Components/Pages/EmployeeTimeline.razor.rz.scp.css
+/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/scopedcss/Components/Pages/BookingConfirmation.razor.rz.scp.css
+/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/scopedcss/Components/AppointmentDetailModal.razor.rz.scp.css
+/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/scopedcss/Components/Pages/Login.razor.rz.scp.css
+/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/t1w7cxfbzb-rup3i7he4h.gz
+/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/u4ptrcu2nl-01qhs9h9us.gz
+/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/f6nc8b14uf-01qhs9h9us.gz

@@ -1,0 +1,46 @@
+@namespace BerberApp1.Components
+
+<div class="stepper-container @(IsHorizontal ? "horizontal" : "vertical")">
+    @foreach (var step in Steps)
+    {
+        var isCompleted = CurrentStep > step.Key;
+        var isActive = CurrentStep == step.Key;
+        var stepIconStyle = "";
+        var stepLabelStyle = "";
+
+        if (isCompleted)
+        {
+            stepIconStyle = "background-color: #FFD700; border-color: #FFD700; color: #000;";
+        }
+        else if (isActive)
+        {
+            stepIconStyle = "background-color: #fff; border-color: #FFD700; color: #FFD700;";
+            stepLabelStyle = "color: #FFD700; font-weight: 600;";
+        }
+
+        <div class="step @(isCompleted ? "completed" : "") @(isActive ? "active" : "")">
+            <div class="step-icon" style="@stepIconStyle">
+                @if (isCompleted)
+                {
+                    <i class="fas fa-check"></i>
+                }
+                else
+                {
+                    @step.Key
+                }
+            </div>
+            <div class="step-label" style="@stepLabelStyle">@step.Value</div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int CurrentStep { get; set; }
+
+    [Parameter]
+    public Dictionary<int, string> Steps { get; set; } = new();
+
+    [Parameter]
+    public bool IsHorizontal { get; set; } = true;
+}

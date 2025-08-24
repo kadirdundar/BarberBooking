@@ -862,7 +862,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 3rem;
-    max-width: 1000px;
+    max-width: 1320px;
     margin: 0 auto;
     padding: 0 2rem;
 }
@@ -1035,12 +1035,12 @@ body {
 
     .calendar-container {
         flex: 1;
-        max-width: 50%;
+        max-width: 65%;
     }
 
     .time-slots-container {
         flex: 1;
-        max-width: 50%;
+        max-width: 35%;
     }
 }
 

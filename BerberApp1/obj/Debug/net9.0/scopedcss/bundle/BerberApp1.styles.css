@@ -1,3 +1,75 @@
+/* _content/BerberApp1/Components/AppointmentDetailModal.razor.rz.scp.css */
+.modal-backdrop[b-bmdygpzpw4] {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1040;
+}
+
+.modal-dialog[b-bmdygpzpw4] {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1050;
+    width: 90%;
+    max-width: 500px;
+}
+
+.modal-content[b-bmdygpzpw4] {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    pointer-events: auto;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid rgba(0,0,0,.2);
+    border-radius: .3rem;
+    outline: 0;
+}
+
+.modal-header[b-bmdygpzpw4] {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1rem;
+    border-bottom: 1px solid #dee2e6;
+    border-top-left-radius: calc(.3rem - 1px);
+    border-top-right-radius: calc(.3rem - 1px);
+}
+
+.modal-title[b-bmdygpzpw4] {
+    margin-bottom: 0;
+    line-height: 1.5;
+}
+
+.btn-close[b-bmdygpzpw4] {
+    padding: .5rem .5rem;
+    margin: -.5rem -.5rem -.5rem auto;
+}
+
+.modal-body[b-bmdygpzpw4] {
+    position: relative;
+    flex: 1 1 auto;
+    padding: 1rem;
+}
+
+.modal-footer[b-bmdygpzpw4] {
+    display: flex;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: flex-end;
+    padding: .75rem;
+    border-top: 1px solid #dee2e6;
+    border-bottom-right-radius: calc(.3rem - 1px);
+    border-bottom-left-radius: calc(.3rem - 1px);
+}
 /* _content/BerberApp1/Components/Layout/MainLayout.razor.rz.scp.css */
 *[b-djnzvyvq3b] {
     margin: 0;
@@ -298,25 +370,286 @@
     cursor: pointer;
 }
 /* _content/BerberApp1/Components/Pages/Booking.razor.rz.scp.css */
+:root[b-5tyq3w5e2t] {
+    --theme-gold: #FFD700; /* Gold */
+    --theme-dark: #343a40; /* Dark Charcoal */
+    --theme-light-gray: #f8f9fa;
+    --text-color-subtle: #6c757d;
+}
+
+.booking-container-new[b-5tyq3w5e2t] {
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background-color: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.selection-container[b-5tyq3w5e2t] {
+    margin-top: 1.5rem;
+}
+
 .employee-selection-container[b-5tyq3w5e2t] {
+    margin-bottom: 2rem;
+}
+
+.continue-btn-large[b-5tyq3w5e2t] {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1.1rem;
+    margin-top: 1.5rem;
+    background-color: var(--theme-gold);
+    border-color: var(--theme-gold);
+    color: #000;
+}
+
+.picker-header[b-5tyq3w5e2t] {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.month-display[b-5tyq3w5e2t] {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.close-btn[b-5tyq3w5e2t] {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #888;
+}
+
+.date-scroller[b-5tyq3w5e2t], .time-scroller[b-5tyq3w5e2t] {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.scroll-btn[b-5tyq3w5e2t] {
+    background-color: #f0f0f0;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+}
+
+.date-list[b-5tyq3w5e2t], .time-list[b-5tyq3w5e2t] {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    gap: 0.5rem;
+    flex-grow: 1;
+    padding: 0 0.5rem;
+}
+
+.date-list.active[b-5tyq3w5e2t], .time-list.active[b-5tyq3w5e2t] {
+    cursor: grabbing;
+    cursor: -webkit-grabbing;
+}
+
+.date-list[b-5tyq3w5e2t]::-webkit-scrollbar, .time-list[b-5tyq3w5e2t]::-webkit-scrollbar {
+    display: none;
+}
+
+.date-item[b-5tyq3w5e2t] {
+    flex: 0 0 70px;
+    padding: 0.75rem 0.5rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
     text-align: center;
-    padding: 20px;
-    background-color: #f8f9fa;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.day-name-short[b-5tyq3w5e2t] {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+}
+
+.day-number[b-5tyq3w5e2t] {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.availability-indicator[b-5tyq3w5e2t] {
+    width: 20px;
+    height: 4px;
+    border-radius: 2px;
+    margin: 0 auto;
+}
+
+.availability-indicator.available[b-5tyq3w5e2t] {
+    background-color: #2ecc71;
+}
+
+.availability-indicator.unavailable[b-5tyq3w5e2t] {
+    background-color: #e74c3c;
+}
+
+.time-filter[b-5tyq3w5e2t] {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.filter-btn[b-5tyq3w5e2t] {
+    padding: 0.5rem 1rem;
+    border: 1px solid #e0e0e0;
+    background-color: #fff;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-btn.active[b-5tyq3w5e2t] {
+    background-color: #fdf8e1; /* Light yellow for active filter */
+    border-color: var(--theme-gold);
+    font-weight: 600;
+}
+
+.time-slot-btn[b-5tyq3w5e2t] {
+    padding: 0.75rem 1rem;
+    border: 1px solid #e0e0e0;
+    background-color: #f0f0f0;
+    color: #333;
     border-radius: 8px;
-    margin-bottom: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.time-slot-btn.selected[b-5tyq3w5e2t] {
+    background-color: var(--theme-dark);
+    color: #fff;
+    border-color: var(--theme-dark);
+}
+
+.selection-summary[b-5tyq3w5e2t] {
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.service-details[b-5tyq3w5e2t], .staff-preference[b-5tyq3w5e2t] {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    font-size: 0.9rem;
+}
+
+.service-details span[b-5tyq3w5e2t], .staff-preference span[b-5tyq3w5e2t] {
+    color: var(--text-color-subtle);
+}
+
+.service-details strong[b-5tyq3w5e2t] {
+    font-weight: 600;
+    color: #333;
+}
+
+.service-details:not(:last-child)[b-5tyq3w5e2t] {
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.staff-preference[b-5tyq3w5e2t] {
+    padding-top: 0.75rem;
+}
+
+.change-btn[b-5tyq3w5e2t] {
+    background: none;
+    border: none;
+    color: var(--theme-gold);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.add-service[b-5tyq3w5e2t] {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.add-service a[b-5tyq3w5e2t] {
+    color: var(--theme-gold);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.footer-summary[b-5tyq3w5e2t] {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 1.5rem;
+}
+
+.total-price strong[b-5tyq3w5e2t] {
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.total-duration[b-5tyq3w5e2t] {
+    color: #888;
+}
+
+.continue-btn[b-5tyq3w5e2t] {
+    background-color: var(--theme-dark);
+    color: #fff;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.continue-btn:disabled[b-5tyq3w5e2t] {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+}
+
+.step-content[b-5tyq3w5e2t] {
+    padding: 1rem;
+}
+
+.step-title[b-5tyq3w5e2t] {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-align: center;
 }
 
 .employee-avatars[b-5tyq3w5e2t] {
     display: flex;
     justify-content: center;
-    gap: 20px;
+    gap: 1rem;
+    flex-wrap: wrap;
 }
 
 .employee-avatar[b-5tyq3w5e2t] {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     cursor: pointer;
+    text-align: center;
 }
 
 .employee-avatar img[b-5tyq3w5e2t] {
@@ -324,155 +657,388 @@
     height: 80px;
     border-radius: 50%;
     border: 3px solid transparent;
-    transition: border-color 0.3s;
 }
 
 .employee-avatar.selected img[b-5tyq3w5e2t] {
-    border-color: var(--primary-color);
-}
-
-.employee-avatar span[b-5tyq3w5e2t] {
-    margin-top: 10px;
-    font-weight: 500;
-}
-
-.booking-container[b-5tyq3w5e2t] {
-    max-width: 900px;
-    margin: 0 auto;
-}
-
-.service-selection-container[b-5tyq3w5e2t] {
-    text-align: center;
-    padding: 20px;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    margin-bottom: 20px;
+    border-color: var(--theme-gold);
 }
 
 .service-buttons[b-5tyq3w5e2t] {
     display: flex;
-    justify-content: center;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 0.75rem;
+    justify-content: center;
 }
-
-.booking-content-wrapper[b-5tyq3w5e2t] {
-    position: relative;
-}
-
-.booking-content.disabled[b-5tyq3w5e2t] {
-    opacity: 0.5;
-    pointer-events: none;
-}
-
-.disabled-overlay[b-5tyq3w5e2t] {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+/* _content/BerberApp1/Components/Pages/BookingConfirmation.razor.rz.scp.css */
+.confirmation-container[b-76q0apahhs] {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 10;
+    min-height: 80vh;
+    text-align: center;
+    padding: 2rem;
 }
 
-.booking-content[b-5tyq3w5e2t] {
-    display: grid;
-    grid-template-columns: 1.5fr 1fr;
-    gap: 20px;
-    align-items: start;
-}
-
-.calendar-container[b-5tyq3w5e2t], .time-slots-container[b-5tyq3w5e2t] {
+.confirmation-card[b-76q0apahhs] {
+    max-width: 500px;
+    padding: 3rem;
     background-color: #fff;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
-.calendar-grid[b-5tyq3w5e2t] {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
+.confirmation-icon[b-76q0apahhs] {
+    font-size: 5rem;
+    color: #2ecc71; /* Green for success */
+    margin-bottom: 1.5rem;
+}
+
+h1[b-76q0apahhs] {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+p[b-76q0apahhs] {
+    font-size: 1.1rem;
+    color: #6c757d;
+    margin-bottom: 2rem;
+}
+
+.btn-primary[b-76q0apahhs] {
+    background-color: #d4b25d;
+    border-color: #d4b25d;
+    padding: 0.75rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+/* _content/BerberApp1/Components/Pages/EmployeeTimeline.razor.rz.scp.css */
+.timeline-container-horizontal[b-7oig1hctxe] {
+    padding: 2rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.timeline-header[b-7oig1hctxe] {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.timeline-header h1[b-7oig1hctxe] {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.timeline-controls[b-7oig1hctxe] {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    align-items: center;
+}
+
+.employee-selector[b-7oig1hctxe] {
+    max-width: 300px;
+}
+
+.date-scroller[b-7oig1hctxe] {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+    justify-content: center;
+}
+
+.scroll-btn[b-7oig1hctxe] {
+    background-color: #f0f0f0;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+}
+
+.date-list[b-7oig1hctxe] {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    gap: 0.5rem;
+    flex-grow: 1;
+    max-width: 800px;
+    padding: 0 0.5rem;
+}
+
+.date-list.active[b-7oig1hctxe] {
+    cursor: grabbing;
+    cursor: -webkit-grabbing;
+}
+
+.date-list[b-7oig1hctxe]::-webkit-scrollbar {
+    display: none;
+}
+
+.date-item[b-7oig1hctxe] {
+    flex: 0 0 70px;
+    padding: 0.75rem 0.5rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.date-item.selected[b-7oig1hctxe] {
+    background-color: #343a40;
+    color: #fff;
+    border-color: #343a40;
+}
+
+.day-name-short[b-7oig1hctxe] {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+}
+
+.day-number[b-7oig1hctxe] {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.availability-indicator[b-7oig1hctxe] {
+    width: 20px;
+    height: 4px;
+    border-radius: 2px;
+    margin: 0 auto;
+}
+
+.availability-indicator.available[b-7oig1hctxe] {
+    background-color: #2ecc71;
+}
+
+.availability-indicator.unavailable[b-7oig1hctxe] {
+    background-color: #e74c3c;
+}
+
+.service-legend[b-7oig1hctxe] {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.legend-item[b-7oig1hctxe] {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.legend-color-box[b-7oig1hctxe] {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+}
+
+.timeline-wrapper-horizontal[b-7oig1hctxe] {
+    display: flex;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.employee-list[b-7oig1hctxe] {
+    flex-shrink: 0;
+    width: 200px;
+    border-right: 1px solid #dee2e6;
+}
+
+.employee-info-header[b-7oig1hctxe] {
+    height: 38px; /* Match hour label height */
+    border-bottom: 1px solid #dee2e6;
+}
+
+.employee-info-horizontal[b-7oig1hctxe] {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    height: 60px; /* Match track height */
+    border-bottom: 1px solid #dee2e6;
+}
+
+.employee-info-horizontal:last-child[b-7oig1hctxe] {
+    border-bottom: none;
+}
+
+.employee-info-horizontal img[b-7oig1hctxe] {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 1rem;
+}
+
+.employee-info-horizontal span[b-7oig1hctxe] {
+    font-weight: 600;
+}
+
+.timeline-grid-container[b-7oig1hctxe] {
+    flex-grow: 1;
+    overflow-x: auto;
+}
+
+.timeline-hours-horizontal[b-7oig1hctxe] {
+    display: flex;
+    border-bottom: 1px solid #dee2e6;
+    height: 38px;
+}
+
+.hour-label-horizontal[b-7oig1hctxe] {
+    flex-shrink: 0;
+    width: 120px;
+    padding: 0.5rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #333;
+    border-right: 1px solid #e9ecef;
+}
+
+.timeline-tracks[b-7oig1hctxe] {
+    position: relative;
+}
+
+.appointments-track-horizontal[b-7oig1hctxe] {
+    position: relative;
+    height: 60px; /* Match employee info height */
+    border-bottom: 1px solid #dee2e6;
+    background: repeating-linear-gradient(90deg, #f8f9fa, #f8f9fa 119px, #e9ecef 119px, #e9ecef 120px);
+}
+
+.appointments-track-horizontal:last-child[b-7oig1hctxe] {
+    border-bottom: none;
+}
+
+.appointment-block-horizontal[b-7oig1hctxe] {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 80%;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.service-bars[b-7oig1hctxe] {
+    display: flex;
+    height: 10px;
+    width: 100%;
+}
+
+.service-bar[b-7oig1hctxe] {
+    height: 100%;
+}
+
+.customer-initials[b-7oig1hctxe] {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    margin-top: 0.25rem;
+}
+/* _content/BerberApp1/Components/Pages/Login.razor.rz.scp.css */
+.login-container[b-pmpn1kbfex] {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(to right, #f7f8fa, #e9ebee);
+    padding: 1rem;
+}
+
+.login-card[b-pmpn1kbfex] {
+    width: 100%;
+    max-width: 420px;
+    padding: 3rem;
+    background-color: #fff;
+    border-radius: 24px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
     text-align: center;
 }
 
-.day-cell[b-5tyq3w5e2t] {
-    padding: 10px 5px;
+.login-header[b-pmpn1kbfex] {
+    margin-bottom: 2.5rem;
+}
+
+.logo-icon[b-pmpn1kbfex] {
+    font-size: 3.5rem;
+    color: #000;
+    background-color: #d4b25d;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    color: #333;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
 }
 
-.day-name[b-5tyq3w5e2t] {
-    font-weight: bold;
-    color: #333;
+.login-header h2[b-pmpn1kbfex] {
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
 }
 
-.time-slots-title[b-5tyq3w5e2t] {
-    color: #333;
+.login-header p[b-pmpn1kbfex] {
+    color: #6c757d;
+    font-size: 1.1rem;
 }
 
-.time-slots-grid[b-5tyq3w5e2t] {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-    gap: 10px;
-}
-
-.time-slot-btn[b-5tyq3w5e2t] {
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
-    border-radius: 8px;
-    padding: 10px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: 500;
-    color: #495057;
-}
-
-.time-slot-btn:hover[b-5tyq3w5e2t] {
-    background-color: #f0f0f0;
-    border-color: #ccc;
-}
-
-.time-slot-btn.selected[b-5tyq3w5e2t] {
-    background-color: var(--primary-color);
+.google-signin-btn[b-pmpn1kbfex] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.8rem 1.5rem;
+    width: 100%;
+    background-color: #4285F4;
     color: #fff;
-    border-color: var(--primary-color);
-}
-.service-buttons .btn[b-5tyq3w5e2t] {
-    transition: all 0.3s ease;
-    border-width: 2px;
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 1rem;
     font-weight: 600;
-    padding: 8px 16px;
-    border-radius: 20px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Unselected button style */
-.service-buttons .btn.btn-outline-primary[b-5tyq3w5e2t] {
-    border-color: var(--secondary-color);
-    color: var(--secondary-color);
-    background-color: transparent;
+.google-signin-btn:hover[b-pmpn1kbfex] {
+    background-color: #357ae8;
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* Hover effect for unselected button */
-.service-buttons .btn.btn-outline-primary:hover[b-5tyq3w5e2t] {
-    background-color: var(--secondary-color);
-    color: var(--primary-color);
+.google-signin-btn img[b-pmpn1kbfex] {
+    width: 24px;
+    height: 24px;
+    background-color: #fff;
+    border-radius: 50%;
+    padding: 2px;
 }
 
-/* Selected button style */
-.service-buttons .btn.btn-primary[b-5tyq3w5e2t] {
-    background-color: var(--secondary-color);
-    border-color: var(--secondary-color);
-    color: var(--primary-color);
-}
-
-/* Override Bootstrap's focus shadow to match the theme */
-.service-buttons .btn:focus[b-5tyq3w5e2t] {
-    box-shadow: 0 0 0 0.25rem rgba(212, 178, 93, 0.5);
+.login-footer[b-pmpn1kbfex] {
+    margin-top: 2.5rem;
+    font-size: 0.9rem;
+    color: #aaa;
 }
 /* _content/BerberApp1/Components/Pages/Payment.razor.rz.scp.css */
 .pricing-features[b-qsnywhg0qk] {
@@ -632,4 +1198,59 @@
 
 .btn-primary[b-cijjjv3lei] {
     margin-top: 1rem;
+}
+/* _content/BerberApp1/Components/VerticalStepper.razor.rz.scp.css */
+.stepper-container[b-0pls43ra0k] {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1rem 0;
+    font-family: 'Segoe UI', sans-serif;
+    position: relative;
+}
+
+.step[b-0pls43ra0k] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    position: relative;
+}
+
+.step-icon[b-0pls43ra0k] {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #e0e0e0;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    z-index: 2;
+    border: 2px solid #e0e0e0;
+}
+
+.step-label[b-0pls43ra0k] {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #888;
+    text-align: center;
+}
+
+.step:not(:last-child)[b-0pls43ra0k]::after {
+    content: '';
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    width: 100%;
+    height: 2px;
+    background-color: #e0e0e0;
+    z-index: 1;
+}
+
+.step.completed:not(:last-child)[b-0pls43ra0k]::after {
+    background-color: #FFD700;
 }
