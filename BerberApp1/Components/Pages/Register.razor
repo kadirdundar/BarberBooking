@@ -1,8 +1,30 @@
 @page "/register"
 @attribute [Microsoft.AspNetCore.Authorization.AllowAnonymous]
 
-<div class="text-center">
-    <h3>BarberBooking'e Hoş Geldiniz!</h3>
-    <p>Salonunuzu dijitalleştirmek için Google ile kaydolun.</p>
-    <a href="api/auth/login?returnUrl=/registersalon" class="btn btn-primary">Register with Google</a>
+<div class="register-container">
+    <div class="register-left">
+        <div class="brand-logo">
+            <a href="/">BarberBooking</a>
+        </div>
+        <h1>Salonunuzu Dijital Dünyaya Taşıyın</h1>
+        <p>Binlerce başarılı salon arasına katılın. Müşteri yönetimi, online randevular ve daha fazlası parmaklarınızın ucunda.</p>
+        <div class="testimonial">
+            <blockquote>
+                "BarberBooking sayesinde randevu trafiğimiz %40 azaldı ve müşteri memnuniyetimiz tavan yaptı. Kesinlikle tavsiye ederim!"
+            </blockquote>
+            <cite>– Ahmet Yılmaz, Modern Erkek Kuaförü</cite>
+        </div>
+    </div>
+    <div class="register-right">
+        <div class="register-form">
+            <h2>Hesap Oluşturun</h2>
+            <p>Başlamak için sadece bir dakikanızı ayırın.</p>
+            <a href="api/auth/login?returnUrl=/registersalon" class="btn btn-google">
+                <i class="fab fa-google"></i> Google ile Devam Et
+            </a>
+            <div class="login-prompt">
+                <p>Zaten bir hesabınız var mı? <a href="/login">Giriş Yapın</a></p>
+            </div>
+        </div>
+    </div>
 </div>

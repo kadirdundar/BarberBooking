@@ -9,11 +9,11 @@
                 var pictureUrl = context.User.FindFirst("urn:google:picture")?.Value;
                 if (!string.IsNullOrEmpty(pictureUrl))
                 {
-                    <img src="@pictureUrl" alt="Profile Picture" class="profile-picture dropdown-toggle" />
+                    <img src="@pictureUrl" alt="Profile Picture" class="profile-picture dropdown-toggle" data-bs-toggle="dropdown" />
                 }
                 else
                 {
-                    <div class="profile-initials dropdown-toggle">@context.User.Identity.Name.Substring(0, 1)</div>
+                    <div class="profile-initials dropdown-toggle" data-bs-toggle="dropdown">@context.User.Identity.Name.Substring(0, 1)</div>
                 }
                 <div class="dropdown-menu dropdown-menu-end">
                     <div class="dropdown-content">
@@ -25,6 +25,9 @@
         </div>
     </Authorized>
     <NotAuthorized>
-        <a href="login" class="btn btn-primary">Login</a>
+        <div class="auth-buttons">
+            <a href="login" class="btn btn-secondary">Giriş Yap</a>
+            <a href="register" class="btn btn-primary-gold">Kayıt Ol</a>
+        </div>
     </NotAuthorized>
 </AuthorizeView>

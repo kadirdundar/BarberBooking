@@ -1,0 +1,106 @@
+@page "/reports/{SalonId:int}"
+@using BerberApp1.Data
+@using Microsoft.EntityFrameworkCore
+@inject ApplicationDbContext DbContext
+@inject ILogger<Reports> Logger
+
+<div class="reports-container">
+    <div class="timeline-header">
+        <h1>Raporlar</h1>
+        <p>Salonunuzun performansına genel bir bakış.</p>
+    </div>
+
+    <div class="report-cards">
+        <div class="report-card">
+            <h3>Bugünkü Ciro</h3>
+            <p class="report-value">@dailyRevenue.ToString("C")</p>
+        </div>
+        <div class="report-card">
+            <h3>Bu Haftaki Ciro</h3>
+            <p class="report-value">@weeklyRevenue.ToString("C")</p>
+        </div>
+        <div class="report-card">
+            <h3>Bu Ayki Ciro</h3>
+            <p class="report-value">@monthlyRevenue.ToString("C")</p>
+        </div>
+        <div class="report-card">
+            <h3>Bugünkü Randevu</h3>
+            <p class="report-value">@dailyAppointments</p>
+        </div>
+    </div>
+
+    <div class="top-services-chart">
+        <h4>En Popüler Hizmetler</h4>
+        @if (topServices.Any())
+        {
+            <ul>
+                @foreach (var service in topServices)
+                {
+                    <li>@service.Key: @service.Value kez</li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p>Henüz yeterli veri yok.</p>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int SalonId { get; set; }
+
+    private decimal dailyRevenue;
+    private decimal weeklyRevenue;
+    private decimal monthlyRevenue;
+    private int dailyAppointments;
+    private Dictionary<string, int> topServices = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var today = DateTime.Today;
+            var startOfWeek = today.AddDays(-(int)today.DayOfWeek + (int)DayOfWeek.Monday);
+            var startOfMonth = new DateTime(today.Year, today.Month, 1);
+
+            var allAppointments = await DbContext.Appointments
+                .AsNoTracking()
+                .Include(a => a.AppointmentServices)
+                .ThenInclude(aps => aps.Service)
+                .Where(a => a.SalonId == SalonId && !a.IsBreak)
+                .ToListAsync();
+
+            dailyRevenue = allAppointments
+                .Where(a => a.AppointmentDate.Date == today)
+                .SelectMany(a => a.AppointmentServices)
+                .Sum(aps => aps.Service?.Price ?? 0);
+
+            weeklyRevenue = allAppointments
+                .Where(a => a.AppointmentDate.Date >= startOfWeek)
+                .SelectMany(a => a.AppointmentServices)
+                .Sum(aps => aps.Service?.Price ?? 0);
+
+            monthlyRevenue = allAppointments
+                .Where(a => a.AppointmentDate.Date >= startOfMonth)
+                .SelectMany(a => a.AppointmentServices)
+                .Sum(aps => aps.Service?.Price ?? 0);
+
+            dailyAppointments = allAppointments
+                .Count(a => a.AppointmentDate.Date == today);
+
+            topServices = allAppointments
+                .SelectMany(a => a.AppointmentServices)
+                .Where(aps => aps.Service != null)
+                .GroupBy(aps => aps.Service!.Name)
+                .OrderByDescending(g => g.Count())
+                .Take(5)
+                .ToDictionary(g => g.Key, g => g.Count());
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading report data for SalonId {SalonId}", SalonId);
+        }
+    }
+}

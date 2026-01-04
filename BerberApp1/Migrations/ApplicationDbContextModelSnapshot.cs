@@ -46,8 +46,14 @@ namespace BerberApp1.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<int?>("DurationInMinutes")
+                        .HasColumnType("int");
+
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsBreak")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Notes")
                         .IsRequired()
@@ -122,6 +128,10 @@ namespace BerberApp1.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<string>("BannerUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(250)
@@ -150,6 +160,28 @@ namespace BerberApp1.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Salons");
+                });
+
+            modelBuilder.Entity("BerberApp1.Data.SalonImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SalonId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SalonId");
+
+                    b.ToTable("SalonImages");
                 });
 
             modelBuilder.Entity("BerberApp1.Data.SalonWorkingHours", b =>
@@ -239,6 +271,9 @@ namespace BerberApp1.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<string>("PictureUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("Users");
@@ -304,6 +339,17 @@ namespace BerberApp1.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("BerberApp1.Data.SalonImage", b =>
+                {
+                    b.HasOne("BerberApp1.Data.Salon", "Salon")
+                        .WithMany("Images")
+                        .HasForeignKey("SalonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Salon");
+                });
+
             modelBuilder.Entity("BerberApp1.Data.SalonWorkingHours", b =>
                 {
                     b.HasOne("BerberApp1.Data.Salon", "Salon")
@@ -341,6 +387,8 @@ namespace BerberApp1.Migrations
                     b.Navigation("Appointments");
 
                     b.Navigation("Employees");
+
+                    b.Navigation("Images");
 
                     b.Navigation("Services");
 

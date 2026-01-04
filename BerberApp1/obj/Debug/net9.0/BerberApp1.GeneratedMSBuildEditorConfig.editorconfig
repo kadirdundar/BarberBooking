@@ -15,6 +15,8 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.TargetFrameworkIdentifier = .NETCoreApp
+build_property.TargetFrameworkVersion = v9.0
 build_property.RootNamespace = BerberApp1
 build_property.RootNamespace = BerberApp1
 build_property.ProjectDir = /Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/
@@ -34,14 +36,6 @@ build_metadata.AdditionalFiles.CssScope =
 
 [/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/Components/Pages/Error.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9FcnJvci5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
-[/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/Components/Pages/Home.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9Ib21lLnJhem9y
-build_metadata.AdditionalFiles.CssScope = 
-
-[/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/Components/Pages/Register.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9SZWdpc3Rlci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
 [/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/Components/Pages/RegisterSalon.razor]
@@ -80,9 +74,17 @@ build_metadata.AdditionalFiles.CssScope = b-5tyq3w5e2t
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9Cb29raW5nQ29uZmlybWF0aW9uLnJhem9y
 build_metadata.AdditionalFiles.CssScope = b-76q0apahhs
 
+[/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/Components/Pages/EmployeeBooking.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9FbXBsb3llZUJvb2tpbmcucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-w7btxsz3a3
+
 [/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/Components/Pages/EmployeeTimeline.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9FbXBsb3llZVRpbWVsaW5lLnJhem9y
 build_metadata.AdditionalFiles.CssScope = b-7oig1hctxe
+
+[/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/Components/Pages/Home.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9Ib21lLnJhem9y
+build_metadata.AdditionalFiles.CssScope = b-r2nwrv8d5n
 
 [/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/Components/Pages/Login.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9Mb2dpbi5yYXpvcg==
@@ -91,6 +93,14 @@ build_metadata.AdditionalFiles.CssScope = b-pmpn1kbfex
 [/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/Components/Pages/Payment.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9QYXltZW50LnJhem9y
 build_metadata.AdditionalFiles.CssScope = b-qsnywhg0qk
+
+[/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/Components/Pages/Register.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9SZWdpc3Rlci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-ngrxjkomnp
+
+[/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/Components/Pages/Reports.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9SZXBvcnRzLnJhem9y
+build_metadata.AdditionalFiles.CssScope = b-uizc97ena0
 
 [/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/Components/Pages/SalonDetail.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9TYWxvbkRldGFpbC5yYXpvcg==

@@ -9,15 +9,17 @@ namespace BerberApp1.Data
 
         [Required]
         [MaxLength(255)]
-        public string GoogleId { get; set; }
+        public string? GoogleId { get; set; }
 
         [Required]
         [MaxLength(255)]
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
         [Required]
         [MaxLength(255)]
-        public string Name { get; set; }
+        public string? Name { get; set; }
+        
+        public string? PictureUrl { get; set; }
 
         public ICollection<Salon> Salons { get; set; } = new List<Salon>();
     }

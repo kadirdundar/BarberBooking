@@ -30,7 +30,9 @@ namespace BerberApp1.Data
 
         public Salon? Salon { get; set; }
         public int EmployeeId { get; set; }
-        public Employee Employee { get; set; }
+        public Employee? Employee { get; set; }
         public ICollection<AppointmentService> AppointmentServices { get; set; } = new List<AppointmentService>();
+        public bool IsBreak { get; set; } = false;
+        public int? DurationInMinutes { get; set; } // For breaks
     }
 }

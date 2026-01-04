@@ -1,90 +1,123 @@
 ﻿@page "/"
+@using Microsoft.AspNetCore.Components.Authorization
+@using BerberApp1.Data
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject ApplicationDbContext DbContext
+@using System.Security.Claims
+@using Microsoft.EntityFrameworkCore
 
-<PageTitle>Ana Sayfa - BarberBooking</PageTitle>
+<div class="landing-container">
+    <header class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="hero-content fade-in-up">
+            <h1 class="hero-title">Salonunuzu <span class="text-gradient">Geleceğe</span> Taşıyın</h1>
+            <p class="hero-subtitle">Randevu yönetimini basitleştirin, müşteri memnuniyetini artırın ve gelirinizi yükseltin. BarberBooking ile işletmeniz parmaklarınızın ucunda.</p>
+            <div class="hero-buttons">
+                <a href="/register" class="btn btn-primary-gold glow-effect">30 Gün Ücretsiz Deneyin</a>
+                <a href="#features" class="btn btn-secondary-outline">Özellikleri Keşfet</a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">1000+</span>
+                    <span class="stat-label">Mutlu İşletme</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">500k+</span>
+                    <span class="stat-label">Aylık Randevu</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">4.9</span>
+                    <span class="stat-label">Müşteri Puanı</span>
+                </div>
+            </div>
+        </div>
+    </header>
 
- <section class="hero-section">
-        <div class="hero-content">
-            <h1 class="hero-title">Salonunuzu Dijitalleştirin.Mükemmel Müşteri Deneyimi Yaratın!</h1>
-            <p class="hero-subtitle">
-                Kuaför Salonunuz İçin Dijital Asistanınız: Zamandan Tasarruf Edin, Müşterilerinizi Memnun Edin!
-            </p>
-            <div class="cta-buttons">
-                <a href="/register" class="btn btn-primary">
-                    <i class="fas fa-calendar-plus"></i>
-                    Hemen Dijital Salonunu Kur
-                </a>
-                <a href="#hizmetler" class="btn btn-secondary">
-                    <i class="fas fa-info-circle"></i>
-                    Hizmetlerimizi Keşfet
-                </a>
+    <section id="features" class="features-section">
+        <div class="section-header">
+            <h2 class="section-title">Neden <span class="text-gold">BarberBooking?</span></h2>
+            <p class="section-description">İşletmenizi büyütmek için ihtiyacınız olan tüm araçlar tek bir platformda.</p>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon-wrapper">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <h3>Akıllı Randevu Yönetimi</h3>
+                <p>Telefon trafiğine son. Müşterileriniz 7/24 online randevu alsın, takviminiz otomatik güncellensin.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon-wrapper">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>Müşteri İlişkileri</h3>
+                <p>Müşteri geçmişini ve tercihlerini takip ederek kişiselleştirilmiş bir hizmet sunun.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon-wrapper">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <h3>Otomatik Bildirimler</h3>
+                <p>Randevuya gelmeme oranını SMS ve e-posta hatırlatmaları ile en aza indirin.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon-wrapper">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <h3>Detaylı Raporlama</h3>
+                <p>İşletmenizin performansını, en popüler hizmetlerinizi ve çalışan verimliliğini analiz edin.</p>
             </div>
         </div>
     </section>
 
-    <!-- Services Section -->
-    <section class="services-section" id="hizmetler">
-        <div class="container">
-            <h2 class="section-title">Hizmetlerimiz</h2>
-            <p class="section-subtitle">Profesyonel ekibimiz ile size en iyi hizmeti sunuyoruz</p>
-            
-            <div class="services-grid">
-                <div class="service-card fade-in-up">
-                    <div class="service-icon">
-                        <i class="fas fa-calendar-check"></i>
-                    </div>
-                    <h3 class="service-title">Randevu Sistemi</h3>
-                    <p class="service-description">Salonunuzu dijitalleştirin, randevu yönetimini kolaylaştırın. Müşteri memnuniyetini artırın.</p>
-                </div>
-                
-                <div class="service-card fade-in-up">
-                    <div class="service-icon">
-                        <i class="fas fa-clipboard-list"></i>
-                    </div>
-                    <h3 class="service-title">Hizmetler ve Fiyat Listesi</h3>
-                    <p class="service-description">Salonunuzun sunduğu tüm hizmetleri ve fiyatlarını kolayca yönetin. Müşterilerinize şeffaf bir deneyim sunun.</p>
-                </div>
-                
-                <div class="service-card fade-in-up">
-                    <div class="service-icon">
-                        <i class="fas fa-map-marked-alt"></i>
-                    </div>
-                    <h3 class="service-title">Harita ve Yol Tarifi</h3>
-                    <p class="service-description">Salonunuza kolayca ulaşın. Harita ve yol tarifi ile müşterilerinizi bilgilendirin.</p>
-                </div>
-                
-                <div class="service-card fade-in-up">
-                    <div class="service-icon">
-                        <i class="fas fa-share-alt"></i>
-                    </div>
-                    <h3 class="service-title">Sosyal Medya Entegrasyonu</h3>
-                    <p class="service-description">Salonunuzun sosyal medya hesaplarını entegre edin. Müşterilerinize güncel kampanya ve duyuruları kolayca ulaştırın.</p>
-                </div>
-            </div>
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2>İşletmenizi Büyütmeye Hazır Mısınız?</h2>
+            <p>Binlerce salon sahibi gibi siz de dijital dönüşüme katılın ve işinizi bir üst seviyeye taşıyın.</p>
+            <a href="/register" class="btn btn-light-gold">Hemen Başlayın</a>
         </div>
     </section>
 
-    <!-- Stats Section -->
-    <section class="stats-section">
-        <div class="container">
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <span class="stat-number" data-count="5000">0</span>
-                    <span class="stat-label">Mutlu Müşteri</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number" data-count="15">0</span>
-                    <span class="stat-label">Uzman Berber</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number" data-count="8">0</span>
-                    <span class="stat-label">Yıllık Deneyim</span>
-                </div>
-        <div class="stat-item">
-            <span class="stat-number" data-count="24">0</span>
-            <span class="stat-label">Saat Hizmet</span>
+    <footer class="landing-footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>BarberBooking</h3>
+                <p>Güzellik ve bakım işletmeleri için en iyi randevu yönetim çözümü.</p>
+            </div>
+            <div class="footer-links">
+                <a href="#">Hakkımızda</a>
+                <a href="#">Özellikler</a>
+                <a href="#">Fiyatlandırma</a>
+                <a href="#">İletişim</a>
+            </div>
         </div>
-    </div>
+        <div class="footer-bottom">
+            <p>&copy; @DateTime.Now.Year BarberBooking. Tüm Hakları Saklıdır.</p>
+        </div>
+    </footer>
 </div>
-</section>
 
-<BerberApp1.Components.Pages.Payment />
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity is { IsAuthenticated: true })
+        {
+            var googleId = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (!string.IsNullOrEmpty(googleId))
+            {
+                var salon = await DbContext.Salons
+                    .FirstOrDefaultAsync(s => s.User != null && s.User.GoogleId == googleId);
+
+                if (salon != null)
+                {
+                    NavigationManager.NavigateTo($"/employee-timeline/{salon.Id}");
+                }
+            }
+        }
+    }
+}

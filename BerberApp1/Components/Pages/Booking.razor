@@ -1,3 +1,4 @@
+@page "/booking/{SalonId:int}"
 @using Microsoft.Extensions.Logging
 @using BerberApp1.Data
 @using Microsoft.EntityFrameworkCore
@@ -8,138 +9,263 @@
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
-<div class="booking-container-new">
-    <VerticalStepper CurrentStep="@currentStep" Steps="@steps" IsHorizontal="true" />
+<div class="booking-wizard">
+    <!-- Stepper Header -->
+    <div class="wizard-stepper">
+        @foreach (var step in steps)
+        {
+            <div class="step-item @(step.Key <= currentStep ? "active" : "") @(step.Key < currentStep ? "completed" : "")">
+                <div class="step-circle">
+                    @if (step.Key < currentStep) { <i class="fas fa-check"></i> }
+                    else { <span>@step.Key</span> }
+                </div>
+                <span class="step-label">@step.Value</span>
+            </div>
+            @if (step.Key < steps.Count)
+            {
+                <div class="step-line @(step.Key < currentStep ? "completed" : "")"></div>
+            }
+        }
+    </div>
 
-    @* Step 1: Employee & Service Selection *@
-    @if (currentStep == 1)
-    {
-        <div class="selection-container">
-            <div class="step-content employee-selection-container">
-                <h4 class="step-title">1. Çalışan Seçimi</h4>
-                <div class="employee-avatars">
+    <div class="wizard-content">
+        <!-- Step 1: Service Selection -->
+        @if (currentStep == 1)
+        {
+            <div class="step-pane fade-in">
+                <h3 class="step-heading">Hizmet Seçimi</h3>
+                <p class="step-subheading">Lütfen almak istediğiniz hizmetleri seçiniz. (Birden fazla seçebilirsiniz)</p>
+
+                <div class="services-grid-selection">
+                    @foreach (var service in services)
+                    {
+                        var isSelected = selectedServices.Contains(service);
+                        <div class="service-select-card @(isSelected ? "selected" : "")" @onclick="() => ToggleServiceSelection(service)">
+                            <div class="card-icon">
+                                @if (isSelected) 
+                                {
+                                    <i class="fas fa-check-square"></i>
+                                } 
+                                else 
+                                {
+                                    <i class="far fa-square"></i>
+                                }
+                            </div>
+                            <div class="card-info">
+                                <h4>@service.Name</h4>
+                                <span class="duration">@service.DurationInMinutes dk</span>
+                            </div>
+                            <div class="card-price">
+                                @service.Price.ToString("C")
+                            </div>
+                            @if (isSelected)
+                            {
+                                <div class="card-check">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+
+                <div class="wizard-actions">
+                    <button class="btn btn-primary" @onclick="() => GoToStep(2)" disabled="@(!selectedServices.Any())">
+                        Devam Et <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        }
+
+        <!-- Step 2: Staff Selection -->
+        @if (currentStep == 2)
+        {
+            <div class="step-pane fade-in">
+                <h3 class="step-heading">Personel Seçimi</h3>
+                <p class="step-subheading">İşleminizi yapacak uzmanımızı seçiniz.</p>
+
+                <div class="staff-selection-grid">
+                    <!-- Any Staff Option -->
+                    <div class="staff-select-card @(selectedEmployeeId == 0 ? "selected" : "")" @onclick="() => SelectEmployee(0)">
+                         <div class="staff-avatar-placeholder">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h4>Fark Etmez</h4>
+                        <p>İlk müsait uzman</p>
+                    </div>
+
                     @if (CurrentSalon?.Employees != null)
                     {
                         @foreach (var employee in CurrentSalon.Employees)
                         {
-                            <div class="employee-avatar @(selectedEmployeeId == employee.Id ? "selected" : "")" @onclick="() => SelectEmployee(employee.Id)">
-                                <img src="@(string.IsNullOrEmpty(employee.PictureUrl) ? "images/barber.png" : employee.PictureUrl)" alt="@employee.Name" />
-                                <span>@employee.Name</span>
+                            <div class="staff-select-card @(selectedEmployeeId == employee.Id ? "selected" : "")" @onclick="() => SelectEmployee(employee.Id)">
+                                <img src="@(string.IsNullOrEmpty(employee.PictureUrl) ? "/images/barber.png" : employee.PictureUrl)" alt="@employee.Name" class="staff-avatar" />
+                                <h4>@employee.Name</h4>
+                                <p>Uzman</p>
                             </div>
                         }
                     }
                 </div>
-            </div>
-            <div class="step-content service-selection-container">
-                <h4 class="step-title">2. Hizmet Seçimi</h4>
-                <div class="service-buttons">
-                    @foreach (var service in services)
-                    {
-                        var buttonStyle = selectedServices.Contains(service) ? "background-color: #FFD700; color: #000; border-color: #FFD700;" : "background-color: #fff; border: 1px solid #FFD700; color: #FFD700;";
-                        <button class="btn" style="@buttonStyle" @onclick="() => ToggleServiceSelection(service)">
-                            @service.Name
-                        </button>
-                    }
+
+                <div class="wizard-actions">
+                    <button class="btn btn-secondary" @onclick="() => GoToStep(1)">Geri</button>
+                    <button class="btn btn-primary" @onclick="() => GoToStep(3)" disabled="@(selectedEmployeeId == null)">
+                        Devam Et <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
                 </div>
             </div>
-            <button class="btn btn-primary continue-btn-large" @onclick="() => GoToStep(2)" disabled="@(selectedEmployeeId == null || !selectedServices.Any())">
-                Tarih ve Saat Seç
-            </button>
-        </div>
-    }
-    @* Step 2: Date, Time, and Summary *@
-    else if (currentStep == 2)
-    {
-        <div class="date-time-picker-container">
-            <div class="picker-header">
-                <h4 class="month-display">@currentMonth.ToString("MMMM yyyy")</h4>
-                <button class="close-btn" @onclick="() => { /* Add close logic if needed */ }">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
+        }
 
-            <div class="date-scroller">
-                <button class="scroll-btn" @onclick="ScrollDateLeft"><i class="fas fa-chevron-left"></i></button>
-                <div class="date-list" @ref="dateListElement">
-                    @foreach (var day in datePickerDays)
-                    {
-                        var dateItemStyle = day.Date == selectedDate.Date ? "background-color: #FFD700; color: #000; border-color: #FFD700;" : "";
-                        <div class="date-item @GetDayClass(day)" style="@dateItemStyle" @onclick="() => SelectDate(day)">
-                            <div class="day-name-short">@day.ToString("ddd")</div>
-                            <div class="day-number">@day.Day</div>
-                            <div class="availability-indicator @(IsDayAvailable(day) ? "available" : "unavailable")"></div>
+        <!-- Step 3: Date & Time Selection (Preserving Logic) -->
+        @if (currentStep == 3)
+        {
+            <div class="step-pane fade-in">
+                <h3 class="step-heading">Tarih ve Saat</h3>
+                
+                <!-- Custom Calendar / Date Scroller -->
+                 <div class="date-time-picker-new">
+                    <div class="picker-header-new">
+                        <h4>@currentMonth.ToString("MMMM yyyy")</h4>
+                    </div>
+
+                    <!-- Date Scroller (Horizontal) -->
+                    <div class="date-scroller-wrapper">
+                        <button class="scroll-nav-btn" @onclick="ScrollDateLeft"><i class="fas fa-chevron-left"></i></button>
+                        <div class="date-list-new" @ref="dateListElement">
+                            @foreach (var day in datePickerDays)
+                            {
+                                var isSelected = day.Date == selectedDate.Date;
+                                var isAvailable = IsDayAvailable(day);
+                                <div class="date-card @(isSelected ? "selected" : "") @(isAvailable ? "" : "disabled")" 
+                                     @onclick="() => SelectDate(day)">
+                                    <span class="day-name">@day.ToString("ddd")</span>
+                                    <span class="day-number">@day.Day</span>
+                                    <span class="dot @(isAvailable ? "available" : "unavailable")"></span>
+                                </div>
+                            }
                         </div>
-                    }
+                        <button class="scroll-nav-btn" @onclick="ScrollDateRight"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+
+                    <!-- Time Filter Tabs -->
+                    <div class="time-filters-new">
+                        <button class="filter-tab @(timeFilter == "Morning" ? "active" : "")" @onclick='() => SetTimeFilter("Morning")'>Sabah</button>
+                        <button class="filter-tab @(timeFilter == "Afternoon" ? "active" : "")" @onclick='() => SetTimeFilter("Afternoon")'>Öğle</button>
+                        <button class="filter-tab @(timeFilter == "Evening" ? "active" : "")" @onclick='() => SetTimeFilter("Evening")'>Akşam</button>
+                    </div>
+
+                    <!-- Time Slots Grid -->
+                    <div class="time-slots-grid" @ref="timeListElement">
+                        @if (FilteredSlots.Any())
+                        {
+                            @foreach (var slot in FilteredSlots)
+                            {
+                                <button class="time-slot-chip @(selectedSlot == slot ? "selected" : "")" @onclick="() => SelectSlot(slot)">
+                                    @slot
+                                </button>
+                            }
+                        }
+                        else
+                        {
+                            <div class="no-slots-message">
+                                <i class="far fa-calendar-times"></i>
+                                <p>Bu zaman diliminde uygun saat bulunamadı.</p>
+                            </div>
+                        }
+                    </div>
                 </div>
-                <button class="scroll-btn" @onclick="ScrollDateRight"><i class="fas fa-chevron-right"></i></button>
-            </div>
 
-            <div class="time-filter">
-                <button class="filter-btn @(timeFilter == "Morning" ? "active" : "")" @onclick='() => SetTimeFilter("Morning")'>Morning</button>
-                <button class="filter-btn @(timeFilter == "Afternoon" ? "active" : "")" @onclick='() => SetTimeFilter("Afternoon")'>Afternoon</button>
-                <button class="filter-btn @(timeFilter == "Evening" ? "active" : "")" @onclick='() => SetTimeFilter("Evening")'>Evening</button>
-            </div>
-
-            <div class="time-scroller">
-                <button class="scroll-btn" @onclick="ScrollTimeLeft"><i class="fas fa-chevron-left"></i></button>
-                <div class="time-list" @ref="timeListElement">
-                    @foreach (var slot in FilteredSlots)
-                    {
-                        <button class="time-slot-btn @(selectedSlot == slot ? "selected" : "")" @onclick="() => SelectSlot(slot)">
-                            @slot
-                        </button>
-                    }
+                <div class="wizard-actions">
+                    <button class="btn btn-secondary" @onclick="() => GoToStep(2)">Geri</button>
+                    <button class="btn btn-primary" @onclick="ConfirmAppointmentStep" disabled="@(string.IsNullOrEmpty(selectedSlot))">
+                        Özet ve Onay <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
                 </div>
-                <button class="scroll-btn" @onclick="ScrollTimeRight"><i class="fas fa-chevron-right"></i></button>
             </div>
+        }
 
-            <div class="selection-summary">
-                @foreach (var service in selectedServices)
-                {
-                    <div class="service-details">
-                        <div class="service-name-price">
-                            <span>@service.Name</span>
-                            <strong>@service.Price.ToString("C")</strong>
+        <!-- Step 4: Confirmation -->
+        @if (currentStep == 4)
+        {
+            <div class="step-pane fade-in">
+                <h3 class="step-heading">Randevu Özeti</h3>
+                
+                <div class="confirmation-card">
+                    <div class="summary-section">
+                        <h4>Müşteri Bilgileri</h4>
+                         <div class="form-group mb-3">
+                            <label class="form-label text-muted small">Adınız Soyadınız</label>
+                            <input type="text" class="form-control" @bind="customerName" placeholder="Ad Soyad" />
                         </div>
-                        <div class="service-duration">
-                            @GetAppointmentEndTime(service)
+                        <div class="form-group">
+                             <label class="form-label text-muted small">Telefon Numaranız</label>
+                            <input type="tel" class="form-control" @bind="customerPhone" placeholder="0555 555 55 55" />
                         </div>
                     </div>
-                }
-                <div class="staff-preference">
-                    <span>Staff: @(CurrentSalon?.Employees.FirstOrDefault(e => e.Id == selectedEmployeeId)?.Name ?? "No preference")</span>
-                    <button class="change-btn" @onclick="() => GoToStep(1)">Change</button>
-                </div>
-            </div>
 
-            <div class="add-service">
-                <a href="#" @onclick:preventDefault @onclick="() => GoToStep(1)"><i class="fas fa-plus"></i> Add another service</a>
-            </div>
+                    <div class="summary-divider"></div>
 
-            <div class="footer-summary">
-                <div class="total-price">
-                    <span>Total:</span>
-                    <strong>@selectedServices.Sum(s => s.Price).ToString("C")</strong>
+                    <div class="summary-section">
+                        <h4>Salon</h4>
+                        <p>@CurrentSalon?.Name</p>
+                        <p class="sm-text">@CurrentSalon?.Address</p>
+                    </div>
+                    
+                    <div class="summary-divider"></div>
+
+                    <div class="summary-section">
+                        <h4>Hizmetler</h4>
+                        @foreach(var service in selectedServices)
+                        {
+                            <div class="summary-row">
+                                <span>@service.Name</span>
+                                <span>@service.Price.ToString("C")</span>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="summary-divider"></div>
+
+                    <div class="summary-section">
+                        <h4>Tarih & Saat</h4>
+                        <div class="summary-row highlight">
+                            <span><i class="far fa-calendar-alt"></i> @selectedDate.ToString("dd MMMM yyyy")</span>
+                            <span><i class="far fa-clock"></i> @selectedSlot</span>
+                        </div>
+                         <div class="summary-row">
+                            <span>Personel:</span>
+                            <span>@(CurrentSalon?.Employees.FirstOrDefault(e => e.Id == selectedEmployeeId)?.Name ?? "Fark Etmez")</span>
+                        </div>
+                    </div>
+
+                     <div class="summary-divider"></div>
+
+                     <div class="summary-total">
+                         <span>Toplam Tutar</span>
+                         <span class="total-amount">@selectedServices.Sum(s => s.Price).ToString("C")</span>
+                     </div>
                 </div>
-                <div class="total-duration">
-                    @selectedServices.Sum(s => s.DurationInMinutes)min
+
+                <div class="wizard-actions">
+                    <button class="btn btn-secondary" @onclick="() => GoToStep(3)">Geri</button>
+                    <button class="btn btn-primary btn-lg w-100" @onclick="FinalizeBooking" disabled="@(string.IsNullOrWhiteSpace(customerName) || string.IsNullOrWhiteSpace(customerPhone))">
+                        Randevuyu Onayla <i class="fas fa-check ml-2"></i>
+                    </button>
                 </div>
-                <button class="btn btn-primary continue-btn" @onclick="ConfirmAppointment" disabled="@(string.IsNullOrEmpty(selectedSlot))">
-                    Randevu Oluştur
-                </button>
             </div>
-        </div>
-    }
+        }
+    </div>
 </div>
-
 
 @code {
     private int currentStep = 1;
     private readonly Dictionary<int, string> steps = new()
     {
-        { 1, "Seçim" },
-        { 2, "Onay" }
+        { 1, "Hizmet" },
+        { 2, "Personel" },
+        { 3, "Tarih" },
+        { 4, "Onay" }
     };
+
     private DateTime currentMonth = DateTime.Today;
     private DateTime selectedDate = DateTime.Today;
     private string selectedSlot = string.Empty;
@@ -152,46 +278,195 @@
 
     [Parameter]
     public int SalonId { get; set; }
+    
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int? EmployeeId { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public int? ServiceId { get; set; }
+
     private Salon? CurrentSalon { get; set; }
     private List<Service> services = new();
     private List<Service> selectedServices = new();
     private int? selectedEmployeeId;
 
     private string timeFilter = "Morning";
+    private string customerName = string.Empty;
+    private string customerPhone = string.Empty;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (currentStep == 2 && !jsInteropReady)
+        if (currentStep == 3 && !jsInteropReady)
         {
-            jsInteropReady = true; // Set flag to prevent re-initialization
-            await JSRuntime.InvokeVoidAsync("bookingInterop.enableDragScroll", dateListElement);
-            await JSRuntime.InvokeVoidAsync("bookingInterop.enableDragScroll", timeListElement);
+            jsInteropReady = true;
+            try {
+                await JSRuntime.InvokeVoidAsync("bookingInterop.enableDragScroll", dateListElement);
+                // timeListElement might change based on filter, so simple drag scroll might need re-init
+            } catch { /* Ignore JS errors if elements not ready */ }
         }
     }
 
     protected override async Task OnInitializedAsync()
     {
-        CurrentSalon = await DbContext.Salons
-                                    .AsNoTracking()
-                                    .Include(s => s.Services)
-                                    .Include(s => s.Employees)
-                                    .Include(s => s.WorkingHours)
-                                    .FirstOrDefaultAsync(s => s.Id == SalonId);
+        Logger.LogInformation("Booking Initialized. SalonId: {SalonId}, EmployeeId: {EmployeeId}, ServiceId: {ServiceId}", SalonId, EmployeeId, ServiceId);
+        
+        try 
+        {
+            CurrentSalon = await DbContext.Salons
+                                        .AsNoTracking()
+                                        .Include(s => s.Services)
+                                        .Include(s => s.Employees)
+                                        .Include(s => s.WorkingHours)
+                                        .FirstOrDefaultAsync(s => s.Id == SalonId);
 
-        if (CurrentSalon != null)
-        {
-            services = CurrentSalon.Services.ToList();
+            if (CurrentSalon != null)
+            {
+                services = CurrentSalon.Services.ToList();
+                Logger.LogInformation("Loaded {Count} services.", services.Count);
+            }
+            else
+            {
+                Logger.LogWarning("Salon with ID {SalonId} not found.", SalonId);
+                return;
+            }
+            
+            // Pre-selection Logic
+            if (ServiceId.HasValue && ServiceId.Value > 0)
+            {
+                var preService = services.FirstOrDefault(s => s.Id == ServiceId.Value);
+                if (preService != null) 
+                {
+                    selectedServices.Add(preService);
+                    Logger.LogInformation("Pre-selected service: {ServiceName}", preService.Name);
+                }
+            }
+
+            if (EmployeeId.HasValue && EmployeeId.Value > 0)
+            {
+                selectedEmployeeId = EmployeeId.Value;
+                Logger.LogInformation("Pre-selected Employee: {EmployeeId}", EmployeeId);
+            }
+
+            GenerateDatePickerDays();
         }
-        else
+        catch (Exception ex) 
         {
-            Logger.LogWarning("Salon with ID {SalonId} not found.", SalonId);
+            Logger.LogError(ex, "Error in Booking.OnInitializedAsync");
+        }
+    }
+
+    // --- Navigation Logic ---
+
+    private async Task GoToStep(int step)
+    {
+        if (step == 3) // Going to Date selection
+        {
+            if (selectedServices.Any() && (selectedEmployeeId.HasValue || selectedEmployeeId == 0))
+            {
+                 await CheckDaysAvailability();
+                 await GenerateAvailableSlots(selectedDate);
+            }
+        }
+        else if (step < 3) 
+        {
+            jsInteropReady = false;
+        }
+
+        if (step == 4) // Confirmation check
+        {
+             // Prepare summary if needed
+        }
+
+        currentStep = step;
+        StateHasChanged();
+    }
+    
+    private async Task ConfirmAppointmentStep()
+    {
+        await GoToStep(4);
+    }
+
+    private async Task FinalizeBooking()
+    {
+         if (string.IsNullOrEmpty(selectedSlot) || CurrentSalon == null || !selectedServices.Any() || !selectedEmployeeId.HasValue)
+        {
             return;
         }
 
-        GenerateDatePickerDays();
-        await CheckDaysAvailability();
-        await GenerateAvailableSlots(selectedDate);
+        try
+        {
+            var appointmentTime = TimeSpan.Parse(selectedSlot);
+            var newAppointment = new Appointment
+            {
+                SalonId = CurrentSalon.Id,
+                EmployeeId = selectedEmployeeId.Value == 0 ? GetAvailableStaffId() : selectedEmployeeId.Value, // Handle "Any"
+                AppointmentDate = selectedDate.Date,
+                AppointmentTime = appointmentTime,
+                CustomerName = string.IsNullOrWhiteSpace(customerName) ? "Misafir" : customerName,
+                CustomerPhone = customerPhone,
+                Notes = "Online Randevu"
+            };
+
+            foreach (var service in selectedServices)
+            {
+                newAppointment.AppointmentServices.Add(new AppointmentService { ServiceId = service.Id });
+            }
+
+            DbContext.Appointments.Add(newAppointment);
+            await DbContext.SaveChangesAsync();
+            
+            NavigationManager.NavigateTo($"/booking-confirmation?salonId={SalonId}");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error creating appointment.");
+        }
     }
+
+    private int GetAvailableStaffId()
+    {
+        // Simple logic for "Any Staff": just pick the first one for now, 
+        // OR better, checking who is actually free. 
+        // For this refactor, let's default to the first employee if '0' is selected.
+        // In a real app we would check slot availability per staff.
+        return CurrentSalon?.Employees.FirstOrDefault()?.Id ?? 0;
+    }
+
+    // --- Selection Logic ---
+
+    private void SelectEmployee(int employeeId)
+    {
+        selectedEmployeeId = employeeId;
+        StateHasChanged();
+    }
+
+    private async Task ToggleServiceSelection(Service service)
+    {
+        try 
+        {
+            Logger.LogInformation("Toggling service: {ServiceName}", service.Name);
+            
+            if (selectedServices.Contains(service))
+            {
+                selectedServices.Remove(service);
+                Logger.LogInformation("Removed service.");
+            }
+            else
+            {
+                selectedServices.Add(service);
+                Logger.LogInformation("Added service.");
+            }
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error in ToggleServiceSelection");
+        }
+    }
+
+    // --- Date/Time Logic (Preserved) ---
 
     private void GenerateDatePickerDays()
     {
@@ -205,55 +480,32 @@
     private async Task CheckDaysAvailability()
     {
         dayAvailability.Clear();
+        
+        // 1. Check Salon Working Hours (Closed Days)
+        if (CurrentSalon?.WorkingHours == null) return;
+
         foreach (var day in datePickerDays)
         {
-            dayAvailability[day.Date] = await IsDayActuallyAvailable(day);
+            var workingHour = CurrentSalon.WorkingHours.FirstOrDefault(wh => wh.DayOfWeek == day.DayOfWeek);
+            bool isOpen = workingHour != null && !workingHour.IsClosed;
+            
+            // TODO: In a real app, we would also check if ALL slots are fully booked here.
+            // For now, if the salon is closed, it's definitely unavailable.
+            dayAvailability[day.Date] = isOpen;
         }
+
+        await Task.CompletedTask;
     }
-
-    private async Task<bool> IsDayActuallyAvailable(DateTime date)
-    {
-        if (CurrentSalon == null || !selectedEmployeeId.HasValue || !selectedServices.Any()) return false;
-
-        var workingHours = CurrentSalon.WorkingHours.FirstOrDefault(wh => wh.DayOfWeek == date.DayOfWeek);
-        if (workingHours == null || workingHours.IsClosed) return false;
-
-        // This is a simplified check. For a real-world scenario, you'd check for at least one available slot.
-        return true;
-    }
-
+    
     private bool IsDayAvailable(DateTime day)
     {
-        return dayAvailability.TryGetValue(day.Date, out bool isAvailable) && isAvailable;
-    }
-
-    private async Task SelectEmployee(int employeeId)
-    {
-        selectedEmployeeId = employeeId;
-        await CheckDaysAvailability();
-        await GenerateAvailableSlots(selectedDate);
-        StateHasChanged();
-    }
-
-    private async Task ToggleServiceSelection(Service service)
-    {
-        if (selectedServices.Contains(service))
-        {
-            selectedServices.Remove(service);
-        }
-        else
-        {
-            selectedServices.Add(service);
-        }
-        await CheckDaysAvailability();
-        await GenerateAvailableSlots(selectedDate);
+        return dayAvailability.TryGetValue(day.Date, out var isAvailable) && isAvailable;
     }
 
     private async Task SelectDate(DateTime date)
     {
         selectedDate = date;
         await GenerateAvailableSlots(date);
-        StateHasChanged();
     }
 
     private void SelectSlot(string slot)
@@ -271,7 +523,6 @@
         get
         {
             if (!availableSlots.Any()) return new List<string>();
-
             return availableSlots.Where(slot =>
             {
                 var time = TimeOnly.Parse(slot);
@@ -289,142 +540,70 @@
     private async Task GenerateAvailableSlots(DateTime date)
     {
         availableSlots.Clear();
-        if (CurrentSalon == null || !selectedEmployeeId.HasValue || !selectedServices.Any())
-        {
-            StateHasChanged();
-            return;
-        }
+        // Logic requires specific employee.
+        int targetEmployeeId = (selectedEmployeeId == 0 && CurrentSalon?.Employees.Any() == true) 
+            ? CurrentSalon.Employees.First().Id 
+            : (selectedEmployeeId ?? 0);
 
-        var workingHours = CurrentSalon.WorkingHours.FirstOrDefault(wh => wh.DayOfWeek == date.DayOfWeek);
-        if (workingHours == null || workingHours.IsClosed)
-        {
-            StateHasChanged();
-            return;
-        }
-
-        var existingAppointments = await DbContext.Appointments
-            .Include(a => a.AppointmentServices)
-            .ThenInclude(aps => aps.Service)
-            .Where(a => a.EmployeeId == selectedEmployeeId && a.AppointmentDate.Date == date.Date)
-            .OrderBy(a => a.AppointmentTime)
-            .ToListAsync();
-
-        int totalDuration = selectedServices.Sum(s => s.DurationInMinutes);
-        TimeOnly slotTime = workingHours.OpeningTime;
-
-        while (slotTime.AddMinutes(totalDuration) <= workingHours.ClosingTime)
-        {
-            bool isSlotAvailable = true;
-            TimeOnly slotEndTime = slotTime.AddMinutes(totalDuration);
-
-            foreach (var appointment in existingAppointments)
-            {
-                TimeOnly appointmentStart = TimeOnly.FromTimeSpan(appointment.AppointmentTime);
-                int appointmentDuration = appointment.AppointmentServices.Sum(aps => aps.Service.DurationInMinutes);
-                TimeOnly appointmentEnd = appointmentStart.AddMinutes(appointmentDuration);
-
-                // Check for overlap
-                if (slotTime < appointmentEnd && slotEndTime > appointmentStart)
-                {
-                    isSlotAvailable = false;
-                    break;
-                }
-            }
-
-            if (isSlotAvailable)
-            {
-                availableSlots.Add(slotTime.ToString("HH:mm"));
-            }
-
-            slotTime = slotTime.AddMinutes(15); // Check for the next slot every 15 minutes
-        }
-        StateHasChanged();
-    }
-
-    private async Task ConfirmAppointment()
-    {
-        if (string.IsNullOrEmpty(selectedSlot) || CurrentSalon == null || !selectedServices.Any() || !selectedEmployeeId.HasValue)
-        {
-            Logger.LogWarning("Appointment confirmation failed due to missing information.");
-            return;
-        }
+        if (CurrentSalon == null || targetEmployeeId == 0 || !selectedServices.Any()) return;
 
         try
         {
-            var appointmentTime = TimeSpan.Parse(selectedSlot);
-            var newAppointment = new Appointment
-            {
-                SalonId = CurrentSalon.Id,
-                EmployeeId = selectedEmployeeId.Value,
-                AppointmentDate = selectedDate.Date,
-                AppointmentTime = appointmentTime,
-                CustomerName = "Dummy User", // Replace with actual user data
-                CustomerPhone = "0000000000", // Replace with actual user data
-                Notes = "Randevu sistem üzerinden oluşturuldu."
-            };
+            var workingHours = CurrentSalon.WorkingHours.FirstOrDefault(wh => wh.DayOfWeek == date.DayOfWeek);
+            if (workingHours == null || workingHours.IsClosed) return;
 
-            foreach (var service in selectedServices)
+            var existingAppointments = await DbContext.Appointments
+                .AsNoTracking()
+                .Include(a => a.AppointmentServices)
+                .ThenInclude(aps => aps.Service)
+                .Where(a => a.EmployeeId == targetEmployeeId && a.AppointmentDate.Date == date.Date)
+                .OrderBy(a => a.AppointmentTime)
+                .ToListAsync();
+
+            int totalDuration = selectedServices.Sum(s => s.DurationInMinutes);
+            TimeOnly slotTime = workingHours.OpeningTime;
+
+            while (slotTime.AddMinutes(totalDuration) <= workingHours.ClosingTime)
             {
-                newAppointment.AppointmentServices.Add(new AppointmentService { ServiceId = service.Id });
+                bool isSlotAvailable = true;
+                TimeOnly slotEndTime = slotTime.AddMinutes(totalDuration);
+
+                foreach (var appointment in existingAppointments)
+                {
+                    TimeOnly appointmentStart = TimeOnly.FromTimeSpan(appointment.AppointmentTime);
+                    int appointmentDuration = appointment.AppointmentServices.Sum(aps => aps.Service?.DurationInMinutes ?? 0);
+                    if (appointmentDuration == 0) continue; 
+
+                    TimeOnly appointmentEnd = appointmentStart.AddMinutes(appointmentDuration);
+
+                    if (slotTime < appointmentEnd && slotEndTime > appointmentStart)
+                    {
+                        isSlotAvailable = false;
+                        break;
+                    }
+                }
+
+                if (isSlotAvailable)
+                {
+                    availableSlots.Add(slotTime.ToString("HH:mm"));
+                }
+
+                slotTime = slotTime.AddMinutes(15);
             }
-
-            DbContext.Appointments.Add(newAppointment);
-            await DbContext.SaveChangesAsync();
-
-            Logger.LogInformation("Appointment created successfully for {Date} at {Time}", selectedDate.ToShortDateString(), selectedSlot);
-            
-            NavigationManager.NavigateTo("/booking-confirmation");
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error creating appointment.");
+            Logger.LogError(ex, "Error generating available slots.");
         }
-    }
-
-    private string GetDayClass(DateTime day)
-    {
-        string cssClass = "date-item";
-        if (day.Date == DateTime.Today) cssClass += " today";
-        if (day.Date == selectedDate.Date) cssClass += " selected";
-        return cssClass;
-    }
-
-    private string GetAppointmentEndTime(Service service)
-    {
-        if (TimeSpan.TryParse(selectedSlot, out var startTime))
-        {
-            var endTime = startTime.Add(TimeSpan.FromMinutes(service.DurationInMinutes));
-            return $"{selectedSlot} - {endTime:hh\\:mm}";
-        }
-        return string.Empty;
-    }
-
-    private void GoToStep(int step)
-    {
-        if (step == 1)
-        {
-            jsInteropReady = false; // Reset when going back
-        }
-        currentStep = step;
     }
 
     private async Task ScrollDateLeft()
     {
-        await JSRuntime.InvokeVoidAsync("bookingInterop.scroll", dateListElement, "left");
+        try { await JSRuntime.InvokeVoidAsync("bookingInterop.scroll", dateListElement, "left"); } catch {}
     }
 
     private async Task ScrollDateRight()
     {
-        await JSRuntime.InvokeVoidAsync("bookingInterop.scroll", dateListElement, "right");
-    }
-
-    private async Task ScrollTimeLeft()
-    {
-        await JSRuntime.InvokeVoidAsync("bookingInterop.scroll", timeListElement, "left");
-    }
-
-    private async Task ScrollTimeRight()
-    {
-        await JSRuntime.InvokeVoidAsync("bookingInterop.scroll", timeListElement, "right");
+        try { await JSRuntime.InvokeVoidAsync("bookingInterop.scroll", dateListElement, "right"); } catch {}
     }
 }

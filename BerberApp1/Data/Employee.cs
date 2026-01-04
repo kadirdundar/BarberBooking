@@ -16,7 +16,7 @@ namespace BerberApp1.Data
 
         [Required]
         public int SalonId { get; set; }
-        public Salon Salon { get; set; }
+        public Salon? Salon { get; set; }
 
         public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
     }

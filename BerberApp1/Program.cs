@@ -1,5 +1,6 @@
 using BerberApp1.Components;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using BerberApp1.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -37,6 +38,36 @@ builder.Services.AddAuthentication(options =>
     options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
     options.CallbackPath = "/signin-google";
     options.Scope.Add("profile");
+    options.Events.OnCreatingTicket = async context =>
+    {
+        var services = context.HttpContext.RequestServices;
+        var dbContext = services.GetRequiredService<ApplicationDbContext>();
+
+        var identifier = context.Principal.FindFirst(ClaimTypes.NameIdentifier).Value;
+        var email = context.Principal.FindFirst(ClaimTypes.Email).Value;
+        var name = context.Principal.FindFirst(ClaimTypes.Name).Value;
+        var picture = context.Principal.FindFirst("urn:google:picture")?.Value;
+
+        var user = await dbContext.Users.Include(u => u.Salons).FirstOrDefaultAsync(u => u.GoogleId == identifier);
+
+        if (user == null)
+        {
+            user = new User
+            {
+                GoogleId = identifier,
+                Email = email,
+                Name = name,
+                PictureUrl = picture
+            };
+            dbContext.Users.Add(user);
+            await dbContext.SaveChangesAsync();
+        }
+        else if (user.Salons.Any())
+        {
+            // If the user already exists and has a salon, redirect to the management page.
+            context.Properties.RedirectUri = $"/employee-timeline/{user.Salons.First().Id}";
+        }
+    };
 });
 
 builder.Services.AddControllers();

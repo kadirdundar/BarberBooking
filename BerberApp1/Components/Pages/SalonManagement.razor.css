@@ -1,12 +1,432 @@
-.card-header {
-    background-color: #f8f9fa;
-    font-weight: bold;
+/* Salon Management - Premium Dark Theme */
+
+.salon-management-container {
+    background-color: var(--bg-dark);
+    /* Ensure dark bg */
+    border-radius: var(--radius-lg);
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    /* For border radius */
+}
+
+/* Header */
+.management-header {
+    background: var(--bg-card);
+    padding: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.header-text h1 {
+    color: var(--primary-gold);
+    margin: 0;
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.header-text p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+/* Body Layout */
+.management-body {
+    display: flex;
+    flex-grow: 1;
+}
+
+/* Sidebar Navigation */
+.management-sidebar {
+    width: 250px;
+    background: rgba(255, 255, 255, 0.02);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.nav-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 1rem;
+    text-align: left;
+    border-radius: var(--radius-md);
+    transition: all 0.2s;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.nav-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+}
+
+.nav-btn.active {
+    background: linear-gradient(90deg, rgba(197, 160, 89, 0.15) 0%, transparent 100%);
+    color: var(--primary-gold);
+    border-left: 3px solid var(--primary-gold);
+}
+
+.nav-btn i {
+    width: 24px;
+    text-align: center;
+}
+
+/* Content Area */
+.management-content {
+    flex-grow: 1;
+    padding: 2rem;
+    background: var(--bg-surface);
+    overflow-y: auto;
+}
+
+/* Animation */
+.fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Section Headers */
+.section-header {
+    margin-bottom: 2rem;
+}
+
+.section-header h3 {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.section-header p {
+    color: var(--text-secondary);
+}
+
+/* Cards (Add New, etc) */
+.add-card {
+    background: var(--bg-card);
+    border: 1px solid var(--primary-gold);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.add-card h5 {
+    color: var(--primary-gold);
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(197, 160, 89, 0.2);
+    padding-bottom: 0.5rem;
+}
+
+/* Forms */
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-end;
 }
 
 .form-group {
     margin-bottom: 1rem;
 }
 
+.form-control {
+    background-color: #2a2a2a;
+    /* Explicit dark bg */
+    border: 1px solid #444;
+    color: #fff;
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+}
+
+.form-control:focus {
+    background-color: #333;
+    border-color: var(--primary-gold);
+    color: #fff;
+    box-shadow: 0 0 0 2px rgba(197, 160, 89, 0.2);
+}
+
+.form-control::placeholder {
+    color: #888;
+}
+
+/* Make sure text inputs in tables also look good */
+table .form-control {
+    background: transparent;
+    border: 1px solid transparent;
+    padding: 0.3rem;
+}
+
+table tr:hover .form-control {
+    background: #2a2a2a;
+    border-color: #444;
+}
+
+table .form-control:focus {
+    background: #333;
+    border-color: var(--primary-gold);
+}
+
+/* Buttons */
 .btn-primary {
-    margin-top: 1rem;
+    background-color: var(--primary-gold);
+    border: none;
+    color: #000;
+    font-weight: 600;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-gold-dark);
+    transform: translateY(-1px);
+}
+
+.btn-save {
+    color: var(--primary-gold);
+    background: rgba(197, 160, 89, 0.1);
+}
+
+.btn-save:hover {
+    background: var(--primary-gold);
+    color: #000;
+}
+
+.btn-delete {
+    color: #ff4444;
+    background: rgba(255, 68, 68, 0.1);
+}
+
+.btn-delete:hover {
+    background: #ff4444;
+    color: #fff;
+}
+
+/* Tables */
+.table-responsive {
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+}
+
+.management-table {
+    margin: 0;
+    color: var(--text-secondary);
+}
+
+.management-table th {
+    color: var(--primary-gold);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-weight: 500;
+    padding: 1rem;
+}
+
+.management-table td {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    vertical-align: middle;
+}
+
+/* Employee Grid */
+.employees-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.employee-manage-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.2s;
+}
+
+.employee-manage-card:hover {
+    border-color: var(--primary-gold);
+}
+
+.employee-manage-card .card-img {
+    height: 150px;
+    overflow: hidden;
+}
+
+.employee-manage-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.employee-manage-card .card-info {
+    padding: 1rem;
+    text-align: center;
+}
+
+.employee-manage-card h5 {
+    color: #fff;
+    margin: 0;
+    font-size: 1rem;
+}
+
+.employee-manage-card .role {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    margin-bottom: 0.5rem;
+}
+
+.employee-manage-card .card-actions {
+    padding: 0.5rem 1rem 1rem;
+}
+
+/* Hours Grid */
+.hours-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.hour-card {
+    background: var(--bg-card);
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.hour-card.closed {
+    opacity: 0.7;
+}
+
+.day-label {
+    font-weight: 600;
+    color: var(--primary-gold);
+    margin-bottom: 0.8rem;
+}
+
+.status-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.time-input-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.time-input-group span {
+    color: var(--text-secondary);
+}
+
+/* Switch Toggle */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #444;
+    transition: .4s;
+    border-radius: 20px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked+.slider {
+    background-color: var(--primary-gold);
+}
+
+input:checked+.slider:before {
+    transform: translateX(20px);
+}
+
+/* Status Alert */
+.status-alert {
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.alert-success {
+    background: rgba(40, 167, 69, 0.2);
+    color: #2ecc71;
+    border: 1px solid #2ecc71;
+}
+
+.alert-danger {
+    background: rgba(220, 53, 69, 0.2);
+    color: #ff5252;
+    border: 1px solid #ff5252;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .management-body {
+        flex-direction: column;
+    }
+
+    .management-sidebar {
+        width: 100%;
+        flex-direction: row;
+        overflow-x: auto;
+        padding: 1rem;
+    }
+
+    .nav-btn {
+        flex: 0 0 auto;
+        white-space: nowrap;
+    }
+
+    .header-text h1 {
+        font-size: 1.5rem;
+    }
 }

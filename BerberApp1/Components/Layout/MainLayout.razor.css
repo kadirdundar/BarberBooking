@@ -18,12 +18,13 @@
 
 /* Header Styles */
 .main-header {
-    background: #1f1f1f; /* Slightly darker than body for contrast */
+    background: #1f1f1f;
+    /* Slightly darker than body for contrast */
     position: sticky;
     top: 0;
-    z-index: 1000; 
+    z-index: 1000;
     border-bottom: 2px solid var(--secondary-color);
-    box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
 .header-content {
@@ -129,7 +130,7 @@
 }
 
 .mobile-menu-toggle:hover {
-    background: rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.1);
 }
 
 /* Main Content */
@@ -163,13 +164,13 @@
     font-weight: bold;
     margin: 0 1rem;
     padding: 0.5rem 1rem;
-    background: rgba(255,255,255,0.2);
+    background: rgba(255, 255, 255, 0.2);
     border-radius: 5px;
     transition: all 0.3s ease;
 }
 
 #blazor-error-ui .reload:hover {
-    background: rgba(255,255,255,0.3);
+    background: rgba(255, 255, 255, 0.3);
 }
 
 #blazor-error-ui .dismiss {
@@ -185,7 +186,7 @@
 }
 
 #blazor-error-ui .dismiss:hover {
-    background: rgba(255,255,255,0.2);
+    background: rgba(255, 255, 255, 0.2);
 }
 
 /* Responsive Design */

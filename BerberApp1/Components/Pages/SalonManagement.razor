@@ -3,187 +3,341 @@
 @using Microsoft.EntityFrameworkCore
 @inject ApplicationDbContext DbContext
 @inject ILogger<SalonManagement> Logger
+@inject IWebHostEnvironment Environment
 
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-            <div class="card shadow-lg">
-                <div class="card-header">
-                    <h3>Salon Yönetimi</h3>
-                </div>
-                <div class="card-body">
-                    @if (salon == null)
-                    {
-                        <p>Salon bulunamadı.</p>
-                    }
-                    else
-                    {
-                        <h4>Hizmetler</h4>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Hizmet Adı</th>
-                                    <th>Fiyat</th>
-                                    <th>Süre (Dakika)</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var service in salon.Services)
+<div class="salon-management-container fade-in">
+    @if (salon == null)
+    {
+        <div class="loading-state">
+            <div class="spinner-border text-gold" role="status"></div>
+            <p>Salon bilgileri yükleniyor...</p>
+        </div>
+    }
+    else
+    {
+        <div class="management-header">
+            <div class="header-text">
+                <h1>@salon.Name</h1>
+                <p>Yönetim Paneli</p>
+            </div>
+            <div class="header-actions">
+                 <a href="/employee-timeline/@SalonId" class="btn btn-outline-light"><i class="fas fa-arrow-left"></i> Çizelgeye Dön</a>
+            </div>
+        </div>
+
+        <div class="management-body">
+            <!-- Sidebar Navigation -->
+            <div class="management-sidebar">
+                <button class="nav-btn @(activeTab == "services" ? "active" : "")" @onclick='() => SetActiveTab("services")'>
+                    <i class="fas fa-cut"></i> Hizmetler
+                </button>
+                <button class="nav-btn @(activeTab == "employees" ? "active" : "")" @onclick='() => SetActiveTab("employees")'>
+                    <i class="fas fa-users"></i> Çalışanlar
+                </button>
+                <button class="nav-btn @(activeTab == "hours" ? "active" : "")" @onclick='() => SetActiveTab("hours")'>
+                    <i class="fas fa-clock"></i> Çalışma Saatleri
+                </button>
+                <button class="nav-btn @(activeTab == "settings" ? "active" : "")" @onclick='() => SetActiveTab("settings")'>
+                    <i class="fas fa-cogs"></i> Genel Ayarlar
+                </button>
+            </div>
+
+            <!-- Content Area -->
+            <div class="management-content">
+                @if (!string.IsNullOrEmpty(statusMessage))
+                {
+                    <div class="status-alert @(isSuccess ? "alert-success" : "alert-danger")">
+                        <i class="@(isSuccess ? "fas fa-check-circle" : "fas fa-exclamation-circle")"></i> @statusMessage
+                    </div>
+                }
+
+                @switch (activeTab)
+                {
+                    case "services":
+                        <div class="content-section fade-in">
+                            <div class="section-header">
+                                <h3>Hizmet Yönetimi</h3>
+                                <p>Müşterilerinize sunduğunuz hizmetleri buradan yönetin.</p>
+                            </div>
+
+                            <div class="add-card">
+                                <h5><i class="fas fa-plus-circle"></i> Yeni Hizmet Ekle</h5>
+                                <EditForm Model="@newService" OnValidSubmit="AddService" class="form-row">
+                                    <DataAnnotationsValidator />
+                                    <div class="form-group col-md-5">
+                                        <InputText @bind-Value="newService.Name" class="form-control" placeholder="Hizmet Adı (Örn: Saç Kesimi)" />
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <InputNumber @bind-Value="newService.Price" class="form-control" placeholder="Fiyat (TL)" />
+                                    </div>
+                                    <div class="form-group col-md-2">
+                                        <InputNumber @bind-Value="newService.DurationInMinutes" class="form-control" placeholder="Süre (Dk)" />
+                                    </div>
+                                    <div class="form-group col-md-2">
+                                        <button type="submit" class="btn btn-primary w-100">Ekle</button>
+                                    </div>
+                                </EditForm>
+                                <small class="text-muted d-block mt-2"><i class="fas fa-info-circle"></i> Mola için "Mola", Fiyat: 0, Süre: 30 olarak ekleyin.</small>
+                            </div>
+
+                            <div class="services-list">
+                                @if (salon.Services.Any())
                                 {
-                                    <tr>
-                                        <td><InputText @bind-Value="service.Name" class="form-control" /></td>
-                                        <td><InputNumber @bind-Value="service.Price" class="form-control" /></td>
-                                        <td><InputNumber @bind-Value="service.DurationInMinutes" class="form-control" /></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-primary" @onclick="() => UpdateService(service)">Güncelle</button>
-                                            <button class="btn btn-sm btn-danger" @onclick="() => DeleteService(service.Id)">Sil</button>
-                                        </td>
-                                    </tr>
+                                    <div class="table-responsive">
+                                        <table class="table management-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Hizmet Adı</th>
+                                                    <th>Fiyat</th>
+                                                    <th>Süre (dk)</th>
+                                                    <th class="text-end">İşlemler</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var service in salon.Services)
+                                                {
+                                                    <tr>
+                                                        <td><InputText @bind-Value="service.Name" class="form-control form-control-sm" /></td>
+                                                        <td><InputNumber @bind-Value="service.Price" class="form-control form-control-sm" /></td>
+                                                        <td><InputNumber @bind-Value="service.DurationInMinutes" class="form-control form-control-sm" /></td>
+                                                        <td class="text-end">
+                                                            <div class="btn-group">
+                                                                <button class="btn btn-sm btn-icon btn-save" title="Kaydet" @onclick="() => UpdateService(service)"><i class="fas fa-save"></i></button>
+                                                                <button class="btn btn-sm btn-icon btn-delete" title="Sil" @onclick="() => DeleteService(service.Id)"><i class="fas fa-trash"></i></button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 }
-                            </tbody>
-                        </table>
-
-                        <hr />
-
-                        <h4>Yeni Hizmet Ekle</h4>
-                        <EditForm Model="@newService" OnValidSubmit="AddService">
-                            <DataAnnotationsValidator />
-                            <ValidationSummary />
-
-                            <div class="form-group">
-                                <label>Hizmet Adı</label>
-                                <InputText @bind-Value="newService.Name" class="form-control" />
+                                else
+                                {
+                                    <div class="empty-state">
+                                        <p>Henüz hizmet eklenmemiş.</p>
+                                    </div>
+                                }
                             </div>
-                            <div class="form-group">
-                                <label>Fiyat</label>
-                                <InputNumber @bind-Value="newService.Price" class="form-control" />
+                        </div>
+                        break;
+
+                    case "employees":
+                        <div class="content-section fade-in">
+                            <div class="section-header">
+                                <h3>Çalışan Kadrosu</h3>
+                                <p>Salonunuzdaki uzmanları yönetin.</p>
                             </div>
-                            <div class="form-group">
-                                <label>Süre (Dakika)</label>
-                                <InputNumber @bind-Value="newService.DurationInMinutes" class="form-control" />
+
+                            <div class="add-card">
+                                <h5><i class="fas fa-user-plus"></i> Yeni Çalışan Ekle</h5>
+                                <EditForm Model="@newEmployee" OnValidSubmit="AddEmployee" class="form-row">
+                                    <DataAnnotationsValidator />
+                                    <div class="form-group col-md-5">
+                                        <InputText @bind-Value="newEmployee.Name" class="form-control" placeholder="Ad Soyad" />
+                                    </div>
+                                    <div class="form-group col-md-5">
+                                        <InputText @bind-Value="newEmployee.PictureUrl" class="form-control" placeholder="Profil Fotoğrafı URL (Opsiyonel)" />
+                                    </div>
+                                    <div class="form-group col-md-2">
+                                        <button type="submit" class="btn btn-primary w-100">Ekle</button>
+                                    </div>
+                                </EditForm>
                             </div>
-                            <button type="submit" class="btn btn-primary">Ekle</button>
-                        </EditForm>
 
-                        <hr />
-
-                        <h4>Çalışma Saatleri</h4>
-                        @foreach (var wh in workingHours)
-                        {
-                            <EditForm Model="wh" OnValidSubmit="@(() => UpdateWorkingHour(wh))">
-                                <div class="row mb-2 align-items-center">
-                                    <div class="col-md-2">@wh.DayOfWeek</div>
-                                    <div class="col-md-3"><input type="time" @bind="wh.OpeningTime" class="form-control" /></div>
-                                    <div class="col-md-3"><input type="time" @bind="wh.ClosingTime" class="form-control" /></div>
-                                    <div class="col-md-2"><InputCheckbox @bind-Value="wh.IsClosed" /> Kapalı</div>
-                                    <div class="col-md-2"><button type="submit" class="btn btn-sm btn-primary">Güncelle</button></div>
-                                </div>
-                            </EditForm>
-                        }
-
-                        <hr />
-
-                        <h4>Çalışanlar</h4>
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Çalışan Adı</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                            <div class="employees-grid">
                                 @foreach (var employee in salon.Employees)
                                 {
-                                    <tr>
-                                        <td>@employee.Name</td>
-                                        <td><button class="btn btn-sm btn-danger" @onclick="() => DeleteEmployee(employee.Id)">Sil</button></td>
-                                    </tr>
+                                    <div class="employee-manage-card">
+                                        <div class="card-img">
+                                            <img src="@(string.IsNullOrEmpty(employee.PictureUrl) ? "images/barber.png" : employee.PictureUrl)" alt="@employee.Name" />
+                                        </div>
+                                        <div class="card-info">
+                                            <h5>@employee.Name</h5>
+                                            <p class="role">Uzman</p>
+                                        </div>
+                                        <div class="card-actions">
+                                            <button class="btn btn-sm btn-outline-danger w-100" @onclick="() => DeleteEmployee(employee.Id)">
+                                                <i class="fas fa-trash"></i> Sil
+                                            </button>
+                                        </div>
+                                    </div>
                                 }
-                            </tbody>
-                        </table>
-
-                        <hr />
-
-                        <h4>Yeni Çalışan Ekle</h4>
-                        <EditForm Model="@newEmployee" OnValidSubmit="AddEmployee">
-                            <DataAnnotationsValidator />
-                            <ValidationSummary />
-                            <div class="form-group">
-                                <label>Çalışan Adı</label>
-                                <InputText @bind-Value="newEmployee.Name" class="form-control" />
                             </div>
-                            <div class="form-group">
-                                <label>Resim URL'si</label>
-                                <InputText @bind-Value="newEmployee.PictureUrl" class="form-control" />
+                        </div>
+                        break;
+
+                    case "hours":
+                        <div class="content-section fade-in">
+                             <div class="section-header">
+                                <h3>Çalışma Saatleri</h3>
+                                <p>Salonunuzun açık olduğu gün ve saatleri belirleyin.</p>
                             </div>
-                            <button type="submit" class="btn btn-primary">Ekle</button>
-                        </EditForm>
-                    }
-                </div>
+                            
+                            <div class="hours-grid">
+                                @foreach (var wh in workingHours)
+                                {
+                                    <div class="hour-card @(wh.IsClosed ? "closed" : "")">
+                                        <div class="day-label">@wh.DayOfWeek</div>
+                                        
+                                        <div class="status-toggle">
+                                            <label class="switch">
+                                                <input type="checkbox" checked="@(!wh.IsClosed)" @onchange="@(e => { wh.IsClosed = !(bool)e.Value!; })" />
+                                                <span class="slider"></span>
+                                            </label>
+                                            <span class="status-text">@(wh.IsClosed ? "Kapalı" : "Açık")</span>
+                                        </div>
+
+                                        <div class="time-range @(wh.IsClosed ? "hidden" : "")">
+                                             <div class="time-input-group">
+                                                <input type="time" @bind="wh.OpeningTime" class="form-control" />
+                                                <span>-</span>
+                                                <input type="time" @bind="wh.ClosingTime" class="form-control" />
+                                             </div>
+                                        </div>
+                                        
+                                        <button class="btn btn-sm btn-primary mt-2 w-100" @onclick="() => UpdateWorkingHour(wh)">
+                                            <i class="fas fa-save"></i> Güncelle
+                                        </button>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        break;
+
+                    case "settings":
+                        <div class="content-section fade-in">
+                            <div class="section-header">
+                                <h3>Genel Ayarlar</h3>
+                                <p>Salon bilgilerini ve görsellerini düzenleyin.</p>
+                            </div>
+
+                            <div class="settings-form-wrapper">
+                                <EditForm Model="@salon" OnValidSubmit="UpdateSalonSettings">
+                                    <DataAnnotationsValidator />
+                                    <div class="form-group mb-3">
+                                        <label>Salon Adı</label>
+                                        <InputText @bind-Value="salon.Name" class="form-control" disabled />
+                                        <small class="text-muted">Salon adı değiştirilemez.</small>
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <label>Adres</label>
+                                        <InputTextArea @bind-Value="salon.Address" class="form-control" rows="3" />
+                                    </div>
+                                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Değişiklikleri Kaydet</button>
+                                </EditForm>
+                            </div>
+                            
+                            <hr class="divider" />
+
+                            <div class="gallery-upload-section">
+                                <h4 class="mt-4">Banner Görseli</h4>
+                                <p class="text-muted">Salon kapak fotoğrafı.</p>
+                                
+                                @if (!string.IsNullOrEmpty(salon.BannerUrl))
+                                {
+                                    <div class="current-banner mb-3">
+                                        <img src="@salon.BannerUrl" alt="Banner" style="width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);" />
+                                        <button class="btn btn-sm btn-outline-danger mt-2" @onclick="RemoveBanner"><i class="fas fa-trash"></i> Bannerı Kaldır</button>
+                                    </div>
+                                }
+
+                                <EditForm Model="bannerUploadModel" OnValidSubmit="HandleBannerUpload" class="upload-form">
+                                    <div class="input-group">
+                                        <InputFile OnChange="@OnBannerFileSelected" class="form-control" accept="image/*" />
+                                        <button type="submit" class="btn btn-primary" disabled="@(bannerUploadModel.File == null)">
+                                            <i class="fas fa-upload"></i> Banner Yükle
+                                        </button>
+                                    </div>
+                                </EditForm>
+
+                                <hr class="divider my-4" />
+
+                                <h4>Galeri Yönetimi</h4>
+                                <EditForm Model="imageUploadModel" OnValidSubmit="HandleImageUpload" class="upload-form">
+                                    <div class="input-group">
+                                        <InputFile OnChange="@OnImageFileSelected" class="form-control" accept="image/*" />
+                                        <button type="submit" class="btn btn-success" disabled="@(imageUploadModel.File == null)">
+                                            <i class="fas fa-cloud-upload-alt"></i> Galeriye Ekle
+                                        </button>
+                                    </div>
+                                </EditForm>
+                                
+                                <!-- ... gallery list ... -->
+                                <div class="gallery-grid mt-3">
+                                    @foreach (var image in salon.Images)
+                                    {
+                                        <div class="gallery-item">
+                                            <img src="@image.ImageUrl" alt="Salon" />
+                                            <button class="delete-img-btn" @onclick="() => DeleteSalonImage(image.Id)">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        break;
+                }
             </div>
         </div>
-    </div>
+    }
 </div>
 
-@if (!string.IsNullOrEmpty(statusMessage))
-{
-    <div class="modal fade show" style="display: block;" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Bildirim</h5>
-                    <button type="button" class="close" @onclick="() => statusMessage = null">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p class="@(isSuccess ? "text-success" : "text-danger")">@statusMessage</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal-backdrop fade show"></div>
-}
-
 @code {
-    [Parameter]
-    public int SalonId { get; set; }
-
+    [Parameter] public int SalonId { get; set; }
     private Salon? salon;
     private Service newService = new();
     private Employee newEmployee = new();
+    private ImageUploadModel imageUploadModel = new();
+    private ImageUploadModel bannerUploadModel = new();
     private List<WorkingHoursViewModel> workingHours = new();
     private string? statusMessage;
     private bool isSuccess;
+    private string activeTab = "services";
+
+    // ... [Previous methods for LoadSalon, SetActiveTab etc remain same] ...
+
+    private void SetActiveTab(string tab)
+    {
+        activeTab = tab;
+        statusMessage = null;
+    }
 
     protected override async Task OnInitializedAsync()
     {
         await LoadSalon();
-        InitializeWorkingHours();
+        if (salon != null)
+        {
+            InitializeWorkingHours();
+        }
     }
-
+    
     private async Task LoadSalon()
     {
         try
         {
             salon = await DbContext.Salons
                                  .AsNoTracking()
-                                 .Include(s => s.Services)
+                                 .Include(s => s.Services.OrderBy(sv => sv.Name))
                                  .Include(s => s.WorkingHours)
-                                 .Include(s => s.Employees)
+                                 .Include(s => s.Employees.OrderBy(e => e.Name))
+                                 .Include(s => s.Images)
                                  .FirstOrDefaultAsync(s => s.Id == SalonId);
-        }
-        catch (Exception ex)
+       }
+       catch (Exception ex)
         {
             Logger.LogError(ex, "Error loading salon details for SalonId {SalonId}", SalonId);
+            await ShowStatusMessage("Veriler yüklenirken hata oluştu.", false);
         }
     }
 
     private void InitializeWorkingHours()
     {
         workingHours = new List<WorkingHoursViewModel>();
-        foreach (DayOfWeek day in Enum.GetValues(typeof(DayOfWeek)))
+        var days = Enum.GetValues(typeof(DayOfWeek)).Cast<DayOfWeek>().ToList();
+        var sortedDays = days.OrderBy(d => d == DayOfWeek.Sunday ? 7 : (int)d).ToList();
+        foreach (DayOfWeek day in sortedDays)
         {
             var wh = salon?.WorkingHours.FirstOrDefault(w => w.DayOfWeek == day);
             workingHours.Add(new WorkingHoursViewModel
@@ -191,14 +345,24 @@
                 DayOfWeek = day,
                 OpeningTime = wh?.OpeningTime ?? new TimeOnly(9, 0),
                 ClosingTime = wh?.ClosingTime ?? new TimeOnly(18, 0),
-                IsClosed = wh?.IsClosed ?? true
+                IsClosed = wh?.IsClosed ?? (day == DayOfWeek.Sunday)
             });
         }
+    }
+    
+    private async Task ShowStatusMessage(string message, bool success)
+    {
+        statusMessage = message;
+        isSuccess = success;
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(3000); 
+        statusMessage = null;
+        await InvokeAsync(StateHasChanged);
     }
 
     private async Task AddService()
     {
-        if (salon is not null)
+        if (salon is not null && !string.IsNullOrWhiteSpace(newService.Name))
         {
             try
             {
@@ -207,66 +371,28 @@
                 await DbContext.SaveChangesAsync();
                 newService = new();
                 await LoadSalon();
-                isSuccess = true;
-                statusMessage = "Hizmet başarıyla eklendi.";
+                await ShowStatusMessage("Hizmet eklendi.", true);
             }
-            catch (Exception ex)
-            {
-                isSuccess = false;
-                statusMessage = $"Hizmet eklenirken bir hata oluştu: {ex.Message}";
-            }
+            catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
         }
     }
-
-    private async Task UpdateWorkingHour(WorkingHoursViewModel vm)
-    {
-        if (salon is null) return;
-
-        try
-        {
-            var workingHour = await DbContext.SalonWorkingHours.FirstOrDefaultAsync(wh => wh.SalonId == salon.Id && wh.DayOfWeek == vm.DayOfWeek);
-
-            if (workingHour == null)
-            {
-                workingHour = new SalonWorkingHours
-                {
-                    SalonId = salon.Id,
-                    DayOfWeek = vm.DayOfWeek
-                };
-                DbContext.SalonWorkingHours.Add(workingHour);
-            }
-
-            workingHour.OpeningTime = vm.OpeningTime;
-            workingHour.ClosingTime = vm.ClosingTime;
-            workingHour.IsClosed = vm.IsClosed;
-
-            await DbContext.SaveChangesAsync();
-            await LoadSalon();
-            isSuccess = true;
-            statusMessage = "Çalışma saati başarıyla güncellendi.";
-        }
-        catch (Exception ex)
-        {
-            isSuccess = false;
-            statusMessage = $"Çalışma saati güncellenirken bir hata oluştu: {ex.Message}";
-        }
-    }
-
+    
     private async Task UpdateService(Service service)
     {
         try
         {
-            DbContext.Services.Update(service);
-            await DbContext.SaveChangesAsync();
-            await LoadSalon();
-            isSuccess = true;
-            statusMessage = "Hizmet başarıyla güncellendi.";
+            var serviceToUpdate = await DbContext.Services.FindAsync(service.Id);
+            if(serviceToUpdate != null)
+            {
+                serviceToUpdate.Name = service.Name;
+                serviceToUpdate.Price = service.Price;
+                serviceToUpdate.DurationInMinutes = service.DurationInMinutes;
+                await DbContext.SaveChangesAsync();
+                await LoadSalon();
+                await ShowStatusMessage("Hizmet güncellendi.", true);
+            }
         }
-        catch (Exception ex)
-        {
-            isSuccess = false;
-            statusMessage = $"Hizmet güncellenirken bir hata oluştu: {ex.Message}";
-        }
+        catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
     }
 
     private async Task DeleteService(int serviceId)
@@ -279,20 +405,15 @@
                 DbContext.Services.Remove(service);
                 await DbContext.SaveChangesAsync();
                 await LoadSalon();
-                isSuccess = true;
-                statusMessage = "Hizmet başarıyla silindi.";
+                await ShowStatusMessage("Hizmet silindi.", true);
             }
         }
-        catch (Exception ex)
-        {
-            isSuccess = false;
-            statusMessage = $"Hizmet silinirken bir hata oluştu: {ex.Message}";
-        }
+        catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
     }
 
     private async Task AddEmployee()
     {
-        if (salon is not null)
+        if (salon is not null && !string.IsNullOrWhiteSpace(newEmployee.Name))
         {
             try
             {
@@ -301,14 +422,9 @@
                 await DbContext.SaveChangesAsync();
                 newEmployee = new();
                 await LoadSalon();
-                isSuccess = true;
-                statusMessage = "Çalışan başarıyla eklendi.";
+                await ShowStatusMessage("Çalışan eklendi.", true);
             }
-            catch (Exception ex)
-            {
-                isSuccess = false;
-                statusMessage = $"Çalışan eklenirken bir hata oluştu: {ex.Message}";
-            }
+            catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
         }
     }
 
@@ -316,20 +432,129 @@
     {
         try
         {
-            var employee = await DbContext.Employees.FindAsync(employeeId);
-            if (employee is not null)
+            var emp = await DbContext.Employees.FindAsync(employeeId);
+            if(emp != null) { DbContext.Employees.Remove(emp); await DbContext.SaveChangesAsync(); await LoadSalon(); await ShowStatusMessage("Çalışan silindi.", true); }
+        }
+        catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
+    }
+
+    private async Task UpdateWorkingHour(WorkingHoursViewModel vm)
+    {
+        if (salon is null) return;
+        try
+        {
+            var workingHour = await DbContext.SalonWorkingHours.FirstOrDefaultAsync(wh => wh.SalonId == salon.Id && wh.DayOfWeek == vm.DayOfWeek);
+            if (workingHour == null)
             {
-                DbContext.Employees.Remove(employee);
+                workingHour = new SalonWorkingHours { SalonId = salon.Id, DayOfWeek = vm.DayOfWeek };
+                DbContext.SalonWorkingHours.Add(workingHour);
+            }
+            workingHour.OpeningTime = vm.OpeningTime;
+            workingHour.ClosingTime = vm.ClosingTime;
+            workingHour.IsClosed = vm.IsClosed;
+            await DbContext.SaveChangesAsync();
+            await LoadSalon(); // Refresh
+            InitializeWorkingHours(); // Refresh VM
+            await ShowStatusMessage($"{vm.DayOfWeek} saatleri güncellendi.", true);
+        }
+        catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
+    }
+
+    private async Task UpdateSalonSettings()
+    {
+        if (salon is null) return;
+        try
+        {
+            var s = await DbContext.Salons.FindAsync(salon.Id);
+            if(s != null) { s.Address = salon.Address; await DbContext.SaveChangesAsync(); await LoadSalon(); await ShowStatusMessage("Ayarlar kaydedildi.", true); }
+        }
+        catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
+    }
+    
+    // Banner Logic
+    private void OnBannerFileSelected(InputFileChangeEventArgs e) { bannerUploadModel.File = e.File; }
+
+    private async Task HandleBannerUpload()
+    {
+        if (bannerUploadModel.File is null || salon is null) return;
+        try
+        {
+            var fileName = $"banner_{salon.Id}_{Guid.NewGuid()}{Path.GetExtension(bannerUploadModel.File.Name)}";
+            var path = Path.Combine(Environment.WebRootPath, "images", "salons", fileName); // Root of salons or banners subdir? Let's use root for simplicity or banners
+            // Using salons/banners/ for clean org
+            path = Path.Combine(Environment.WebRootPath, "images", "salons", "banners", fileName);
+            
+            var dir = Path.GetDirectoryName(path);
+            if (dir != null && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
+
+            await using var stream = new FileStream(path, FileMode.Create);
+            await bannerUploadModel.File.OpenReadStream(20 * 1024 * 1024).CopyToAsync(stream); // 20MB limit
+            
+            // Delete old banner (Optional, but good practice)
+            // For now, skip delete logic to avoid deleting shared files if any (unlikely with Guid)
+
+            var s = await DbContext.Salons.FindAsync(salon.Id);
+            if (s != null)
+            {
+                s.BannerUrl = $"/images/salons/banners/{fileName}";
                 await DbContext.SaveChangesAsync();
                 await LoadSalon();
-                isSuccess = true;
-                statusMessage = "Çalışan başarıyla silindi.";
+                await ShowStatusMessage("Banner yüklendi.", true);
+            }
+            bannerUploadModel = new();
+        }
+        catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
+    }
+
+    private async Task RemoveBanner()
+    {
+        if (salon is null) return;
+        try
+        {
+            var s = await DbContext.Salons.FindAsync(salon.Id);
+            if (s != null)
+            {
+                s.BannerUrl = null;
+                await DbContext.SaveChangesAsync();
+                await LoadSalon();
+                await ShowStatusMessage("Banner kaldırıldı.", true);
             }
         }
-        catch (Exception ex)
-        {
-            isSuccess = false;
-            statusMessage = $"Çalışan silinirken bir hata oluştu: {ex.Message}";
-        }
+        catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
     }
+
+    // Gallery Logic
+    private void OnImageFileSelected(InputFileChangeEventArgs e) { imageUploadModel.File = e.File; }
+
+    private async Task HandleImageUpload()
+    {
+        if (imageUploadModel.File is null || salon is null) return;
+        try
+        {
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(imageUploadModel.File.Name)}";
+            var path = Path.Combine(Environment.WebRootPath, "images", "salons", fileName);
+            
+            var dir = Path.GetDirectoryName(path);
+            if (dir != null && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
+
+            await using var stream = new FileStream(path, FileMode.Create);
+            await imageUploadModel.File.OpenReadStream(imageUploadModel.File.Size).CopyToAsync(stream);
+            
+            var newImage = new SalonImage { SalonId = salon.Id, ImageUrl = $"/images/salons/{fileName}" };
+            DbContext.SalonImages.Add(newImage);
+            await DbContext.SaveChangesAsync();
+            await LoadSalon();
+            await ShowStatusMessage("Fotoğraf yüklendi.", true);
+            imageUploadModel = new();
+        }
+        catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
+    }
+
+    private async Task DeleteSalonImage(int imageId)
+    {
+        try { var img = await DbContext.SalonImages.FindAsync(imageId); if(img!=null){ DbContext.SalonImages.Remove(img); await DbContext.SaveChangesAsync(); await LoadSalon(); await ShowStatusMessage("Resim silindi.", true); } }
+        catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
+    }
+
+    public class ImageUploadModel { public IBrowserFile? File { get; set; } }
 }

@@ -3,57 +3,173 @@
 @using Microsoft.EntityFrameworkCore
 @inject ApplicationDbContext DbContext
 @inject ILogger<SalonDetail> Logger
+@inject IConfiguration Configuration
+@inject NavigationManager NavigationManager
 
 @if (salon == null)
 {
-    <p>Salon bulunamadı.</p>
+    <div class="loading-state">
+        <div class="spinner-border text-gold" role="status"></div>
+    </div>
 }
 else
 {
-    <div class="salon-detail-container">
-        <div class="container">
-            <div class="salon-header">
-                <h1>@salon.Name</h1>
-                <p><i class="fas fa-map-marker-alt"></i> @salon.Address</p>
-            </div>
-
-            <div class="content-tabs">
-                <button class="tab-button @(activeTab == "booking" ? "active" : "")" @onclick="@(() => SetActiveTab("booking"))">Randevu Al</button>
-                <button class="tab-button @(activeTab == "prices" ? "active" : "")" @onclick="@(() => SetActiveTab("prices"))">Fiyat Listesi</button>
-            </div>
-
-            <div class="tab-content @(activeTab == "booking" ? "active" : "")">
-                <Booking SalonId="@SalonId" />
-            </div>
-
-            <div class="tab-content @(activeTab == "prices" ? "active" : "")">
-                <div class="price-list-container">
-                    @if (salon.Services.Any())
-                    {
-                        <table class="price-table">
-                            <thead>
-                                <tr>
-                                    <th>Hizmet</th>
-                                    <th>Fiyat</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var service in salon.Services)
-                                {
-                                    <tr>
-                                        <td class="service-name">@service.Name</td>
-                                        <td class="service-price">@service.Price.ToString("C")</td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    }
-                    else
-                    {
-                        <p>Bu salon için henüz bir hizmet (fiyat) bilgisi girilmemiş.</p>
-                    }
+    <div class="salon-detail-page fade-in">
+        <!-- Hero Section -->
+        <div class="salon-hero" style="background-image: linear-gradient(to bottom, rgba(0,0,0,0.4), var(--bg-dark)), url('@currentImageUrl');">
+            <div class="hero-content container">
+                <div class="salon-brand-large">
+                    <h1>@salon.Name</h1>
+                    <div class="rating-badge">
+                        <i class="fas fa-star text-gold"></i> 4.9 (127)
+                    </div>
+                </div>
+                <div class="salon-actions">
+                    <button class="btn btn-primary btn-lg pulse-btn" @onclick="NavigateToBooking">
+                        <i class="fas fa-calendar-check mr-2"></i> Randevu Al
+                    </button>
+                    <button class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-phone-alt"></i> Ara
+                    </button>
                 </div>
             </div>
+        </div>
+
+        <!-- Sticky Navigation -->
+        <div class="salon-nav-sticky">
+            <div class="container">
+                <nav class="nav-tabs-custom">
+                    <button class="@(activeTab == "services" ? "active" : "")" @onclick='() => SetActiveTab("services")'>Hizmetler</button>
+                    <button class="@(activeTab == "staff" ? "active" : "")" @onclick='() => SetActiveTab("staff")'>Ekip</button>
+                    <button class="@(activeTab == "gallery" ? "active" : "")" @onclick='() => SetActiveTab("gallery")'>Galeri</button>
+                    <button class="@(activeTab == "info" ? "active" : "")" @onclick='() => SetActiveTab("info")'>İletişim</button>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Content Content -->
+        <div class="container content-wrapper">
+            @switch (activeTab)
+            {
+                case "services":
+                    <div class="tab-content fade-in">
+                        <div class="section-title">
+                            <h2>Hizmet Menüsü</h2>
+                            <p>Premium bakım hizmetlerimiz.</p>
+                        </div>
+                        <div class="services-list-detail">
+                            @foreach (var service in salon.Services)
+                            {
+                                <div class="service-detail-card" @onclick="() => BookService(service)">
+                                    <div class="service-left">
+                                        <h4>@service.Name</h4>
+                                        <span class="duration text-muted"><i class="far fa-clock"></i> @service.DurationInMinutes dk</span>
+                                    </div>
+                                    <div class="service-right">
+                                        <span class="price">@service.Price.ToString("C")</span>
+                                        <button class="btn btn-sm btn-icon"><i class="fas fa-plus"></i></button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    break;
+
+                case "staff":
+                    <div class="tab-content fade-in">
+                        <div class="section-title">
+                            <h2>Uzman Kadromuz</h2>
+                            <p>İşinin ehli profesyoneller.</p>
+                        </div>
+                        <div class="staff-grid-detail">
+                            @foreach (var employee in salon.Employees)
+                            {
+                                <div class="staff-detail-card" @onclick="() => BookEmployee(employee)">
+                                    <img src="@(string.IsNullOrEmpty(employee.PictureUrl) ? "/images/barber.png" : employee.PictureUrl)" alt="@employee.Name" />
+                                    <div class="info">
+                                        <h4>@employee.Name</h4>
+                                        <p>Uzman</p>
+                                        <div class="rating-mini">
+                                            <i class="fas fa-star text-gold"></i> 5.0
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    break;
+                
+                case "gallery":
+                    <div class="tab-content fade-in">
+                         <div class="section-title">
+                            <h2>Galeri</h2>
+                            <p>Salonumuzdan kareler.</p>
+                        </div>
+                        <div class="gallery-grid-detail">
+                            @if (salon.Images != null && salon.Images.Any())
+                            {
+                                @foreach (var img in salon.Images)
+                                {
+                                    <div class="gallery-img-card">
+                                        <img src="@img.ImageUrl" alt="Salon Image" />
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <p class="text-muted text-center">Henüz görsel eklenmemiş.</p>
+                            }
+                        </div>
+                    </div>
+                    break;
+
+                case "info":
+                     <div class="tab-content fade-in">
+                        <div class="section-title">
+                            <h2>İletişim & Saatler</h2>
+                        </div>
+                        
+                        <div class="info-card">
+                            <div class="info-row">
+                                <i class="fas fa-map-marker-alt icon"></i>
+                                <div>
+                                    <h5>Adres</h5>
+                                    <p>@salon.Address</p>
+                                </div>
+                            </div>
+                             <div class="info-row">
+                                <i class="fas fa-phone-alt icon"></i>
+                                <div>
+                                    <h5>Telefon</h5>
+                                    <p>@salon.PhoneNumber</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hours-card mt-4">
+                            <h5>Çalışma Saatleri</h5>
+                            <div class="hours-list">
+                                @foreach (var wh in salon.WorkingHours) // Assumes already sorted or needs sorting
+                                {
+                                    <div class="hours-row">
+                                        <span class="day">@wh.DayOfWeek</span>
+                                        <span class="time @(wh.IsClosed ? "closed" : "")">
+                                            @(wh.IsClosed ? "Kapalı" : $"{wh.OpeningTime:HH:mm} - {wh.ClosingTime:HH:mm}")
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    break;
+            }
+        </div>
+        
+        <!-- Mobile Bottom FAB for Booking -->
+        <div class="mobile-fab-container">
+            <button class="btn btn-primary fab-btn" @onclick="NavigateToBooking">
+                Randevu Al
+            </button>
         </div>
     </div>
 }
@@ -63,15 +179,32 @@ else
     public int SalonId { get; set; }
 
     private Salon? salon;
-    private string activeTab = "booking"; // Default tab
+    private string activeTab = "services";
+    private string currentImageUrl = "/images/home1.png"; // Default hero
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
             salon = await DbContext.Salons
+                                 .AsNoTracking()
                                  .Include(s => s.Services)
+                                 .Include(s => s.Employees)
+                                 .Include(s => s.WorkingHours)
+                                 .Include(s => s.Images)
                                  .FirstOrDefaultAsync(s => s.Id == SalonId);
+            
+            if (salon != null)
+            {
+                if (!string.IsNullOrEmpty(salon.BannerUrl))
+                {
+                    currentImageUrl = salon.BannerUrl;
+                }
+                else if (salon.Images.Any())
+                {
+                    currentImageUrl = salon.Images.First().ImageUrl;
+                }
+            }
         }
         catch (Exception ex)
         {
@@ -79,8 +212,23 @@ else
         }
     }
 
-    private void SetActiveTab(string tabName)
+    private void SetActiveTab(string tab)
     {
-        activeTab = tabName;
+        activeTab = tab;
+    }
+    
+    private void NavigateToBooking()
+    {
+        NavigationManager.NavigateTo($"/booking/{SalonId}");
+    }
+
+    private void BookService(Service service)
+    {
+        NavigationManager.NavigateTo($"/booking/{SalonId}?serviceId={service.Id}");
+    }
+
+    private void BookEmployee(Employee employee)
+    {
+        NavigationManager.NavigateTo($"/booking/{SalonId}?employeeId={employee.Id}");
     }
 }

@@ -4,6 +4,8 @@
 @inject ApplicationDbContext DbContext
 @inject ILogger<EmployeeTimeline> Logger
 @inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
+@using QRCoder
 @rendermode InteractiveServer
 
 <div class="timeline-container-horizontal">
@@ -11,48 +13,130 @@
         <h1>Çalışan Zaman Çizelgesi</h1>
         <p>Çalışanların randevu durumlarını ve müsaitliklerini görüntüleyin.</p>
     </div>
-
-    <div class="timeline-controls">
-        <div class="employee-selector">
-            <select @onchange="OnEmployeeSelected" class="form-select">
-                <option value="0">Tüm Çalışanlar</option>
-                @if (employees.Any())
-                {
-                    @foreach (var employee in employees)
-                    {
-                        <option value="@employee.Id">@employee.Name</option>
-                    }
-                }
-            </select>
-        </div>
     </div>
     
-    <div class="date-scroller">
-        <button class="scroll-btn" @onclick="ScrollLeft"><i class="fas fa-chevron-left"></i></button>
-        <div class="date-list" @ref="dateListElement">
-            @foreach (var day in datePickerDays)
+    <div class="header-controls">
+        <div class="control-group">
+            <NavLink href="@($"/salon-management/{SalonId}")" class="btn btn-tertiary">
+                <i class="fas fa-cog"></i> Salon Ayarları
+            </NavLink>
+            <NavLink href="@($"/reports/{SalonId}")" class="btn btn-tertiary">
+                <i class="fas fa-chart-line"></i> Raporlar
+            </NavLink>
+        </div>
+        <div class="control-group">
+            <button class="btn btn-secondary" @onclick="GenerateAndShowQrCode">
+                <i class="fas fa-qrcode"></i> Karekod
+            </button>
+            <button class="btn btn-primary" @onclick="NavigateToNewAppointment">
+                <i class="fas fa-plus"></i> Yeni Randevu
+            </button>
+        </div>
+    </div>
+
+    <div class="timeline-content-wrapper">
+        <div class="timeline-controls">
+            <div class="employee-selector">
+                <select @onchange="OnEmployeeSelected" class="form-select">
+                    <option value="0">Tüm Çalışanlar</option>
+                    @if (employees.Any())
+                    {
+                        @foreach (var employee in employees)
+                        {
+                            <option value="@employee.Id">@employee.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="date-scroller">
+            <button class="scroll-btn" @onclick="ScrollLeft"><i class="fas fa-chevron-left"></i></button>
+            <div class="date-list" @ref="dateListElement">
+                @foreach (var day in datePickerDays)
+                {
+                    <div id="date-@day.ToString("yyyy-MM-dd")" class="date-item @GetDayClass(day)" @onclick="() => SelectDate(day)">
+                        <div class="day-name-short">@day.ToString("ddd")</div>
+                        <div class="day-number">@day.Day</div>
+                        <div class="availability-indicator @(IsDayAvailable(day) ? "available" : "unavailable")"></div>
+                    </div>
+                }
+            </div>
+            <button class="scroll-btn" @onclick="ScrollRight"><i class="fas fa-chevron-right"></i></button>
+        </div>
+
+        <div class="service-legend">
+            @foreach (var service in allServices)
             {
-                <div id="date-@day.ToString("yyyy-MM-dd")" class="date-item @GetDayClass(day)" @onclick="() => SelectDate(day)">
-                    <div class="day-name-short">@day.ToString("ddd")</div>
-                    <div class="day-number">@day.Day</div>
-                    <div class="availability-indicator @(IsDayAvailable(day) ? "available" : "unavailable")"></div>
+                <div class="legend-item">
+                    <div class="legend-color-box" style="background-color: @GetServiceColor(service.Name);"></div>
+                    <span>@service.Name</span>
                 </div>
             }
         </div>
-        <button class="scroll-btn" @onclick="ScrollRight"><i class="fas fa-chevron-right"></i></button>
-    </div>
-
-    <div class="service-legend">
-        @foreach (var service in allServices)
-        {
-            <div class="legend-item">
-                <div class="legend-color-box" style="background-color: @GetServiceColor(service.Name);"></div>
-                <span>@service.Name</span>
-            </div>
-        }
-    </div>
 
     <AppointmentDetailModal Appointment="selectedAppointment" IsVisible="isModalVisible" OnClose="CloseModal" />
+
+    @if (isQrModalVisible)
+    {
+        <div class="qr-modal-overlay" @onclick="CloseQrModal">
+            <div class="qr-modal-content" @onclick:stopPropagation="true">
+                <button class="close-btn" @onclick="CloseQrModal"><i class="fas fa-times"></i></button>
+                <h4>@CurrentSalon?.Name için Randevu Karekodu</h4>
+                <p>Müşterileriniz bu karekodu okutarak salonunuzdan randevu alabilir.</p>
+                <div class="qr-code-container">
+                    <img src="@qrCodeBase64" alt="Randevu Karekodu" />
+                </div>
+                <a href="@qrCodeBase64" download="@($"{selectedEmployeeForQr?.Name}-randevu-karekodu.png")" class="btn btn-primary">
+                    <i class="fas fa-download"></i> Karekodu İndir
+                </a>
+            </div>
+        </div>
+    }
+
+    @if (isBreakModalVisible)
+    {
+        <div class="qr-modal-overlay" @onclick="CloseBreakModal">
+            <div class="qr-modal-content" @onclick:stopPropagation="true">
+                <button class="close-btn" @onclick="CloseBreakModal"><i class="fas fa-times"></i></button>
+                <h4>Mola Ekle</h4>
+                <p>@selectedDate.ToShortDateString() saat @breakStartTime.ToString("HH:mm") için mola süresi seçin:</p>
+                <div class="duration-buttons">
+                    <button class="btn btn-outline-primary" @onclick="() => ConfirmAddBreak(15)">15 dk</button>
+                    <button class="btn btn-outline-primary" @onclick="() => ConfirmAddBreak(30)">30 dk</button>
+                    <button class="btn btn-outline-primary" @onclick="() => ConfirmAddBreak(45)">45 dk</button>
+                    <button class="btn btn-outline-primary" @onclick="() => ConfirmAddBreak(60)">60 dk</button>
+                </div>
+                <div class="modal-buttons">
+                    <button class="btn btn-secondary" @onclick="CloseBreakModal">İptal</button>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (isBreakDetailModalVisible)
+    {
+        <div class="qr-modal-overlay" @onclick="CloseBreakDetailModal">
+            <div class="qr-modal-content" @onclick:stopPropagation="true">
+                <button class="close-btn" @onclick="CloseBreakDetailModal"><i class="fas fa-times"></i></button>
+                <h4>Mola Detayları</h4>
+                @if(selectedAppointment != null)
+                {
+                    <p>
+                        <strong>Çalışan:</strong> @employees.FirstOrDefault(e => e.Id == selectedAppointment.EmployeeId)?.Name <br/>
+                        <strong>Tarih:</strong> @selectedAppointment.AppointmentDate.ToShortDateString() <br/>
+                        <strong>Saat:</strong> @TimeOnly.FromTimeSpan(selectedAppointment.AppointmentTime).ToString("HH:mm") - @TimeOnly.FromTimeSpan(selectedAppointment.AppointmentTime).AddMinutes(selectedAppointment.DurationInMinutes ?? 0).ToString("HH:mm")
+                    </p>
+                }
+                <div class="modal-buttons">
+                    <button class="btn btn-danger" @onclick="() => DeleteBreak(selectedAppointment.Id)">
+                        <i class="fas fa-trash"></i> Molayı Sil
+                    </button>
+                    <button class="btn btn-secondary" @onclick="CloseBreakDetailModal">Kapat</button>
+                </div>
+            </div>
+        </div>
+    }
 
     <div class="timeline-wrapper-horizontal">
         <div class="employee-list">
@@ -79,21 +163,28 @@
             <div class="timeline-tracks">
                 @foreach (var employee in GetFilteredEmployees())
                 {
-                    <div class="appointments-track-horizontal">
+                    <div class="appointments-track-horizontal" @onclick="(e) => HandleTimelineClick(e, employee.Id)">
                         @foreach (var appointment in GetAppointmentsForEmployee(employee.Id))
                         {
-                            var totalDuration = appointment.AppointmentServices.Sum(s => s.Service?.DurationInMinutes ?? 0);
-                            var appointmentTitle = $"{appointment.CustomerName} - {string.Join(", ", appointment.AppointmentServices.Select(s => s.Service?.Name))}";
+                            var totalDuration = appointment.IsBreak ? (appointment.DurationInMinutes ?? 0) : appointment.AppointmentServices.Sum(s => s.Service?.DurationInMinutes ?? 0);
+                            var appointmentTitle = appointment.IsBreak ? "Mola" : $"{appointment.CustomerName} - {string.Join(", ", appointment.AppointmentServices.Select(s => s.Service?.Name))}";
 
-                            <div class="appointment-block-horizontal" style="@GetAppointmentStyle(appointment, totalDuration)" title="@appointmentTitle" @onclick="() => ShowAppointmentDetails(appointment)">
-                                <div class="service-bars">
-                                    @foreach(var service in appointment.AppointmentServices)
-                                    {
-                                        var servicePercentage = (double)(service.Service?.DurationInMinutes ?? 0) / totalDuration * 100;
-                                        <div class="service-bar" style="background-color: @GetServiceColor(service.Service?.Name); width: @(servicePercentage.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture))%;"></div>
-                                    }
-                                </div>
-                                <span class="customer-initials">@GetInitials(appointment.CustomerName)</span>
+                            <div class="appointment-block-horizontal @(appointment.IsBreak ? "break-block" : "")" style="@GetAppointmentStyle(appointment, totalDuration)" title="@appointmentTitle" @onclick="() => ShowAppointmentDetails(appointment)" @onclick:stopPropagation="true">
+                                @if(appointment.IsBreak)
+                                {
+                                    <i class="fas fa-coffee break-icon"></i>
+                                }
+                                else
+                                {
+                                    <div class="service-bars">
+                                        @foreach(var service in appointment.AppointmentServices)
+                                        {
+                                            var servicePercentage = (double)(service.Service?.DurationInMinutes ?? 0) / totalDuration * 100;
+                                            <div class="service-bar" style="background-color: @GetServiceColor(service.Service?.Name ?? string.Empty); width: @(servicePercentage.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture))%;"></div>
+                                        }
+                                    </div>
+                                    <span class="customer-initials">@GetInitials(appointment.CustomerName)</span>
+                                }
                             </div>
                         }
                     </div>
@@ -107,6 +198,10 @@
     [Parameter]
     public int SalonId { get; set; }
 
+    private string qrCodeBase64 = "";
+    private bool isQrModalVisible = false;
+    private Employee? selectedEmployeeForQr;
+
     private List<Employee> employees = new();
     private List<Appointment> appointments = new();
     private List<Service> allServices = new();
@@ -117,6 +212,10 @@
     private TimeOnly? closingTime;
     private Appointment? selectedAppointment;
     private bool isModalVisible = false;
+    private bool isBreakDetailModalVisible = false;
+    private bool isBreakModalVisible = false;
+    private TimeOnly breakStartTime;
+    private int breakEmployeeId;
     private List<DateTime> datePickerDays = new List<DateTime>();
     private ElementReference dateListElement;
     private Dictionary<DateTime, bool> dayAvailability = new Dictionary<DateTime, bool>();
@@ -194,9 +293,42 @@
 
     private async Task OnEmployeeSelected(ChangeEventArgs e)
     {
-        selectedEmployeeId = int.Parse(e.Value.ToString());
+        selectedEmployeeId = int.Parse(e.Value?.ToString() ?? "0");
         await LoadDataAsync();
     }
+
+    private void GenerateAndShowQrCode()
+    {
+        var uri = new Uri(Navigation.BaseUri);
+        var salonBookingUrl = $"{uri.Scheme}://{uri.Authority}/salon/{SalonId}";
+
+        using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
+        {
+            QRCodeData qrCodeData = qrGenerator.CreateQrCode(salonBookingUrl, QRCodeGenerator.ECCLevel.Q);
+            using (PngByteQRCode qrCode = new PngByteQRCode(qrCodeData))
+            {
+                byte[] qrCodeImage = qrCode.GetGraphic(20);
+                qrCodeBase64 = "data:image/png;base64," + Convert.ToBase64String(qrCodeImage);
+            }
+        }
+        isQrModalVisible = true;
+    }
+
+    private void CloseQrModal()
+    {
+        isQrModalVisible = false;
+        qrCodeBase64 = "";
+        selectedEmployeeForQr = null;
+    }
+
+    private void NavigateToNewAppointment()
+    {
+        // Always navigate to the main booking page for the salon, letting the user choose the employee.
+        Navigation.NavigateTo($"/salon/{SalonId}");
+    }
+
+
+
 
     private List<Employee> GetFilteredEmployees()
     {
@@ -269,6 +401,53 @@
         
         return $"#{r:X2}{g:X2}{b:X2}";
     }
+    
+        private async Task HandleTimelineClick(MouseEventArgs e, int employeeId)
+        {
+            if (openingTime == null) return;
+            
+            // Calculate the clicked time on the timeline
+            var hourWidth = 120; // Must match CSS
+            var clickX = e.OffsetX;
+            var clickedMinutes = (clickX / hourWidth) * 60;
+            var clickedTime = openingTime.Value.AddMinutes(clickedMinutes);
+            
+            // Round to nearest 15 minutes
+            var totalMinutes = clickedTime.Hour * 60 + clickedTime.Minute;
+            var roundedMinutes = (int)Math.Round(totalMinutes / 15.0) * 15;
+            
+            breakStartTime = new TimeOnly(roundedMinutes / 60, roundedMinutes % 60);
+            breakEmployeeId = employeeId;
+            isBreakModalVisible = true;
+        }
+    
+    
+        private void CloseBreakModal()
+        {
+            isBreakModalVisible = false;
+        }
+
+    private async Task ConfirmAddBreak(int duration)
+    {
+        if (CurrentSalon == null || breakEmployeeId == 0) return;
+
+        var newBreak = new Appointment
+        {
+            SalonId = SalonId,
+            EmployeeId = breakEmployeeId,
+            AppointmentDate = selectedDate.Date,
+            AppointmentTime = breakStartTime.ToTimeSpan(),
+            CustomerName = "Mola",
+            IsBreak = true,
+            DurationInMinutes = duration
+        };
+
+        DbContext.Appointments.Add(newBreak);
+        await DbContext.SaveChangesAsync();
+        
+        isBreakModalVisible = false;
+        await LoadDataAsync(); // Refresh timeline
+    }
 
     private string GetInitials(string fullName)
     {
@@ -284,7 +463,42 @@
     private void ShowAppointmentDetails(Appointment appointment)
     {
         selectedAppointment = appointment;
-        isModalVisible = true;
+        if (appointment.IsBreak)
+        {
+            isBreakDetailModalVisible = true;
+        }
+        else
+        {
+            isModalVisible = true;
+        }
+    }
+
+    private void CloseBreakDetailModal()
+    {
+        isBreakDetailModalVisible = false;
+        selectedAppointment = null;
+    }
+
+    private async Task DeleteBreak(int appointmentId)
+    {
+        try
+        {
+            var appointmentToDelete = await DbContext.Appointments.FindAsync(appointmentId);
+            if (appointmentToDelete != null && appointmentToDelete.IsBreak)
+            {
+                DbContext.Appointments.Remove(appointmentToDelete);
+                await DbContext.SaveChangesAsync();
+                await LoadDataAsync(); // Refresh the timeline
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error deleting break with ID {AppointmentId}", appointmentId);
+        }
+        finally
+        {
+            CloseBreakDetailModal();
+        }
     }
 
     private async Task ScrollLeft()

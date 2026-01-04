@@ -1,0 +1,45 @@
+@page "/randevu/{EmployeeId:int}"
+@using BerberApp1.Data
+@using Microsoft.EntityFrameworkCore
+@inject ApplicationDbContext DbContext
+@inject ILogger<EmployeeBooking> Logger
+
+@if (employee == null)
+{
+    <p>Çalışan bulunamadı.</p>
+}
+else
+{
+    <div class="salon-detail-container">
+        <div class="container">
+            <div class="salon-header">
+                <img src="@(string.IsNullOrEmpty(employee.PictureUrl) ? "images/barber.png" : employee.PictureUrl)" alt="@employee.Name" class="employee-photo-large" />
+                <h1>@employee.Name için Randevu Al</h1>
+                <p><i class="fas fa-store"></i> @employee.Salon?.Name</p>
+            </div>
+
+            <Booking EmployeeId="@EmployeeId" SalonId="@employee.SalonId" />
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public int EmployeeId { get; set; }
+
+    private Employee? employee;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            employee = await DbContext.Employees
+                                     .Include(e => e.Salon)
+                                     .FirstOrDefaultAsync(e => e.Id == EmployeeId);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error loading employee details for EmployeeId {EmployeeId}", EmployeeId);
+        }
+    }
+}

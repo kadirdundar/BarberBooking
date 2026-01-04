@@ -11,6 +11,10 @@
             </div>
             <div class="modal-body">
                 <p><strong>Müşteri:</strong> @Appointment.CustomerName</p>
+                @if (!string.IsNullOrEmpty(Appointment.CustomerPhone))
+                {
+                    <p><strong>Telefon:</strong> <a href="tel:@Appointment.CustomerPhone">@Appointment.CustomerPhone</a></p>
+                }
                 <p><strong>Saat:</strong> @Appointment.AppointmentTime.ToString("hh\\:mm")</p>
                 <p><strong>Hizmetler:</strong></p>
                 <ul>
