@@ -98,8 +98,18 @@
                                                 {
                                                     <tr>
                                                         <td><InputText @bind-Value="service.Name" class="form-control form-control-sm" /></td>
-                                                        <td><InputNumber @bind-Value="service.Price" class="form-control form-control-sm" /></td>
-                                                        <td><InputNumber @bind-Value="service.DurationInMinutes" class="form-control form-control-sm" /></td>
+                                                        <td>
+                                                            <div class="input-group input-group-sm">
+                                                                <span class="input-group-text">₺</span>
+                                                                <InputNumber @bind-Value="service.Price" class="form-control" />
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="input-group input-group-sm">
+                                                                <InputNumber @bind-Value="service.DurationInMinutes" class="form-control" />
+                                                                <span class="input-group-text">dk</span>
+                                                            </div>
+                                                        </td>
                                                         <td class="text-end">
                                                             <div class="btn-group">
                                                                 <button class="btn btn-sm btn-icon btn-save" title="Kaydet" @onclick="() => UpdateService(service)"><i class="fas fa-save"></i></button>
@@ -137,7 +147,16 @@
                                         <InputText @bind-Value="newEmployee.Name" class="form-control" placeholder="Ad Soyad" />
                                     </div>
                                     <div class="form-group col-md-5">
-                                        <InputText @bind-Value="newEmployee.PictureUrl" class="form-control" placeholder="Profil Fotoğrafı URL (Opsiyonel)" />
+                                        <div class="custom-file-upload">
+                                            <InputFile OnChange="@OnEmployeeImageSelected" class="form-control" accept="image/*" />
+                                            @if (!string.IsNullOrEmpty(newEmployee.PictureUrl))
+                                            {
+                                                <div class="mt-2">
+                                                    <span class="text-success small"><i class="fas fa-check"></i> Görsel seçildi</span>
+                                                    <img src="@newEmployee.PictureUrl" alt="Preview" style="height: 30px; width: 30px; border-radius: 50%; object-fit: cover; margin-left: 5px;" />
+                                                </div>
+                                            }
+                                        </div>
                                     </div>
                                     <div class="form-group col-md-2">
                                         <button type="submit" class="btn btn-primary w-100">Ekle</button>
@@ -409,6 +428,32 @@
             }
         }
         catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
+    }
+
+    // New method for Employee Image Selection
+    private async Task OnEmployeeImageSelected(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            var file = e.File;
+            if (file != null)
+            {
+                var fileName = $"employee_{Guid.NewGuid()}{Path.GetExtension(file.Name)}";
+                var path = Path.Combine(Environment.WebRootPath, "images", "employees", fileName);
+                
+                var dir = Path.GetDirectoryName(path);
+                if (dir != null && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
+
+                await using var stream = new FileStream(path, FileMode.Create);
+                await file.OpenReadStream(5 * 1024 * 1024).CopyToAsync(stream); // 5MB limit
+
+                newEmployee.PictureUrl = $"/images/employees/{fileName}";
+            }
+        }
+        catch (Exception ex)
+        {
+             await ShowStatusMessage($"Resim yüklenirken hata: {ex.Message}", false);
+        }
     }
 
     private async Task AddEmployee()

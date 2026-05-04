@@ -1,12 +1,18 @@
 @page "/booking-confirmation"
 
 <div class="confirmation-container">
-    <div class="confirmation-card">
-        <div class="confirmation-icon">
+    <div class="confirmation-card fade-in">
+        <div class="confirmation-icon pulse-animation">
             <i class="fas fa-check-circle"></i>
         </div>
         <h1>Randevunuz Onaylandı!</h1>
-        <p>Randevu bilgileriniz başarıyla kaydedilmiştir. Sizi salonumuzda görmeyi dört gözle bekliyoruz.</p>
-        <a href="/" class="btn btn-primary">Ana Sayfaya Dön</a>
+        <p class="confirmation-message">Randevu bilgileriniz başarıyla sisteme kaydedilmiştir. <br/> Sizi salonumuzda ağırlamaktan mutluluk duyacağız.</p>
+        
+        <div class="action-buttons">
+            <a href="/" class="btn btn-primary">Ana Sayfaya Dön</a>
+             <button class="btn btn-outline-secondary" onclick="window.print()">
+                <i class="fas fa-print"></i> Yazdır
+            </button>
+        </div>
     </div>
 </div>

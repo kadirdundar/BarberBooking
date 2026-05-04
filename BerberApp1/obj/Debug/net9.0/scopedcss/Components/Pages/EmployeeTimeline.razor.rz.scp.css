@@ -76,6 +76,7 @@
     text-align: center;
     cursor: pointer;
     transition: all 0.3s ease;
+    color: #333;
 }
 
 .date-item.selected[b-7oig1hctxe] {
@@ -123,6 +124,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    color: #333;
 }
 
 .legend-color-box[b-7oig1hctxe] {
@@ -146,7 +148,8 @@
 }
 
 .employee-info-header[b-7oig1hctxe] {
-    height: 38px; /* Match hour label height */
+    height: 38px;
+    /* Match hour label height */
     border-bottom: 1px solid #dee2e6;
 }
 
@@ -154,7 +157,8 @@
     display: flex;
     align-items: center;
     padding: 1rem;
-    height: 60px; /* Match track height */
+    height: 60px;
+    /* Match track height */
     border-bottom: 1px solid #dee2e6;
 }
 
@@ -171,6 +175,7 @@
 
 .employee-info-horizontal span[b-7oig1hctxe] {
     font-weight: 600;
+    color: #333;
 }
 
 .timeline-grid-container[b-7oig1hctxe] {
@@ -200,7 +205,8 @@
 
 .appointments-track-horizontal[b-7oig1hctxe] {
     position: relative;
-    height: 60px; /* Match employee info height */
+    height: 60px;
+    /* Match employee info height */
     border-bottom: 1px solid #dee2e6;
     background: repeating-linear-gradient(90deg, #f8f9fa, #f8f9fa 119px, #e9ecef 119px, #e9ecef 120px);
     cursor: pointer;
@@ -378,6 +384,7 @@
     color: white;
     font-size: 1.5rem;
 }
+
 .duration-buttons .btn-outline-primary[b-7oig1hctxe] {
     color: #D4B25D;
     border-color: #D4B25D;
@@ -388,11 +395,12 @@
     color: #2c2c2c;
     border-color: #D4B25D;
 }
+
 .timeline-content-wrapper[b-7oig1hctxe] {
     background-color: white;
     border-radius: 12px;
     padding: 2rem;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     margin-top: 2rem;
 }
 
@@ -403,7 +411,7 @@
     background-color: #fff;
     padding: 1rem 2rem;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .control-group[b-7oig1hctxe] {

@@ -29,56 +29,61 @@
    ========================================================================== */
 :root {
     /* Colors - Brand */
-    --primary-gold: #C5A059;
-    /* Metallic Gold */
-    --primary-gold-light: #E6C87C;
-    /* Lighter Gold for hover/accents */
-    --primary-gold-dark: #9C7E3A;
-    /* Darker Gold for active states */
+    --primary-gold: #D4AF37;
+    /* More metallic/vibrant gold */
+    --primary-gold-light: #F4D06F;
+    --primary-gold-dark: #AA8C2C;
 
-    /* Colors - Neutrals */
-    --bg-dark: #121212;
-    /* Deep black/gray background */
-    --bg-card: #1E1E1E;
-    /* Slightly lighter for cards */
-    --bg-surface: #252525;
-    /* For inputs, secondary surfaces */
+    /* Colors - Modern Dark Theme (Gunmetal/Deep Charcoal) */
+    --bg-dark: #16181D;
+    /* Deepest Blue-Grey - softer than pure black */
+    --bg-card: #20242C;
+    /* Lighter Blue-Grey for cards */
+    --bg-surface: #2B303B;
+    /* Input fields, hover states */
+
+    /* New Third Color - Modern Accent */
+    --accent-teal: #2A9D8F;
+    /* Modern Teal - Adds freshness */
+    --accent-teal-soft: rgba(42, 157, 143, 0.15);
 
     /* Colors - Text */
-    --text-primary: #FFFFFF;
-    --text-secondary: #B0B0B0;
-    --text-muted: #6e6e6e;
+    --text-primary: #EEF2F6;
+    /* Cool white, easier on eyes */
+    --text-secondary: #94A3B8;
+    /* Slate grey text */
+    --text-muted: #64748B;
 
     /* Colors - Functional */
-    --error: #cf6679;
-    --success: #03dac6;
+    --error: #EF476F;
+    --success: var(--accent-teal);
+    --warning: #FFD166;
 
     /* Gradients */
     --gradient-gold: linear-gradient(135deg, var(--primary-gold) 0%, var(--primary-gold-light) 100%);
-    --gradient-dark: linear-gradient(135deg, #1E1E1E 0%, #121212 100%);
+    --gradient-dark: linear-gradient(135deg, #20242C 0%, #16181D 100%);
+    --gradient-primary: var(--gradient-dark);
 
     /* Typography */
     --font-main: 'Outfit', 'Segoe UI', sans-serif;
 
     /* Shadows */
-    --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 8px 15px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.5);
+    --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 8px 15px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.4);
 
     /* Spacing & Layout */
     --radius-sm: 8px;
     --radius-md: 16px;
     --radius-lg: 24px;
 
-    /* Legacy Variable Mappings (For backward compatibility with existing components) */
+    /* Legacy Variable Mappings */
     --primary-color: var(--bg-dark);
-    /* Mapped to Dark BG */
     --secondary-color: var(--primary-gold);
-    /* Mapped to Gold */
-    --accent-color: var(--primary-gold-dark);
+    --accent-color: var(--accent-teal);
     --background-color: var(--bg-dark);
     --card-background: var(--bg-card);
-    --border-color: #333333;
+    --border-color: #334155;
 }
 
 /* Global Reset & Base Styles */
@@ -704,7 +709,7 @@ a:hover {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--accent-color);
+    background: var(--primary-gold-light);
 }
 
 /* Payment Page Styles */

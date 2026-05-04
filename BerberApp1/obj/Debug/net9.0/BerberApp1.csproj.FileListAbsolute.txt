@@ -179,6 +179,6 @@
 /Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/nynkitwej0-{0}-rup3i7he4h-rup3i7he4h.gz
 /Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/staticwebassets.build.json.cache
 /Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/swae.build.ex.cache
-/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/nlj5xcf0mt-{0}-fs5avf9j2s-fs5avf9j2s.gz
-/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/3jmtvo55av-{0}-nwyxaei94z-nwyxaei94z.gz
-/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/9yleo367qk-{0}-nwyxaei94z-nwyxaei94z.gz
+/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/nlj5xcf0mt-{0}-u87tfbxayk-u87tfbxayk.gz
+/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/3jmtvo55av-{0}-tbkya54hjl-tbkya54hjl.gz
+/Users/kadirdundar/Desktop/BerberApp/BerberApp1/BerberApp1/obj/Debug/net9.0/compressed/9yleo367qk-{0}-tbkya54hjl-tbkya54hjl.gz
