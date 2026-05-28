@@ -1,47 +1,38 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
 @using Microsoft.AspNetCore.Components.Authorization
-
+@using System.Security.Claims
+@using Microsoft.EntityFrameworkCore
+@using BerberApp1.Data
 
 <div class="page">
     <header class="main-header">
         <div class="header-content">
             <NavLink href="/" class="logo">
-                <div class="logo-icon"><i class="fas fa-cut"></i></div>
-                <span class="logo-text">BarberBooking</span>
+                <div class="logo-icon"><i class="fas fa-calendar-check"></i></div>
+                <span class="logo-text">Bookify</span>
             </NavLink>
             
             <nav class="d-flex align-items-center">
-                @if (ShouldShowNav())
-                {
-                     <ul class="nav-menu @(mobileMenuOpen ? "show" : "")" id="navMenu">
+                <ul class="nav-menu @(mobileMenuOpen ? "show" : "")" id="navMenu">
+                    <li class="nav-item">
+                        <NavLink href="/" class="nav-link" Match="NavLinkMatch.All">
+                            Keşfet
+                        </NavLink>
+                    </li>
+                    <li class="nav-item">
+                        <NavLink href="/business" class="nav-link">
+                            İşletmeler İçin
+                        </NavLink>
+                    </li>
+                    @if (UserSalonId.HasValue)
+                    {
                         <li class="nav-item">
-                            <NavLink href="/" class="nav-link" Match="NavLinkMatch.All">
-                                Ana Sayfa
-                            </NavLink>
-                        </li> </ul>
-                        @*
-                        <li class="nav-item">
-                            <NavLink href="/randevu" class="nav-link">
-                                Randevu Al
-                            </NavLink>
-                        </li>
-                        <li class="nav-item">
-                            <NavLink href="/randevularim" class="nav-link">
-                                Randevularım
-                            </NavLink>
-                        </li>
-                        <li class="nav-item">
-                            <NavLink href="/salon-management/1" class="nav-link">
-                                Salon Yönetimi
+                            <NavLink href="@($"/employee-timeline/{UserSalonId.Value}")" class="nav-link dashboard-nav-btn">
+                                <i class="fas fa-sliders-h"></i> Yönetim Paneli
                             </NavLink>
                         </li>
-                        <li class="nav-item">
-                            <NavLink href="/employee-timeline/1" class="nav-link">
-                                Zaman Çizelgesi
-                            </NavLink>
-                        </li>
-                    </ul> *@
-                }
+                    }
+                </ul>
                 <div class="ms-auto me-3">
                     <UserProfile />
                 </div>
@@ -71,16 +62,19 @@
 
 @code {
     private bool mobileMenuOpen = false;
+    private bool IsAuthenticated { get; set; }
+    private int? UserSalonId { get; set; }
 
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
     [Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
-
-    private bool IsAuthenticated { get; set; }
+    [Inject] private ApplicationDbContext DbContext { get; set; } = default!;
+    [Inject] public IJSRuntime? JSRuntime { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         IsAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
+        await CheckUserSalonAsync(authState.User);
         AuthenticationStateProvider.AuthenticationStateChanged += HandleAuthenticationStateChanged;
     }
 
@@ -88,17 +82,28 @@
     {
         var authState = await task;
         IsAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
+        await CheckUserSalonAsync(authState.User);
         await InvokeAsync(StateHasChanged);
     }
 
-    private bool ShouldShowNav()
+    private async Task CheckUserSalonAsync(ClaimsPrincipal user)
     {
-        if (NavigationManager == null)
+        if (IsAuthenticated && user != null)
         {
-            return false;
+            var googleId = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (!string.IsNullOrEmpty(googleId))
+            {
+                var dbUser = await DbContext.Users
+                    .Include(u => u.Salons)
+                    .FirstOrDefaultAsync(u => u.GoogleId == googleId);
+                if (dbUser != null && dbUser.Salons.Any())
+                {
+                    UserSalonId = dbUser.Salons.First().Id;
+                    return;
+                }
+            }
         }
-        var uri = new Uri(NavigationManager.Uri, UriKind.Absolute);
-        return IsAuthenticated && uri.AbsolutePath != "/";
+        UserSalonId = null;
     }
 
     private void ToggleMobileMenu()
@@ -106,13 +111,11 @@
         mobileMenuOpen = !mobileMenuOpen;
     }
 
-    [Inject] public IJSRuntime? JSRuntime { get; set; }
-
     private async Task DismissError()
     {
         if (JSRuntime is not null)
-    {
-        await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('blazor-error-ui').style.display = 'none';");
+        {
+            await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('blazor-error-ui').style.display = 'none';");
         }
     }
 }

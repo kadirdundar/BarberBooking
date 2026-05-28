@@ -1,4 +1,5 @@
 @page "/employee-timeline/{SalonId:int}"
+@layout Layout.DashboardLayout
 @using BerberApp1.Data
 @using Microsoft.EntityFrameworkCore
 @inject ApplicationDbContext DbContext
@@ -10,20 +11,11 @@
 
 <div class="timeline-container-horizontal">
     <div class="timeline-header">
-        <h1>Çalışan Zaman Çizelgesi</h1>
-        <p>Çalışanların randevu durumlarını ve müsaitliklerini görüntüleyin.</p>
-    </div>
+        <h1>Uzman Çalışma Takvimi</h1>
+        <p>İşletmeniz bünyesindeki uzmanların randevu durumlarını ve çalışma planlarını görüntüleyin.</p>
     </div>
     
     <div class="header-controls">
-        <div class="control-group">
-            <NavLink href="@($"/salon-management/{SalonId}")" class="btn btn-tertiary">
-                <i class="fas fa-cog"></i> Salon Ayarları
-            </NavLink>
-            <NavLink href="@($"/reports/{SalonId}")" class="btn btn-tertiary">
-                <i class="fas fa-chart-line"></i> Raporlar
-            </NavLink>
-        </div>
         <div class="control-group">
             <button class="btn btn-secondary" @onclick="GenerateAndShowQrCode">
                 <i class="fas fa-qrcode"></i> Karekod
@@ -38,7 +30,7 @@
         <div class="timeline-controls">
             <div class="employee-selector">
                 <select @onchange="OnEmployeeSelected" class="form-select">
-                    <option value="0">Tüm Çalışanlar</option>
+                    <option value="0">Tüm Uzmanlar</option>
                     @if (employees.Any())
                     {
                         @foreach (var employee in employees)
@@ -123,7 +115,7 @@
                 @if(selectedAppointment != null)
                 {
                     <p>
-                        <strong>Çalışan:</strong> @employees.FirstOrDefault(e => e.Id == selectedAppointment.EmployeeId)?.Name <br/>
+                        <strong>Uzman:</strong> @employees.FirstOrDefault(e => e.Id == selectedAppointment.EmployeeId)?.Name <br/>
                         <strong>Tarih:</strong> @selectedAppointment.AppointmentDate.ToShortDateString() <br/>
                         <strong>Saat:</strong> @TimeOnly.FromTimeSpan(selectedAppointment.AppointmentTime).ToString("HH:mm") - @TimeOnly.FromTimeSpan(selectedAppointment.AppointmentTime).AddMinutes(selectedAppointment.DurationInMinutes ?? 0).ToString("HH:mm")
                     </p>
@@ -192,6 +184,7 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 
 @code {

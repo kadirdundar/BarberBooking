@@ -40,7 +40,7 @@ else
             <div class="container">
                 <nav class="nav-tabs-custom">
                     <button class="@(activeTab == "services" ? "active" : "")" @onclick='() => SetActiveTab("services")'>Hizmetler</button>
-                    <button class="@(activeTab == "staff" ? "active" : "")" @onclick='() => SetActiveTab("staff")'>Ekip</button>
+                    <button class="@(activeTab == "staff" ? "active" : "")" @onclick='() => SetActiveTab("staff")'>Uzmanlar</button>
                     <button class="@(activeTab == "gallery" ? "active" : "")" @onclick='() => SetActiveTab("gallery")'>Galeri</button>
                     <button class="@(activeTab == "info" ? "active" : "")" @onclick='() => SetActiveTab("info")'>İletişim</button>
                 </nav>
@@ -103,7 +103,7 @@ else
                     <div class="tab-content fade-in">
                          <div class="section-title">
                             <h2>Galeri</h2>
-                            <p>Salonumuzdan kareler.</p>
+                            <p>İşletmemizden kareler.</p>
                         </div>
                         <div class="gallery-grid-detail">
                             @if (salon.Images != null && salon.Images.Any())

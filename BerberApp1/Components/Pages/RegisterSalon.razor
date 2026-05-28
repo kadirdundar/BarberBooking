@@ -8,26 +8,26 @@
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<PageTitle>Salon Kayıt</PageTitle>
+<PageTitle>İşletme Kayıt</PageTitle>
 
 <AuthorizeView Context="authContext">
     <Authorized>
         <div class="register-salon-container">
             <div class="register-salon-header">
                 <h2 class="section-title">Hoş Geldin, @authContext.User.Identity.Name!</h2>
-                <p class="section-subtitle">Aşağıdaki formu doldurarak salonunu kaydet.</p>
+                <p class="section-subtitle">Aşağıdaki formu doldurarak işletmenizi kaydedin.</p>
             </div>
             <div class="row justify-content-center">
                 <div class="col-md-8">
                     <div class="card shadow-lg p-4 rounded-3">
                         <div class="card-body">
-                            <h2 class="card-title text-center mb-4 section-title" hidden>Yeni Salon Kaydı</h2>
+                            <h2 class="card-title text-center mb-4 section-title" hidden>Yeni İşletme Kaydı</h2>
                             <EditForm Model="@Salon" OnValidSubmit="@HandleRegistration" FormName="RegisterSalonForm" class="needs-validation" Novalidate>
                                 <DataAnnotationsValidator />
                                 <ValidationSummary class="alert alert-danger" />
 
                                 <div class="mb-3">
-                                    <label for="name" class="form-label">Salon Adı</label>
+                                    <label for="name" class="form-label">İşletme Adı</label>
                                     <InputText id="name" class="form-control" @bind-Value="@Salon.Name" />
                                     <ValidationMessage For="@(() => Salon.Name)" />
                                 </div>
@@ -57,7 +57,7 @@
                                 </div>
 
                                 <div class="d-grid gap-2">
-                                    <button type="submit" class="btn btn-primary btn-lg">Salonu Kaydet</button>
+                                    <button type="submit" class="btn btn-primary btn-lg">İşletmeyi Kaydet</button>
                                 </div>
                             </EditForm>
 
@@ -108,14 +108,14 @@
                 await DbContext.SaveChangesAsync();
 
                 isSuccess = true;
-                statusMessage = "Salon başarıyla kaydedildi!";
+                statusMessage = "İşletme başarıyla kaydedildi!";
                 
                 NavigationManager.NavigateTo($"/salon/{Salon.Id}");
             }
             catch (Exception ex)
             {
                 isSuccess = false;
-                statusMessage = $"Salon kaydedilirken bir hata oluştu: {ex.Message}";
+                statusMessage = $"İşletme kaydedilirken bir hata oluştu: {ex.Message}";
                 Console.WriteLine($"Error saving salon: {ex.Message}");
             }
         }

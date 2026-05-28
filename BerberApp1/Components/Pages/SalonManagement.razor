@@ -1,4 +1,5 @@
 @page "/salon-management/{SalonId:int}"
+@layout Layout.DashboardLayout
 @using BerberApp1.Data
 @using Microsoft.EntityFrameworkCore
 @inject ApplicationDbContext DbContext
@@ -10,7 +11,7 @@
     {
         <div class="loading-state">
             <div class="spinner-border text-gold" role="status"></div>
-            <p>Salon bilgileri yükleniyor...</p>
+            <p>İşletme bilgileri yükleniyor...</p>
         </div>
     }
     else
@@ -18,10 +19,7 @@
         <div class="management-header">
             <div class="header-text">
                 <h1>@salon.Name</h1>
-                <p>Yönetim Paneli</p>
-            </div>
-            <div class="header-actions">
-                 <a href="/employee-timeline/@SalonId" class="btn btn-outline-light"><i class="fas fa-arrow-left"></i> Çizelgeye Dön</a>
+                <p>İşletme Yönetim Paneli</p>
             </div>
         </div>
 
@@ -32,7 +30,7 @@
                     <i class="fas fa-cut"></i> Hizmetler
                 </button>
                 <button class="nav-btn @(activeTab == "employees" ? "active" : "")" @onclick='() => SetActiveTab("employees")'>
-                    <i class="fas fa-users"></i> Çalışanlar
+                    <i class="fas fa-users"></i> Uzmanlar
                 </button>
                 <button class="nav-btn @(activeTab == "hours" ? "active" : "")" @onclick='() => SetActiveTab("hours")'>
                     <i class="fas fa-clock"></i> Çalışma Saatleri
@@ -135,12 +133,12 @@
                     case "employees":
                         <div class="content-section fade-in">
                             <div class="section-header">
-                                <h3>Çalışan Kadrosu</h3>
-                                <p>Salonunuzdaki uzmanları yönetin.</p>
+                                <h3>Uzman Kadrosu</h3>
+                                <p>İşletmenizdeki uzmanları yönetin.</p>
                             </div>
 
                             <div class="add-card">
-                                <h5><i class="fas fa-user-plus"></i> Yeni Çalışan Ekle</h5>
+                                <h5><i class="fas fa-user-plus"></i> Yeni Uzman Ekle</h5>
                                 <EditForm Model="@newEmployee" OnValidSubmit="AddEmployee" class="form-row">
                                     <DataAnnotationsValidator />
                                     <div class="form-group col-md-5">
@@ -190,7 +188,7 @@
                         <div class="content-section fade-in">
                              <div class="section-header">
                                 <h3>Çalışma Saatleri</h3>
-                                <p>Salonunuzun açık olduğu gün ve saatleri belirleyin.</p>
+                                <p>İşletmenizin açık olduğu gün ve saatleri belirleyin.</p>
                             </div>
                             
                             <div class="hours-grid">
@@ -228,16 +226,16 @@
                         <div class="content-section fade-in">
                             <div class="section-header">
                                 <h3>Genel Ayarlar</h3>
-                                <p>Salon bilgilerini ve görsellerini düzenleyin.</p>
+                                <p>İşletme bilgilerini ve görsellerini düzenleyin.</p>
                             </div>
 
                             <div class="settings-form-wrapper">
                                 <EditForm Model="@salon" OnValidSubmit="UpdateSalonSettings">
                                     <DataAnnotationsValidator />
                                     <div class="form-group mb-3">
-                                        <label>Salon Adı</label>
+                                        <label>İşletme Adı</label>
                                         <InputText @bind-Value="salon.Name" class="form-control" disabled />
-                                        <small class="text-muted">Salon adı değiştirilemez.</small>
+                                        <small class="text-muted">İşletme adı değiştirilemez.</small>
                                     </div>
                                     <div class="form-group mb-3">
                                         <label>Adres</label>
@@ -251,7 +249,7 @@
 
                             <div class="gallery-upload-section">
                                 <h4 class="mt-4">Banner Görseli</h4>
-                                <p class="text-muted">Salon kapak fotoğrafı.</p>
+                                <p class="text-muted">İşletme kapak fotoğrafı.</p>
                                 
                                 @if (!string.IsNullOrEmpty(salon.BannerUrl))
                                 {
@@ -467,7 +465,7 @@
                 await DbContext.SaveChangesAsync();
                 newEmployee = new();
                 await LoadSalon();
-                await ShowStatusMessage("Çalışan eklendi.", true);
+                await ShowStatusMessage("Uzman eklendi.", true);
             }
             catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
         }
@@ -478,7 +476,7 @@
         try
         {
             var emp = await DbContext.Employees.FindAsync(employeeId);
-            if(emp != null) { DbContext.Employees.Remove(emp); await DbContext.SaveChangesAsync(); await LoadSalon(); await ShowStatusMessage("Çalışan silindi.", true); }
+            if(emp != null) { DbContext.Employees.Remove(emp); await DbContext.SaveChangesAsync(); await LoadSalon(); await ShowStatusMessage("Uzman silindi.", true); }
         }
         catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
     }

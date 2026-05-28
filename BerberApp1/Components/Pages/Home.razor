@@ -1,4 +1,4 @@
-﻿@page "/"
+@page "/"
 @using Microsoft.AspNetCore.Components.Authorization
 @using BerberApp1.Data
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -6,118 +6,179 @@
 @inject ApplicationDbContext DbContext
 @using System.Security.Claims
 @using Microsoft.EntityFrameworkCore
+@rendermode InteractiveServer
 
-<div class="landing-container">
-    <header class="hero-section">
-        <div class="hero-overlay"></div>
-        <div class="hero-content fade-in-up">
-            <h1 class="hero-title">Salonunuzu <span class="text-gradient">Geleceğe</span> Taşıyın</h1>
-            <p class="hero-subtitle">Randevu yönetimini basitleştirin, müşteri memnuniyetini artırın ve gelirinizi yükseltin. BarberBooking ile işletmeniz parmaklarınızın ucunda.</p>
-            <div class="hero-buttons">
-                <a href="/register" class="btn btn-primary-gold glow-effect">30 Gün Ücretsiz Deneyin</a>
-                <a href="#features" class="btn btn-secondary-outline">Özellikleri Keşfet</a>
-            </div>
-            <div class="hero-stats">
-                <div class="stat-item">
-                    <span class="stat-number">1000+</span>
-                    <span class="stat-label">Mutlu İşletme</span>
+<div class="portal-container">
+    <!-- Hero / Search Section -->
+    <section class="search-hero">
+        <div class="hero-bg-overlay"></div>
+        <div class="search-content">
+            <h1 class="search-title">İstediğiniz Hizmeti <span class="gold-gradient">Keşfedin & Rezerv Edin</span></h1>
+            <p class="search-subtitle">Güzellik salonları, klinikler, uzmanlar ve hizmet sağlayıcılar arasından size en uygun olanı bulun, anında randevu alın.</p>
+            
+            <div class="search-box-wrapper">
+                <div class="search-input-group">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" 
+                           class="search-input" 
+                           placeholder="İşletme adı, adres veya hizmet arayın... (Örn: Saç Kesimi, Masaj)" 
+                           value="@searchQuery"
+                           @oninput="UpdateSearch" />
                 </div>
-                <div class="stat-item">
-                    <span class="stat-number">500k+</span>
-                    <span class="stat-label">Aylık Randevu</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number">4.9</span>
-                    <span class="stat-label">Müşteri Puanı</span>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <section id="features" class="features-section">
-        <div class="section-header">
-            <h2 class="section-title">Neden <span class="text-gold">BarberBooking?</span></h2>
-            <p class="section-description">İşletmenizi büyütmek için ihtiyacınız olan tüm araçlar tek bir platformda.</p>
-        </div>
-        
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon-wrapper">
-                    <i class="fas fa-calendar-check"></i>
-                </div>
-                <h3>Akıllı Randevu Yönetimi</h3>
-                <p>Telefon trafiğine son. Müşterileriniz 7/24 online randevu alsın, takviminiz otomatik güncellensin.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon-wrapper">
-                    <i class="fas fa-users"></i>
-                </div>
-                <h3>Müşteri İlişkileri</h3>
-                <p>Müşteri geçmişini ve tercihlerini takip ederek kişiselleştirilmiş bir hizmet sunun.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon-wrapper">
-                    <i class="fas fa-bell"></i>
-                </div>
-                <h3>Otomatik Bildirimler</h3>
-                <p>Randevuya gelmeme oranını SMS ve e-posta hatırlatmaları ile en aza indirin.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon-wrapper">
-                    <i class="fas fa-chart-pie"></i>
-                </div>
-                <h3>Detaylı Raporlama</h3>
-                <p>İşletmenizin performansını, en popüler hizmetlerinizi ve çalışan verimliliğini analiz edin.</p>
             </div>
         </div>
     </section>
 
-    <section class="cta-section">
-        <div class="cta-content">
-            <h2>İşletmenizi Büyütmeye Hazır Mısınız?</h2>
-            <p>Binlerce salon sahibi gibi siz de dijital dönüşüme katılın ve işinizi bir üst seviyeye taşıyın.</p>
-            <a href="/register" class="btn btn-light-gold">Hemen Başlayın</a>
+    <!-- Listings Section -->
+    <section class="listings-section">
+        <div class="container-width">
+            <div class="section-title-bar">
+                <h2>Tüm İşletmeler</h2>
+                <span class="count-badge">@filteredSalons.Count Sonuç</span>
+            </div>
+
+            @if (filteredSalons == null || !filteredSalons.Any())
+            {
+                <div class="no-results-card">
+                    <div class="icon-box"><i class="fas fa-search-minus"></i></div>
+                    <h3>Aradığınız kriterlere uygun işletme bulunamadı</h3>
+                    <p>Farklı bir arama yapmayı deneyebilir veya Bookify'a kendi işletmenizi ekleyebilirsiniz.</p>
+                    <div class="action-buttons">
+                        <button class="btn-clear" @onclick="ClearSearch">Aramayı Temizle</button>
+                        <a href="/business" class="btn-register-cta">İşletmenizi Kaydedin</a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="listings-grid">
+                    @foreach (var salon in filteredSalons)
+                    {
+                        <div class="salon-card fade-in">
+                            <div class="card-image-wrapper">
+                                @if (!string.IsNullOrEmpty(salon.BannerUrl))
+                                {
+                                    <img src="@salon.BannerUrl" alt="@salon.Name" class="card-image" />
+                                }
+                                else if (salon.Images != null && salon.Images.Any())
+                                {
+                                    <img src="@salon.Images.First().ImageUrl" alt="@salon.Name" class="card-image" />
+                                }
+                                else
+                                {
+                                    <div class="card-image-placeholder">
+                                        <i class="fas fa-store"></i>
+                                    </div>
+                                }
+                                <div class="rating-badge-overlay">
+                                    <i class="fas fa-star text-gold"></i>
+                                    <span>4.9</span>
+                                </div>
+                            </div>
+                            
+                            <div class="card-body">
+                                <h3 class="salon-name">@salon.Name</h3>
+                                <div class="salon-address">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>@salon.Address</span>
+                                </div>
+                                <p class="salon-desc">@(salon.Description?.Length > 100 ? salon.Description.Substring(0, 97) + "..." : salon.Description)</p>
+                                
+                                @if (salon.Services != null && salon.Services.Any())
+                                {
+                                    <div class="services-pills">
+                                        @foreach (var service in salon.Services.Take(3))
+                                        {
+                                            <span class="service-pill">@service.Name</span>
+                                        }
+                                        @if (salon.Services.Count > 3)
+                                        {
+                                            <span class="service-pill count-pill">+@(salon.Services.Count - 3)</span>
+                                        }
+                                    </div>
+                                }
+                                
+                                <div class="card-footer">
+                                    <a href="@($"/salon/{salon.Id}")" class="btn-book">
+                                        Randevu Al <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
         </div>
     </section>
 
-    <footer class="landing-footer">
-        <div class="footer-content">
-            <div class="footer-brand">
-                <h3>BarberBooking</h3>
-                <p>Güzellik ve bakım işletmeleri için en iyi randevu yönetim çözümü.</p>
+    <!-- Footer -->
+    <footer class="portal-footer">
+        <div class="container-width footer-content">
+            <div class="footer-info">
+                <h3>Bookify</h3>
+                <p>Hizmet ve randevu tabanlı tüm işletmeler için modern yönetim çözümü.</p>
             </div>
             <div class="footer-links">
-                <a href="#">Hakkımızda</a>
-                <a href="#">Özellikler</a>
-                <a href="#">Fiyatlandırma</a>
-                <a href="#">İletişim</a>
+                <a href="/business">İşletmeler İçin</a>
+                <a href="/register">Kayıt Ol</a>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; @DateTime.Now.Year BarberBooking. Tüm Hakları Saklıdır.</p>
+            <p>&copy; @DateTime.Now.Year Bookify. Tüm Hakları Saklıdır.</p>
         </div>
     </footer>
 </div>
 
 @code {
+    private List<Salon> salons = new();
+    private List<Salon> filteredSalons = new();
+    private string searchQuery = string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-
-        if (user.Identity is { IsAuthenticated: true })
+        try
         {
-            var googleId = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            if (!string.IsNullOrEmpty(googleId))
-            {
-                var salon = await DbContext.Salons
-                    .FirstOrDefaultAsync(s => s.User != null && s.User.GoogleId == googleId);
-
-                if (salon != null)
-                {
-                    NavigationManager.NavigateTo($"/employee-timeline/{salon.Id}");
-                }
-            }
+            salons = await DbContext.Salons
+                .AsNoTracking()
+                .Include(s => s.Services)
+                .Include(s => s.Images)
+                .ToListAsync();
+            filteredSalons = salons;
         }
+        catch (Exception ex)
+        {
+            // Fallback empty list
+            salons = new List<Salon>();
+            filteredSalons = salons;
+        }
+    }
+
+    private void UpdateSearch(ChangeEventArgs e)
+    {
+        searchQuery = e.Value?.ToString() ?? string.Empty;
+        FilterSalons();
+    }
+
+    private void FilterSalons()
+    {
+        if (string.IsNullOrWhiteSpace(searchQuery))
+        {
+            filteredSalons = salons;
+        }
+        else
+        {
+            filteredSalons = salons
+                .Where(s => s.Name.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) || 
+                            s.Address.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
+                            s.Description.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
+                            s.Services.Any(ser => ser.Name.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)))
+                .ToList();
+        }
+    }
+
+    private void ClearSearch()
+    {
+        searchQuery = string.Empty;
+        filteredSalons = salons;
     }
 }

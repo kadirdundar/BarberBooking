@@ -1,0 +1,119 @@
+@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components.Authorization
+@using BerberApp1.Data
+@using Microsoft.EntityFrameworkCore
+@using BerberApp1.Components.Layout
+
+<div class="dashboard-layout">
+    <aside class="sidebar @(sidebarOpen ? "open" : "")">
+        <div class="sidebar-brand">
+            <div class="logo-icon"><i class="fas fa-calendar-check"></i></div>
+            <span class="brand-text">Bookify</span>
+        </div>
+        
+        <div class="business-info">
+            <span class="business-name">@SalonName</span>
+            <span class="business-badge">Yönetici Paneli</span>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <NavLink href="@($"/employee-timeline/{SalonId}")" class="sidebar-link" Match="NavLinkMatch.All">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Çalışma Takvimi</span>
+            </NavLink>
+            
+            <NavLink href="@($"/salon-management/{SalonId}")" class="sidebar-link">
+                <i class="fas fa-sliders-h"></i>
+                <span>İşletme Yönetimi</span>
+            </NavLink>
+            
+            <NavLink href="@($"/reports/{SalonId}")" class="sidebar-link">
+                <i class="fas fa-chart-bar"></i>
+                <span>Raporlar</span>
+            </NavLink>
+            
+            <div class="sidebar-divider"></div>
+
+            <NavLink href="@($"/salon/{SalonId}")" class="sidebar-link text-gold-nav">
+                <i class="fas fa-eye"></i>
+                <span>Müşteri Gözüyle</span>
+            </NavLink>
+            
+            <a href="/" class="sidebar-link">
+                <i class="fas fa-home"></i>
+                <span>Ana Sayfa</span>
+            </a>
+            
+            <a href="api/auth/logout" class="sidebar-link logout-link">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Çıkış Yap</span>
+            </a>
+        </nav>
+    </aside>
+    
+    <div class="main-content-area">
+        <header class="dashboard-header">
+            <button class="sidebar-toggle-btn" @onclick="ToggleSidebar">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="header-right ms-auto">
+                <UserProfile />
+            </div>
+        </header>
+        
+        <main class="dashboard-body">
+            @Body
+        </main>
+    </div>
+</div>
+
+@code {
+    private bool sidebarOpen = false;
+    
+    [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+    [Inject] private ApplicationDbContext DbContext { get; set; } = default!;
+    
+    private int SalonId { get; set; }
+    private string SalonName { get; set; } = "Yükleniyor...";
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        ParseSalonId();
+        if (SalonId > 0)
+        {
+            var salon = await DbContext.Salons.FindAsync(SalonId);
+            if (salon != null)
+            {
+                SalonName = salon.Name;
+            }
+        }
+    }
+    
+    private void ParseSalonId()
+    {
+        var uri = NavigationManager.Uri;
+        var absoluteUri = new Uri(uri);
+        var segments = absoluteUri.Segments;
+        if (segments.Length > 0)
+        {
+            var lastSegment = segments[^1].TrimEnd('/');
+            if (int.TryParse(lastSegment, out int id))
+            {
+                SalonId = id;
+            }
+            else if (segments.Length > 1)
+            {
+                var prevSegment = segments[^2].TrimEnd('/');
+                if (int.TryParse(prevSegment, out id))
+                {
+                    SalonId = id;
+                }
+            }
+        }
+    }
+    
+    private void ToggleSidebar()
+    {
+        sidebarOpen = !sidebarOpen;
+    }
+}
