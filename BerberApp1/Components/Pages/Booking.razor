@@ -310,8 +310,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Logger.LogInformation("Booking Initialized. SalonId: {SalonId}, EmployeeId: {EmployeeId}, ServiceId: {ServiceId}", SalonId, EmployeeId, ServiceId);
-        
         try 
         {
             CurrentSalon = await DbContext.Salons
@@ -324,7 +322,6 @@
             if (CurrentSalon != null)
             {
                 services = CurrentSalon.Services.ToList();
-                Logger.LogInformation("Loaded {Count} services.", services.Count);
             }
             else
             {
@@ -339,14 +336,12 @@
                 if (preService != null) 
                 {
                     selectedServices.Add(preService);
-                    Logger.LogInformation("Pre-selected service: {ServiceName}", preService.Name);
                 }
             }
 
             if (EmployeeId.HasValue && EmployeeId.Value > 0)
             {
                 selectedEmployeeId = EmployeeId.Value;
-                Logger.LogInformation("Pre-selected Employee: {EmployeeId}", EmployeeId);
             }
 
             GenerateDatePickerDays();
@@ -446,17 +441,13 @@
     {
         try 
         {
-            Logger.LogInformation("Toggling service: {ServiceName}", service.Name);
-            
             if (selectedServices.Contains(service))
             {
                 selectedServices.Remove(service);
-                Logger.LogInformation("Removed service.");
             }
             else
             {
                 selectedServices.Add(service);
-                Logger.LogInformation("Added service.");
             }
             await InvokeAsync(StateHasChanged);
         }

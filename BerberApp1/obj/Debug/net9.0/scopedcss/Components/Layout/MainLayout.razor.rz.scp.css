@@ -36,6 +36,18 @@
     align-items: center;
 }
 
+.header-left[b-djnzvyvq3b] {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+}
+
+.header-right[b-djnzvyvq3b] {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
 .logo[b-djnzvyvq3b] {
     display: flex;
     align-items: center;

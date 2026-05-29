@@ -7,37 +7,93 @@
 @using System.Security.Claims
 @using Microsoft.EntityFrameworkCore
 
+<PageTitle>Bookify - İşletmenizi Geleceğe Taşıyın</PageTitle>
+
 <div class="landing-container">
+    <!-- Hero Section -->
     <header class="hero-section">
-        <div class="hero-overlay"></div>
-        <div class="hero-content fade-in-up">
-            <h1 class="hero-title">İşletmenizi <span class="text-gradient">Geleceğe</span> Taşıyın</h1>
-            <p class="hero-subtitle">Randevu yönetimini basitleştirin, müşteri memnuniyetini artırın ve gelirinizi yükseltin. Güzellik salonları, klinikler, özel eğitmenler, otomotiv servisleri ve tüm hizmet işletmeleri için Bookify yanınızda.</p>
-            <div class="hero-buttons">
-                <a href="/register" class="btn btn-primary-gold glow-effect">30 Gün Ücretsiz Deneyin</a>
-                <a href="#features" class="btn btn-secondary-outline">Özellikleri Keşfet</a>
+        <div class="hero-text fade-in-up">
+            <div class="badge-new">İŞLETMELER İÇİN</div>
+            <h1 class="hero-title">Rezervasyonlarınızı <span class="text-gradient">Tek Bir Bağlantı</span> İle Yönetin</h1>
+            <p class="hero-subtitle">Müşterileriniz için en şık ve hızlı randevu deneyimi. Salon bilgilerinizi ve hizmetlerinizi tek bir profilde toplayın, 7/24 randevu alın.</p>
+            
+            <div class="claim-bar">
+                <span class="claim-prefix">bookify.com/</span>
+                <input type="text" class="claim-input" placeholder="salon-adiniz" @bind-value="topSalonName" @bind-value:event="oninput" @onkeydown="@(e => { if (e.Key == "Enter") RedirectToRegisterTop(); })" />
+                <button class="claim-btn" @onclick="RedirectToRegisterTop">Hemen Başla</button>
             </div>
-            <div class="hero-stats">
-                <div class="stat-item">
-                    <span class="stat-number">1000+</span>
-                    <span class="stat-label">Mutlu İşletme</span>
+            
+            <div class="hero-ratings">
+                <div class="rating-item">
+                    <span class="rating-stars">★★★★★</span>
+                    <span class="rating-text">4.9/5 Müşteri Memnuniyeti</span>
                 </div>
-                <div class="stat-item">
-                    <span class="stat-number">500k+</span>
-                    <span class="stat-label">Aylık Randevu</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number">4.9</span>
-                    <span class="stat-label">Müşteri Puanı</span>
+                <div class="rating-divider">|</div>
+                <div class="rating-item">
+                    <span class="rating-stats-count">1000+ Aktif İşletme</span>
                 </div>
             </div>
         </div>
+
+        <div class="hero-mockup-wrapper">
+            <div class="phone-mockup">
+                <div class="phone-notch"></div>
+                <div class="phone-screen">
+                    <div class="phone-avatar">
+                        <i class="fas fa-scissors"></i>
+                    </div>
+                    <h3 class="phone-salon-title">Modern Cut Salon</h3>
+                    <div class="phone-salon-badge">✓ Onaylı Partner</div>
+                    
+                    <div class="phone-links">
+                        <div class="phone-link-btn primary">
+                            <i class="fas fa-calendar-alt"></i> Online Randevu Al
+                        </div>
+                        <div class="phone-link-btn">
+                            <i class="fas fa-cut"></i> Hizmetler & Fiyatlar
+                        </div>
+                        <div class="phone-link-btn">
+                            <i class="fas fa-map-marker-alt"></i> Yol Tarifi & İletişim
+                        </div>
+                        <div class="phone-link-btn">
+                            <i class="fas fa-images"></i> Galerimiz
+                        </div>
+                    </div>
+                    
+                    <div class="phone-footer-socials">
+                        <span class="phone-social-icon"><i class="fab fa-instagram"></i></span>
+                        <span class="phone-social-icon"><i class="fab fa-facebook-f"></i></span>
+                        <span class="phone-social-icon"><i class="fab fa-whatsapp"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="phone-glow"></div>
+        </div>
     </header>
 
+    <!-- Stats Showcase -->
+    <section class="stats-showcase">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-number">10 Dakika</span>
+                <span class="stat-desc">Ortalama Kurulum Süresi</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">%40</span>
+                <span class="stat-desc">Telefon Trafiğinde Azalma</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">7/24</span>
+                <span class="stat-desc">Kesintisiz Rezervasyon Kabulü</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
     <section id="features" class="features-section">
         <div class="section-header">
             <h2 class="section-title">Neden <span class="text-gold">Bookify?</span></h2>
-            <p class="section-description">İşletmenizi büyütmek için ihtiyacınız olan tüm araçlar tek bir platformda.</p>
+            <p class="section-description">İşletmenizi büyütmek ve randevularınızı düzene sokmak için ihtiyacınız olan her şey.</p>
         </div>
         
         <div class="features-grid">
@@ -46,51 +102,87 @@
                     <i class="fas fa-calendar-check"></i>
                 </div>
                 <h3>Akıllı Randevu Yönetimi</h3>
-                <p>Telefon trafiğine son. Müşterileriniz 7/24 online randevu alsın, takviminiz otomatik güncellensin.</p>
+                <p>Müşterileriniz boş saatlerinizi görsün, anında rezervasyon yapsın. Çift rezervasyon ihtimalini sıfıra indirin.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon-wrapper">
                     <i class="fas fa-users"></i>
                 </div>
-                <h3>Müşteri İlişkileri</h3>
-                <p>Müşteri geçmişini ve tercihlerini takip ederek kişiselleştirilmiş bir hizmet sunun.</p>
+                <h3>Müşteri İlişkileri (CRM)</h3>
+                <p>Müşterilerinizin geçmiş randevu verilerini, tercihlerini ve harcama detaylarını tek bir ekrandan inceleyin.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon-wrapper">
                     <i class="fas fa-bell"></i>
                 </div>
                 <h3>Otomatik Hatırlatmalar</h3>
-                <p>Randevuya gelmeme oranını SMS ve e-posta hatırlatmaları ile en aza indirin.</p>
+                <p>Randevuya gelmeme veya unutma durumlarını önlemek için otomatik SMS ve bildirimler gönderin.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon-wrapper">
-                    <i class="fas fa-chart-pie"></i>
+                    <i class="fas fa-chart-line"></i>
                 </div>
-                <h3>Detaylı Raporlama</h3>
-                <p>İşletmenizin performansını, en popüler hizmetlerinizi ve çalışan verimliliğini analiz edin.</p>
+                <h3>Gelişmiş Analitik</h3>
+                <p>En çok tercih edilen hizmetleri, çalışan performansını ve günlük ciro raporlarını kolayca takip edin.</p>
             </div>
         </div>
     </section>
 
-    <section class="cta-section">
-        <div class="cta-content">
-            <h2>İşletmenizi Büyütmeye Hazır Mısınız?</h2>
-            <p>Binlerce işletme sahibi gibi siz de dijital dönüşüme katılın ve işinizi bir üst seviyeye taşıyın.</p>
-            <a href="/register" class="btn btn-light-gold">Hemen Başlayın</a>
+    <!-- How It Works Section (Linktree Style Stepper) -->
+    <section class="steps-section">
+        <div class="section-header">
+            <h2 class="section-title">3 Kolay Adımda <span class="text-gradient">Canlıya Alın</span></h2>
+            <p class="section-description">Hiçbir teknik bilgiye ihtiyaç duymadan dakikalar içinde randevu almaya başlayın.</p>
+        </div>
+        
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <h3 class="step-title">Sayfanızı Oluşturun</h3>
+                <p class="step-desc">Kullanıcı adınızı belirleyin, profil görselinizi ve logonuzu yükleyin.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <h3 class="step-title">Hizmetlerinizi Ekleyin</h3>
+                <p class="step-desc">Sunduğunuz hizmetleri, süreleri, fiyatları ve çalışan personellerinizi tanımlayın.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <h3 class="step-title">Bağlantınızı Paylaşın</h3>
+                <p class="step-desc">Instagram veya TikTok profilinize linkinizi ekleyin ve müşterilerinizin randevu almasını izleyin.</p>
+            </div>
         </div>
     </section>
 
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-card">
+            <div class="cta-glow"></div>
+            <div class="cta-content">
+                <h2>İşletmenizde Dijital Dönüşümü Başlatın</h2>
+                <p>Hemen bugün ücretsiz kaydolun, 30 gün boyunca hiçbir sınır olmadan tüm premium özellikleri deneyimleyin.</p>
+                
+                <div class="claim-bar bottom-claim">
+                    <span class="claim-prefix">bookify.com/</span>
+                    <input type="text" class="claim-input" placeholder="salon-adiniz" @bind-value="bottomSalonName" @bind-value:event="oninput" @onkeydown="@(e => { if (e.Key == "Enter") RedirectToRegisterBottom(); })" />
+                    <button class="claim-btn" @onclick="RedirectToRegisterBottom">Ücretsiz Başla</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
     <footer class="landing-footer">
         <div class="footer-content">
             <div class="footer-brand">
                 <h3>Bookify</h3>
-                <p>Hizmet ve randevu tabanlı tüm işletmeler için modern yönetim çözümü.</p>
+                <p>Hizmet ve randevu tabanlı tüm modern işletmeler için link-in-bio yönetim aracı.</p>
             </div>
             <div class="footer-links">
                 <a href="#">Hakkımızda</a>
-                <a href="#">Özellikler</a>
+                <a href="#features">Özellikler</a>
                 <a href="#">Fiyatlandırma</a>
-                <a href="#">İletişim</a>
+                <a href="#">Destek</a>
             </div>
         </div>
         <div class="footer-bottom">
@@ -100,6 +192,9 @@
 </div>
 
 @code {
+    private string topSalonName = "";
+    private string bottomSalonName = "";
+
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
@@ -118,6 +213,28 @@
                     NavigationManager.NavigateTo($"/employee-timeline/{salon.Id}");
                 }
             }
+        }
+    }
+
+    private void RedirectToRegisterTop()
+    {
+        RedirectToRegister(topSalonName);
+    }
+
+    private void RedirectToRegisterBottom()
+    {
+        RedirectToRegister(bottomSalonName);
+    }
+
+    private void RedirectToRegister(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            NavigationManager.NavigateTo("/register");
+        }
+        else
+        {
+            NavigationManager.NavigateTo($"/register?salonName={Uri.EscapeDataString(name)}");
         }
     }
 }

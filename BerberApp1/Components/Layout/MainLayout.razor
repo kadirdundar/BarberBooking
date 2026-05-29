@@ -1,3 +1,4 @@
+@implements IDisposable
 @inherits LayoutComponentBase
 @using Microsoft.AspNetCore.Components.Authorization
 @using System.Security.Claims
@@ -5,43 +6,47 @@
 @using BerberApp1.Data
 
 <div class="page">
-    <header class="main-header">
-        <div class="header-content">
-            <NavLink href="/" class="logo">
-                <div class="logo-icon"><i class="fas fa-calendar-check"></i></div>
-                <span class="logo-text">Bookify</span>
-            </NavLink>
-            
-            <nav class="d-flex align-items-center">
-                <ul class="nav-menu @(mobileMenuOpen ? "show" : "")" id="navMenu">
-                    <li class="nav-item">
-                        <NavLink href="/" class="nav-link" Match="NavLinkMatch.All">
-                            Keşfet
-                        </NavLink>
-                    </li>
-                    <li class="nav-item">
-                        <NavLink href="/business" class="nav-link">
-                            İşletmeler İçin
-                        </NavLink>
-                    </li>
-                    @if (UserSalonId.HasValue)
-                    {
+    @if (!ShouldHideNavbar())
+    {
+        <header class="main-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <NavLink href="/" class="logo">
+                        <div class="logo-icon"><i class="fas fa-calendar-check"></i></div>
+                        <span class="logo-text">Bookify</span>
+                    </NavLink>
+                    
+                    <ul class="nav-menu @(mobileMenuOpen ? "show" : "")" id="navMenu">
                         <li class="nav-item">
-                            <NavLink href="@($"/employee-timeline/{UserSalonId.Value}")" class="nav-link dashboard-nav-btn">
-                                <i class="fas fa-sliders-h"></i> Yönetim Paneli
+                            <NavLink href="/" class="nav-link" Match="NavLinkMatch.All">
+                                Keşfet
                             </NavLink>
                         </li>
-                    }
-                </ul>
-                <div class="ms-auto me-3">
+                        <li class="nav-item">
+                            <NavLink href="/business" class="nav-link">
+                                İşletmeler İçin
+                            </NavLink>
+                        </li>
+                        @if (UserSalonId.HasValue)
+                        {
+                            <li class="nav-item">
+                                <NavLink href="@($"/employee-timeline/{UserSalonId.Value}")" class="nav-link dashboard-nav-btn">
+                                    <i class="fas fa-sliders-h"></i> Yönetim Paneli
+                                </NavLink>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                
+                <div class="header-right">
                     <UserProfile />
+                    <div class="mobile-menu-toggle" @onclick="ToggleMobileMenu">
+                        <i class="fas fa-bars"></i>
+                    </div>
                 </div>
-                <div class="mobile-menu-toggle" @onclick="ToggleMobileMenu">
-                    <i class="fas fa-bars"></i>
-                </div>
-            </nav>
-        </div>
-    </header>
+            </div>
+        </header>
+    }
 
     <main class="main-container">
         @Body
@@ -67,15 +72,21 @@
 
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
     [Inject] private AuthenticationStateProvider AuthenticationStateProvider { get; set; } = default!;
-    [Inject] private ApplicationDbContext DbContext { get; set; } = default!;
+    [Inject] private IDbContextFactory<ApplicationDbContext> DbContextFactory { get; set; } = default!;
     [Inject] public IJSRuntime? JSRuntime { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        NavigationManager.LocationChanged += OnLocationChanged;
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         IsAuthenticated = authState.User.Identity?.IsAuthenticated ?? false;
         await CheckUserSalonAsync(authState.User);
         AuthenticationStateProvider.AuthenticationStateChanged += HandleAuthenticationStateChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
     }
 
     private async void HandleAuthenticationStateChanged(Task<AuthenticationState> task)
@@ -86,6 +97,19 @@
         await InvokeAsync(StateHasChanged);
     }
 
+    private bool ShouldHideNavbar()
+    {
+        var relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri).ToLower();
+        var queryIndex = relativePath.IndexOf('?');
+        if (queryIndex >= 0)
+        {
+            relativePath = relativePath.Substring(0, queryIndex);
+        }
+        return relativePath.StartsWith("salon/") || 
+               relativePath.StartsWith("booking/") || 
+               relativePath.StartsWith("booking-confirmation");
+    }
+
     private async Task CheckUserSalonAsync(ClaimsPrincipal user)
     {
         if (IsAuthenticated && user != null)
@@ -93,7 +117,8 @@
             var googleId = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
             if (!string.IsNullOrEmpty(googleId))
             {
-                var dbUser = await DbContext.Users
+                using var dbContext = await DbContextFactory.CreateDbContextAsync();
+                var dbUser = await dbContext.Users
                     .Include(u => u.Salons)
                     .FirstOrDefaultAsync(u => u.GoogleId == googleId);
                 if (dbUser != null && dbUser.Salons.Any())
@@ -117,5 +142,11 @@
         {
             await JSRuntime.InvokeVoidAsync("eval", "document.getElementById('blazor-error-ui').style.display = 'none';");
         }
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+        AuthenticationStateProvider.AuthenticationStateChanged -= HandleAuthenticationStateChanged;
     }
 }

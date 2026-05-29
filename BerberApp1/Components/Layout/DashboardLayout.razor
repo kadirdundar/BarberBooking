@@ -5,10 +5,18 @@
 @using BerberApp1.Components.Layout
 
 <div class="dashboard-layout">
+    @if (sidebarOpen)
+    {
+        <div class="sidebar-backdrop d-lg-none" @onclick="ToggleSidebar"></div>
+    }
+
     <aside class="sidebar @(sidebarOpen ? "open" : "")">
         <div class="sidebar-brand">
             <div class="logo-icon"><i class="fas fa-calendar-check"></i></div>
             <span class="brand-text">Bookify</span>
+            <button class="sidebar-close-btn d-lg-none" @onclick="ToggleSidebar">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
         
         <div class="business-info">
@@ -71,7 +79,7 @@
     private bool sidebarOpen = false;
     
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
-    [Inject] private ApplicationDbContext DbContext { get; set; } = default!;
+    [Inject] private IDbContextFactory<ApplicationDbContext> DbContextFactory { get; set; } = default!;
     
     private int SalonId { get; set; }
     private string SalonName { get; set; } = "Yükleniyor...";
@@ -81,7 +89,8 @@
         ParseSalonId();
         if (SalonId > 0)
         {
-            var salon = await DbContext.Salons.FindAsync(SalonId);
+            using var dbContext = await DbContextFactory.CreateDbContextAsync();
+            var salon = await dbContext.Salons.FindAsync(SalonId);
             if (salon != null)
             {
                 SalonName = salon.Name;

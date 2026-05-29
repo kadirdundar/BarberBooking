@@ -43,7 +43,8 @@ builder.Services.AddAuthentication(options =>
     options.Events.OnCreatingTicket = async context =>
     {
         var services = context.HttpContext.RequestServices;
-        var dbContext = services.GetRequiredService<ApplicationDbContext>();
+        var dbContextFactory = services.GetRequiredService<IDbContextFactory<ApplicationDbContext>>();
+        using var dbContext = await dbContextFactory.CreateDbContextAsync();
 
         var identifier = context.Principal.FindFirst(ClaimTypes.NameIdentifier).Value;
         var email = context.Principal.FindFirst(ClaimTypes.Email).Value;
@@ -64,16 +65,16 @@ builder.Services.AddAuthentication(options =>
             dbContext.Users.Add(user);
             await dbContext.SaveChangesAsync();
         }
-        else if (user.Salons.Any())
-        {
-            // If the user already exists and has a salon, redirect to the management page.
-            context.Properties.RedirectUri = $"/employee-timeline/{user.Salons.First().Id}";
-        }
+         else if (user.Salons.Any())
+         {
+             // If the user already exists and has a salon, redirect to the management page.
+             context.Properties.RedirectUri = $"/employee-timeline/{user.Salons.First().Id}";
+         }
     };
 });
 
 builder.Services.AddControllers();
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();

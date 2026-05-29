@@ -1,5 +1,6 @@
 @page "/register"
 @attribute [Microsoft.AspNetCore.Authorization.AllowAnonymous]
+@inject NavigationManager NavigationManager
 
 <div class="register-container">
     <div class="register-left">
@@ -19,7 +20,7 @@
         <div class="register-form">
             <h2>Hesap Oluşturun</h2>
             <p>Başlamak için sadece bir dakikanızı ayırın.</p>
-            <a href="api/auth/login?returnUrl=/registersalon" class="btn btn-google">
+            <a href="api/auth/login?returnUrl=@(string.IsNullOrEmpty(SalonName) ? "/registersalon" : $"/registersalon?name={Uri.EscapeDataString(SalonName)}")" class="btn btn-google">
                 <i class="fab fa-google"></i> Google ile Devam Et
             </a>
             <div class="login-prompt">
@@ -28,3 +29,9 @@
         </div>
     </div>
 </div>
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "salonName")]
+    public string? SalonName { get; set; }
+}

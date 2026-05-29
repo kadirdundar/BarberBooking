@@ -34,8 +34,8 @@
 }
 
 .scroll-btn {
-    background-color: #f0f0f0;
-    border: none;
+    background-color: var(--bg-surface);
+    border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 50%;
     width: 36px;
     height: 36px;
@@ -44,7 +44,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #333;
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+}
+
+.scroll-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--primary-gold);
+    border-color: rgba(212, 178, 93, 0.3);
 }
 
 .date-list {
@@ -71,18 +78,25 @@
 .date-item {
     flex: 0 0 70px;
     padding: 0.75rem 0.5rem;
-    border: 1px solid #e0e0e0;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    background-color: var(--bg-surface);
     border-radius: 12px;
     text-align: center;
     cursor: pointer;
     transition: all 0.3s ease;
-    color: #333;
+    color: var(--text-secondary);
+}
+
+.date-item:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+    color: var(--text-primary);
 }
 
 .date-item.selected {
-    background-color: #343a40;
+    background-color: var(--bg-surface);
     color: #fff;
-    border-color: #343a40;
+    border-color: var(--primary-gold);
+    box-shadow: 0 0 10px rgba(212, 178, 93, 0.15);
 }
 
 .day-name-short {
@@ -124,7 +138,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: #333;
+    color: var(--text-primary);
 }
 
 .legend-color-box {
@@ -136,7 +150,7 @@
 
 .timeline-wrapper-horizontal {
     display: flex;
-    border: 1px solid #dee2e6;
+    border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 8px;
     overflow: hidden;
 }
@@ -144,13 +158,13 @@
 .employee-list {
     flex-shrink: 0;
     width: 200px;
-    border-right: 1px solid #dee2e6;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .employee-info-header {
     height: 38px;
     /* Match hour label height */
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .employee-info-horizontal {
@@ -159,7 +173,7 @@
     padding: 1rem;
     height: 60px;
     /* Match track height */
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .employee-info-horizontal:last-child {
@@ -175,7 +189,7 @@
 
 .employee-info-horizontal span {
     font-weight: 600;
-    color: #333;
+    color: var(--text-primary);
 }
 
 .timeline-grid-container {
@@ -185,7 +199,7 @@
 
 .timeline-hours-horizontal {
     display: flex;
-    border-bottom: 1px solid #dee2e6;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     height: 38px;
 }
 
@@ -195,8 +209,8 @@
     padding: 0.5rem;
     text-align: center;
     font-size: 0.9rem;
-    color: #333;
-    border-right: 1px solid #e9ecef;
+    color: var(--text-secondary);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .timeline-tracks {
@@ -207,8 +221,8 @@
     position: relative;
     height: 60px;
     /* Match employee info height */
-    border-bottom: 1px solid #dee2e6;
-    background: repeating-linear-gradient(90deg, #f8f9fa, #f8f9fa 119px, #e9ecef 119px, #e9ecef 120px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    background: repeating-linear-gradient(90deg, var(--bg-card), var(--bg-card) 119px, rgba(255, 255, 255, 0.04) 119px, rgba(255, 255, 255, 0.04) 120px);
     cursor: pointer;
 }
 
@@ -397,10 +411,11 @@
 }
 
 .timeline-content-wrapper {
-    background-color: white;
+    background-color: var(--bg-card);
+    border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 12px;
     padding: 2rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-md);
     margin-top: 2rem;
 }
 
@@ -408,10 +423,24 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #fff;
+    background-color: var(--bg-card);
+    border: 1px solid rgba(255, 255, 255, 0.05);
     padding: 1rem 2rem;
     border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-md);
+}
+
+.employee-selector select.form-select {
+    background-color: var(--bg-surface);
+    color: var(--text-primary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.employee-selector select.form-select:focus {
+    border-color: var(--primary-gold);
+    box-shadow: 0 0 0 0.25rem rgba(212, 178, 93, 0.25);
+    background-color: var(--bg-surface);
+    color: #fff;
 }
 
 .control-group {

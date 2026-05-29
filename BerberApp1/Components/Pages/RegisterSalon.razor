@@ -77,9 +77,21 @@
 
 
 @code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "name")]
+    public string? UrlSalonName { get; set; }
+
     private Salon Salon { get; set; } = new Salon();
     private string statusMessage = string.Empty;
     private bool isSuccess;
+
+    protected override void OnInitialized()
+    {
+        if (!string.IsNullOrEmpty(UrlSalonName))
+        {
+            Salon.Name = UrlSalonName;
+        }
+    }
 
     private async Task HandleRegistration()
     {
@@ -110,7 +122,7 @@
                 isSuccess = true;
                 statusMessage = "İşletme başarıyla kaydedildi!";
                 
-                NavigationManager.NavigateTo($"/salon/{Salon.Id}");
+                NavigationManager.NavigateTo($"/salon-management/{Salon.Id}");
             }
             catch (Exception ex)
             {
