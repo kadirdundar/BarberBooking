@@ -241,6 +241,45 @@
                                         <label>Adres</label>
                                         <InputTextArea @bind-Value="salon.Address" class="form-control" rows="3" />
                                     </div>
+
+                                    <h4 class="mt-4 mb-3">Sosyal Medya Hesapları</h4>
+                                    <div class="row">
+                                        <div class="form-group col-md-6 mb-3">
+                                            <label><i class="fab fa-instagram text-danger me-1"></i> Instagram</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-dark border-secondary text-light">instagram.com/</span>
+                                                <InputText @bind-Value="salon.InstagramUrl" class="form-control" placeholder="kullanici_adi" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-md-6 mb-3">
+                                            <label><i class="fab fa-tiktok text-light me-1"></i> TikTok</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-dark border-secondary text-light">tiktok.com/@@</span>
+                                                <InputText @bind-Value="salon.TiktokUrl" class="form-control" placeholder="kullanici_adi" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-md-6 mb-3">
+                                            <label><i class="fab fa-twitter text-info me-1"></i> Twitter / X</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-dark border-secondary text-light">x.com/</span>
+                                                <InputText @bind-Value="salon.TwitterUrl" class="form-control" placeholder="kullanici_adi" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-md-6 mb-3">
+                                            <label><i class="fab fa-whatsapp text-success me-1"></i> WhatsApp</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-dark border-secondary text-light">wa.me/</span>
+                                                <InputText @bind-Value="salon.WhatsappNumber" class="form-control" placeholder="905XXXXXXXXX" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group mb-4">
+                                        <label><i class="fas fa-globe text-primary me-1"></i> Web Sitesi</label>
+                                        <InputText @bind-Value="salon.WebsiteUrl" class="form-control" placeholder="https://www.websiteniz.com" />
+                                    </div>
+
                                     <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Değişiklikleri Kaydet</button>
                                 </EditForm>
                             </div>
@@ -264,6 +303,28 @@
                                         <InputFile OnChange="@OnBannerFileSelected" class="form-control" accept="image/*" />
                                         <button type="submit" class="btn btn-primary" disabled="@(bannerUploadModel.File == null)">
                                             <i class="fas fa-upload"></i> Banner Yükle
+                                        </button>
+                                    </div>
+                                </EditForm>
+
+                                <hr class="divider my-4" />
+
+                                <h4>Arka Plan Görseli</h4>
+                                <p class="text-muted">Mobil Linktree sayfasının arka plan resmi.</p>
+                                
+                                @if (!string.IsNullOrEmpty(salon.BackgroundUrl))
+                                {
+                                    <div class="current-banner mb-3">
+                                        <img src="@salon.BackgroundUrl" alt="Arka Plan" style="width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);" />
+                                        <button class="btn btn-sm btn-outline-danger mt-2" @onclick="RemoveBackground"><i class="fas fa-trash"></i> Arka Planı Kaldır</button>
+                                    </div>
+                                }
+
+                                <EditForm Model="backgroundUploadModel" OnValidSubmit="HandleBackgroundUpload" class="upload-form">
+                                    <div class="input-group">
+                                        <InputFile OnChange="@OnBackgroundFileSelected" class="form-control" accept="image/*" />
+                                        <button type="submit" class="btn btn-primary" disabled="@(backgroundUploadModel.File == null)">
+                                            <i class="fas fa-upload"></i> Arka Plan Yükle
                                         </button>
                                     </div>
                                 </EditForm>
@@ -308,6 +369,7 @@
     private Employee newEmployee = new();
     private ImageUploadModel imageUploadModel = new();
     private ImageUploadModel bannerUploadModel = new();
+    private ImageUploadModel backgroundUploadModel = new();
     private List<WorkingHoursViewModel> workingHours = new();
     private string? statusMessage;
     private bool isSuccess;
@@ -509,11 +571,69 @@
         try
         {
             var s = await DbContext.Salons.FindAsync(salon.Id);
-            if(s != null) { s.Address = salon.Address; await DbContext.SaveChangesAsync(); await LoadSalon(); await ShowStatusMessage("Ayarlar kaydedildi.", true); }
+            if(s != null) 
+            { 
+                s.Address = salon.Address; 
+                s.InstagramUrl = salon.InstagramUrl;
+                s.TiktokUrl = salon.TiktokUrl;
+                s.TwitterUrl = salon.TwitterUrl;
+                s.WhatsappNumber = salon.WhatsappNumber;
+                s.WebsiteUrl = salon.WebsiteUrl;
+                await DbContext.SaveChangesAsync(); 
+                await LoadSalon(); 
+                await ShowStatusMessage("Ayarlar kaydedildi.", true); 
+            }
         }
         catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
     }
     
+    // Background Logic
+    private void OnBackgroundFileSelected(InputFileChangeEventArgs e) { backgroundUploadModel.File = e.File; }
+
+    private async Task HandleBackgroundUpload()
+    {
+        if (backgroundUploadModel.File is null || salon is null) return;
+        try
+        {
+            var fileName = $"bg_{salon.Id}_{Guid.NewGuid()}{Path.GetExtension(backgroundUploadModel.File.Name)}";
+            var path = Path.Combine(Environment.WebRootPath, "images", "salons", "backgrounds", fileName);
+            
+            var dir = Path.GetDirectoryName(path);
+            if (dir != null && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
+
+            await using var stream = new FileStream(path, FileMode.Create);
+            await backgroundUploadModel.File.OpenReadStream(20 * 1024 * 1024).CopyToAsync(stream); // 20MB limit
+            
+            var s = await DbContext.Salons.FindAsync(salon.Id);
+            if (s != null)
+            {
+                s.BackgroundUrl = $"/images/salons/backgrounds/{fileName}";
+                await DbContext.SaveChangesAsync();
+                await LoadSalon();
+                await ShowStatusMessage("Arka plan görseli yüklendi.", true);
+            }
+            backgroundUploadModel = new();
+        }
+        catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
+    }
+
+    private async Task RemoveBackground()
+    {
+        if (salon is null) return;
+        try
+        {
+            var s = await DbContext.Salons.FindAsync(salon.Id);
+            if (s != null)
+            {
+                s.BackgroundUrl = null;
+                await DbContext.SaveChangesAsync();
+                await LoadSalon();
+                await ShowStatusMessage("Arka plan görseli kaldırıldı.", true);
+            }
+        }
+        catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
+    }
+
     // Banner Logic
     private void OnBannerFileSelected(InputFileChangeEventArgs e) { bannerUploadModel.File = e.File; }
 

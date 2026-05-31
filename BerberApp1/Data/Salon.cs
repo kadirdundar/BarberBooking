@@ -14,6 +14,9 @@ namespace BerberApp1.Data
         [MaxLength(500)]
         public string? BannerUrl { get; set; }
 
+        [MaxLength(500)]
+        public string? BackgroundUrl { get; set; }
+
         [MaxLength(200)]
         public string Address { get; set; } = string.Empty;
 
@@ -27,6 +30,21 @@ namespace BerberApp1.Data
 
         [MaxLength(250)]
         public string Description { get; set; } = string.Empty;
+
+        [MaxLength(200)]
+        public string? InstagramUrl { get; set; }
+
+        [MaxLength(200)]
+        public string? TiktokUrl { get; set; }
+
+        [MaxLength(200)]
+        public string? TwitterUrl { get; set; }
+
+        [MaxLength(50)]
+        public string? WhatsappNumber { get; set; }
+
+        [MaxLength(200)]
+        public string? WebsiteUrl { get; set; }
 
         public int UserId { get; set; }
         public User? User { get; set; }

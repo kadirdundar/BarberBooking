@@ -119,6 +119,21 @@
                 DbContext.Salons.Add(Salon);
                 await DbContext.SaveChangesAsync();
 
+                // Add default working hours (9-5 for all days)
+                foreach (DayOfWeek day in Enum.GetValues(typeof(DayOfWeek)))
+                {
+                    var workingHour = new SalonWorkingHours
+                    {
+                        SalonId = Salon.Id,
+                        DayOfWeek = day,
+                        OpeningTime = new TimeOnly(9, 0),
+                        ClosingTime = new TimeOnly(17, 0),
+                        IsClosed = false
+                    };
+                    DbContext.SalonWorkingHours.Add(workingHour);
+                }
+                await DbContext.SaveChangesAsync();
+
                 isSuccess = true;
                 statusMessage = "İşletme başarıyla kaydedildi!";
                 

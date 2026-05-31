@@ -177,7 +177,7 @@ else
         </div>
 
         <!-- Mobile View (Linktree-style) -->
-        <div class="mobile-view d-block d-md-none">
+        <div class="mobile-view d-flex flex-column d-md-none" style="@GetMobileBackgroundStyle()">
             <!-- Grid Background Pattern -->
             <div class="grid-background"></div>
             
@@ -186,13 +186,13 @@ else
                 <div class="avatar-container">
                     <div class="avatar-glow"></div>
                     <div class="salon-avatar">
-                        @if (!string.IsNullOrEmpty(salon.BannerUrl))
-                        {
-                            <img src="@salon.BannerUrl" alt="@salon.Name" class="avatar-img" />
-                        }
-                        else if (salon.Images != null && salon.Images.Any())
+                        @if (salon.Images != null && salon.Images.Any())
                         {
                             <img src="@salon.Images.First().ImageUrl" alt="@salon.Name" class="avatar-img" />
+                        }
+                        else if (!string.IsNullOrEmpty(salon.BannerUrl))
+                        {
+                            <img src="@salon.BannerUrl" alt="@salon.Name" class="avatar-img" />
                         }
                         else
                         {
@@ -236,15 +236,51 @@ else
 
                 <!-- Social Footer Links -->
                 <div class="social-footer">
-                    <a href="https://instagram.com" target="_blank" class="social-icon">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                    <a href="https://facebook.com" target="_blank" class="social-icon">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                    <a href="https://wa.me/@GetCleanPhoneNumber(salon.PhoneNumber)" target="_blank" class="social-icon">
-                        <i class="fab fa-whatsapp"></i>
-                    </a>
+                    @if (!string.IsNullOrEmpty(salon.InstagramUrl))
+                    {
+                        var link = salon.InstagramUrl.StartsWith("http") ? salon.InstagramUrl : $"https://instagram.com/{salon.InstagramUrl.TrimStart('@')}";
+                        <a href="@link" target="_blank" class="social-icon" title="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    }
+                    @if (!string.IsNullOrEmpty(salon.TiktokUrl))
+                    {
+                        var link = salon.TiktokUrl.StartsWith("http") ? salon.TiktokUrl : $"https://tiktok.com/@{salon.TiktokUrl.TrimStart('@')}";
+                        <a href="@link" target="_blank" class="social-icon" title="TikTok">
+                            <i class="fab fa-tiktok"></i>
+                        </a>
+                    }
+                    @if (!string.IsNullOrEmpty(salon.TwitterUrl))
+                    {
+                        var link = salon.TwitterUrl.StartsWith("http") ? salon.TwitterUrl : $"https://x.com/{salon.TwitterUrl.TrimStart('@')}";
+                        <a href="@link" target="_blank" class="social-icon" title="Twitter / X">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                    }
+                    @if (!string.IsNullOrEmpty(salon.WhatsappNumber))
+                    {
+                        var rawNumber = salon.WhatsappNumber;
+                        var cleanNumber = new string(rawNumber.Where(char.IsDigit).ToArray());
+                        if (cleanNumber.StartsWith("0"))
+                        {
+                            cleanNumber = "9" + cleanNumber;
+                        }
+                        else if (cleanNumber.Length == 10 && cleanNumber.StartsWith("5"))
+                        {
+                            cleanNumber = "90" + cleanNumber;
+                        }
+                        var link = $"https://wa.me/{cleanNumber}";
+                        <a href="@link" target="_blank" class="social-icon" title="WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                    }
+                    @if (!string.IsNullOrEmpty(salon.WebsiteUrl))
+                    {
+                        var link = salon.WebsiteUrl.StartsWith("http") ? salon.WebsiteUrl : $"https://{salon.WebsiteUrl}";
+                        <a href="@link" target="_blank" class="social-icon" title="Web Sitesi">
+                            <i class="fas fa-globe"></i>
+                        </a>
+                    }
                 </div>
             </div>
             
@@ -476,5 +512,18 @@ else
             clean = "90" + clean;
         }
         return clean;
+    }
+
+    private string GetMobileBackgroundStyle()
+    {
+        if (salon != null && !string.IsNullOrEmpty(salon.BackgroundUrl))
+        {
+            return $"background-image: linear-gradient(to bottom, rgba(15, 17, 21, 0.82), rgba(15, 17, 21, 0.94)), url('{salon.BackgroundUrl}'); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: scroll;";
+        }
+        if (salon != null && !string.IsNullOrEmpty(salon.BannerUrl))
+        {
+            return $"background-image: linear-gradient(to bottom, rgba(15, 17, 21, 0.82), rgba(15, 17, 21, 0.94)), url('{salon.BannerUrl}'); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: scroll;";
+        }
+        return "";
     }
 }
