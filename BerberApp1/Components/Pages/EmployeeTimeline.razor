@@ -18,7 +18,7 @@
     <div class="header-controls">
         <div class="control-group">
             <button class="btn btn-secondary" @onclick="GenerateAndShowQrCode">
-                <i class="fas fa-qrcode"></i> Karekod
+                <i class="fas fa-share-alt"></i> Paylaş
             </button>
             <button class="btn btn-primary" @onclick="NavigateToNewAppointment">
                 <i class="fas fa-plus"></i> Yeni Randevu
@@ -74,14 +74,66 @@
         <div class="qr-modal-overlay" @onclick="CloseQrModal">
             <div class="qr-modal-content" @onclick:stopPropagation="true">
                 <button class="close-btn" @onclick="CloseQrModal"><i class="fas fa-times"></i></button>
-                <h4>@CurrentSalon?.Name için Randevu Karekodu</h4>
-                <p>Müşterileriniz bu karekodu okutarak salonunuzdan randevu alabilir.</p>
-                <div class="qr-code-container">
-                    <img src="@qrCodeBase64" alt="Randevu Karekodu" />
+                <h4>@CurrentSalon?.Name Paylaşım Merkezi</h4>
+                <p>Müşterilerinizin online randevu alabilmesi için rezervasyon linkinizi paylaşın.</p>
+                
+                <div class="share-sections-container">
+                    <!-- Bağlantı Kopyalama -->
+                    <div class="share-section-block">
+                        <h5>Rezervasyon Linki</h5>
+                        <div class="copy-link-group">
+                            <input type="text" class="copy-link-input" value="@GetSalonBookingUrl()" readonly />
+                            <button class="btn btn-copy @(isCopied ? "copied" : "")" @onclick="CopyUrlToClipboard">
+                                @if (isCopied)
+                                {
+                                    <i class="fas fa-check"></i> <span>Kopyalandı</span>
+                                }
+                                else
+                                {
+                                    <i class="fas fa-copy"></i> <span>Kopyala</span>
+                                }
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Hızlı Paylaşım -->
+                    <div class="share-section-block">
+                        <h5>Sosyal Paylaşım</h5>
+                        <div class="quick-share-buttons">
+                            <button class="btn-share-action btn-whatsapp" @onclick="ShareViaWhatsapp">
+                                <i class="fab fa-whatsapp"></i> WhatsApp
+                            </button>
+                            <button class="btn-share-action btn-instagram" @onclick="ToggleInstagramInstructions">
+                                <i class="fab fa-instagram"></i> Instagram
+                            </button>
+                        </div>
+                        @if (showInstagramInstructions)
+                        {
+                            <div class="instagram-instructions fade-in">
+                                <p><strong>Instagram'da Paylaşın:</strong></p>
+                                <ol>
+                                    <li>Önce yukarıdaki <strong>"Linki Kopyala"</strong> butonu ile linki kopyalayın.</li>
+                                    <li>Instagram uygulamasını veya web sitesini açın.</li>
+                                    <li>Profilinizden <strong>Profili Düzenle > Bağlantı Ekle</strong> bölümüne yapıştırın ya da hikayenize <strong>"Bağlantı"</strong> çıkartması olarak ekleyin.</li>
+                                </ol>
+                                <a href="https://instagram.com" target="_blank" class="btn-go-ig">
+                                    <i class="fab fa-instagram"></i> Instagram'a Git
+                                </a>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Karekod (QR Code) -->
+                    <div class="share-section-block">
+                        <h5>Karekod (QR Code)</h5>
+                        <div class="qr-code-container">
+                            <img src="@qrCodeBase64" alt="Randevu Karekodu" />
+                        </div>
+                        <a href="@qrCodeBase64" download="@($"{CurrentSalon?.Name?.Replace(" ", "-").ToLower()}-randevu-karekodu.png")" class="btn btn-sm btn-outline-light w-100">
+                            <i class="fas fa-download"></i> Karekodu İndir
+                        </a>
+                    </div>
                 </div>
-                <a href="@qrCodeBase64" download="@($"{selectedEmployeeForQr?.Name}-randevu-karekodu.png")" class="btn btn-primary">
-                    <i class="fas fa-download"></i> Karekodu İndir
-                </a>
             </div>
         </div>
     }
@@ -194,6 +246,8 @@
     private string qrCodeBase64 = "";
     private bool isQrModalVisible = false;
     private Employee? selectedEmployeeForQr;
+    private bool isCopied = false;
+    private bool showInstagramInstructions = false;
 
     private List<Employee> employees = new();
     private List<Appointment> appointments = new();
@@ -292,9 +346,8 @@
 
     private void GenerateAndShowQrCode()
     {
-        var uri = new Uri(Navigation.BaseUri);
-        var salonBookingUrl = $"{uri.Scheme}://{uri.Authority}/salon/{SalonId}";
-
+        var salonBookingUrl = GetSalonBookingUrl();
+ 
         using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
         {
             QRCodeData qrCodeData = qrGenerator.CreateQrCode(salonBookingUrl, QRCodeGenerator.ECCLevel.Q);
@@ -312,12 +365,56 @@
         isQrModalVisible = false;
         qrCodeBase64 = "";
         selectedEmployeeForQr = null;
+        isCopied = false;
+        showInstagramInstructions = false;
+    }
+
+    private string GetSalonBookingUrl()
+    {
+        var uri = new Uri(Navigation.BaseUri);
+        return string.IsNullOrEmpty(CurrentSalon?.NickName)
+            ? $"{uri.Scheme}://{uri.Authority}/salon/{SalonId}"
+            : $"{uri.Scheme}://{uri.Authority}/{CurrentSalon.NickName}";
+    }
+
+    private async Task CopyUrlToClipboard()
+    {
+        var url = GetSalonBookingUrl();
+        var success = await JSRuntime.InvokeAsync<bool>("bookingInterop.copyToClipboard", url);
+        if (success)
+        {
+            isCopied = true;
+            StateHasChanged();
+            await Task.Delay(2000);
+            isCopied = false;
+            StateHasChanged();
+        }
+    }
+
+    private void ShareViaWhatsapp()
+    {
+        var url = GetSalonBookingUrl();
+        var text = $"Merhaba! {CurrentSalon?.Name} salonumuzdan hızlıca randevu almak için bu bağlantıyı kullanabilirsiniz: {url}";
+        var shareUrl = $"https://api.whatsapp.com/send?text={Uri.EscapeDataString(text)}";
+        Navigation.NavigateTo(shareUrl, forceLoad: true);
+    }
+
+    private void ToggleInstagramInstructions()
+    {
+        showInstagramInstructions = !showInstagramInstructions;
     }
 
     private void NavigateToNewAppointment()
     {
         // Always navigate to the main booking page for the salon, letting the user choose the employee.
-        Navigation.NavigateTo($"/salon/{SalonId}");
+        if (CurrentSalon != null && !string.IsNullOrEmpty(CurrentSalon.NickName))
+        {
+            Navigation.NavigateTo($"/{CurrentSalon.NickName}");
+        }
+        else
+        {
+            Navigation.NavigateTo($"/salon/{SalonId}");
+        }
     }
 
 

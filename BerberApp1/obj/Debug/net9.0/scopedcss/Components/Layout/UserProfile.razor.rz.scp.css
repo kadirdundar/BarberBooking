@@ -1,6 +1,7 @@
 .auth-buttons[b-8j172auywp] {
     display: flex;
     gap: 10px;
+    flex-shrink: 0;
 }
 
 .auth-buttons .btn[b-8j172auywp] {
@@ -10,6 +11,17 @@
     border-radius: 30px !important;
     text-transform: none !important;
     letter-spacing: normal !important;
+    white-space: nowrap;
+}
+
+@media (max-width: 576px) {
+    .auth-buttons[b-8j172auywp] {
+        gap: 6px;
+    }
+    .auth-buttons .btn[b-8j172auywp] {
+        padding: 0.4rem 0.8rem !important;
+        font-size: 0.75rem !important;
+    }
 }
 
 .auth-buttons .btn-secondary[b-8j172auywp] {

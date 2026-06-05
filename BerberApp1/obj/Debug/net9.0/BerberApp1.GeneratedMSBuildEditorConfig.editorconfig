@@ -36,10 +36,6 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9FcnJvci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/kadir/Desktop/projeler/BarberBooking/BerberApp1/Components/Pages/RegisterSalon.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9SZWdpc3RlclNhbG9uLnJhem9y
-build_metadata.AdditionalFiles.CssScope = 
-
 [/Users/kadir/Desktop/projeler/BarberBooking/BerberApp1/Components/RedirectToLogin.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9SZWRpcmVjdFRvTG9naW4ucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
@@ -103,6 +99,10 @@ build_metadata.AdditionalFiles.CssScope = b-qsnywhg0qk
 [/Users/kadir/Desktop/projeler/BarberBooking/BerberApp1/Components/Pages/Register.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9SZWdpc3Rlci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-ngrxjkomnp
+
+[/Users/kadir/Desktop/projeler/BarberBooking/BerberApp1/Components/Pages/RegisterSalon.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9SZWdpc3RlclNhbG9uLnJhem9y
+build_metadata.AdditionalFiles.CssScope = b-vvolpwemx5
 
 [/Users/kadir/Desktop/projeler/BarberBooking/BerberApp1/Components/Pages/Reports.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9SZXBvcnRzLnJhem9y

@@ -57,6 +57,10 @@ namespace BerberApp1.Data
                 .WithMany(u => u.Salons)
                 .HasForeignKey(s => s.UserId);
 
+            modelBuilder.Entity<Salon>()
+                .HasIndex(s => s.NickName)
+                .IsUnique();
+
             modelBuilder.Entity<Employee>()
                 .HasOne(e => e.Salon)
                 .WithMany(s => s.Employees)

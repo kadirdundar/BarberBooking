@@ -11,11 +11,19 @@ namespace BerberApp1.Data
         [MaxLength(100)]
         public string Name { get; set; } = string.Empty;
 
+        [Required]
+        [MaxLength(50)]
+        [RegularExpression(@"^[a-zA-Z0-9-_]+$", ErrorMessage = "Kullanıcı adı sadece harf, rakam, tire (-) ve alt çizgi (_) içerebilir.")]
+        public string NickName { get; set; } = string.Empty;
+
         [MaxLength(500)]
         public string? BannerUrl { get; set; }
 
         [MaxLength(500)]
         public string? BackgroundUrl { get; set; }
+
+        [MaxLength(500)]
+        public string? LogoUrl { get; set; }
 
         [MaxLength(200)]
         public string Address { get; set; } = string.Empty;

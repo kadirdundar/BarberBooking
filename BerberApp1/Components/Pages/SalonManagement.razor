@@ -5,6 +5,7 @@
 @inject ApplicationDbContext DbContext
 @inject ILogger<SalonManagement> Logger
 @inject IWebHostEnvironment Environment
+@inject IJSRuntime JSRuntime
 
 <div class="salon-management-container fade-in">
     @if (salon == null)
@@ -284,10 +285,27 @@
                                 </EditForm>
                             </div>
                             
-                            <hr class="divider" />
-
+                            <hr class="divider my-5" style="border-top: 1px solid rgba(255,255,255,0.15);" />
+                            
                             <div class="gallery-upload-section">
-                                <h4 class="mt-4">Banner Görseli</h4>
+                                <h4>Profil Fotoğrafı</h4>
+                                <p class="text-muted">İşletmenizin profil resmi (Örn: Logo veya Erkek Berber görseli).</p>
+                                
+                                @if (!string.IsNullOrEmpty(salon.LogoUrl))
+                                {
+                                    <div class="current-logo mb-3 d-flex align-items-center gap-3">
+                                        <img src="@salon.LogoUrl" alt="Logo" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%; border: 2px solid var(--primary-gold);" />
+                                        <button class="btn btn-sm btn-outline-danger" @onclick="RemoveLogo"><i class="fas fa-trash"></i> Profil Fotoğrafını Kaldır</button>
+                                    </div>
+                                }
+
+                                <div class="mb-4">
+                                    <InputFile OnChange="@OnLogoFileSelected" class="form-control" accept="image/*" />
+                                </div>
+
+                                <hr class="divider my-4" />
+
+                                <h4>Banner Görseli</h4>
                                 <p class="text-muted">İşletme kapak fotoğrafı.</p>
                                 
                                 @if (!string.IsNullOrEmpty(salon.BannerUrl))
@@ -298,14 +316,9 @@
                                     </div>
                                 }
 
-                                <EditForm Model="bannerUploadModel" OnValidSubmit="HandleBannerUpload" class="upload-form">
-                                    <div class="input-group">
-                                        <InputFile OnChange="@OnBannerFileSelected" class="form-control" accept="image/*" />
-                                        <button type="submit" class="btn btn-primary" disabled="@(bannerUploadModel.File == null)">
-                                            <i class="fas fa-upload"></i> Banner Yükle
-                                        </button>
-                                    </div>
-                                </EditForm>
+                                <div class="mb-4">
+                                    <InputFile OnChange="@OnBannerFileSelected" class="form-control" accept="image/*" />
+                                </div>
 
                                 <hr class="divider my-4" />
 
@@ -320,28 +333,17 @@
                                     </div>
                                 }
 
-                                <EditForm Model="backgroundUploadModel" OnValidSubmit="HandleBackgroundUpload" class="upload-form">
-                                    <div class="input-group">
-                                        <InputFile OnChange="@OnBackgroundFileSelected" class="form-control" accept="image/*" />
-                                        <button type="submit" class="btn btn-primary" disabled="@(backgroundUploadModel.File == null)">
-                                            <i class="fas fa-upload"></i> Arka Plan Yükle
-                                        </button>
-                                    </div>
-                                </EditForm>
+                                <div class="mb-4">
+                                    <InputFile OnChange="@OnBackgroundFileSelected" class="form-control" accept="image/*" />
+                                </div>
 
                                 <hr class="divider my-4" />
 
                                 <h4>Galeri Yönetimi</h4>
-                                <EditForm Model="imageUploadModel" OnValidSubmit="HandleImageUpload" class="upload-form">
-                                    <div class="input-group">
-                                        <InputFile OnChange="@OnImageFileSelected" class="form-control" accept="image/*" />
-                                        <button type="submit" class="btn btn-success" disabled="@(imageUploadModel.File == null)">
-                                            <i class="fas fa-cloud-upload-alt"></i> Galeriye Ekle
-                                        </button>
-                                    </div>
-                                </EditForm>
+                                <div class="mb-4">
+                                    <InputFile OnChange="@OnImageFileSelected" class="form-control" accept="image/*" />
+                                </div>
                                 
-                                <!-- ... gallery list ... -->
                                 <div class="gallery-grid mt-3">
                                     @foreach (var image in salon.Images)
                                     {
@@ -359,6 +361,56 @@
                 }
             </div>
         </div>
+
+        @if (isCropModalVisible)
+        {
+            <div class="crop-modal-overlay">
+                <div class="crop-modal-content" @onclick:stopPropagation="true">
+                    <h4>Görseli Ayarla</h4>
+                    <p>Görselin görünmesini istediğiniz alanını seçin ve ayarlayın.</p>
+                    
+                    <div class="crop-container" style="position: relative;">
+                        <img id="cropper-target-image" src="@cropImageSourceUrl" alt="Kırpılacak Görsel" style="max-width: 100%; max-height: 350px; display: block;" />
+                        
+                        @if (isCroppingInProgress)
+                        {
+                            <div class="crop-loading-overlay">
+                                <div class="spinner-border text-gold" role="status"></div>
+                                <p class="mt-2 text-white font-weight-bold" style="font-size: 0.9rem;">Görsel Kırpılıyor...</p>
+                            </div>
+                        }
+                    </div>
+                    
+                    <div class="crop-actions">
+                        @if (isCroppingInProgress)
+                        {
+                            <button type="button" class="btn btn-primary" disabled>
+                                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                İşleniyor...
+                            </button>
+                        }
+                        else
+                        {
+                            <button type="button" class="btn btn-secondary" @onclick="CancelCrop">İptal</button>
+                            <button type="button" class="btn btn-primary" @onclick="ConfirmCrop">Kırp ve Kaydet</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (isProcessing)
+        {
+            <div class="global-loading-overlay">
+                <div class="loading-card">
+                    <div class="spinner-container">
+                        <div class="luxury-spinner"></div>
+                    </div>
+                    <h5>@processingMessage</h5>
+                    <p>Lütfen bu işlem tamamlanana kadar bekleyin.</p>
+                </div>
+            </div>
+        }
     }
 </div>
 
@@ -367,15 +419,22 @@
     private Salon? salon;
     private Service newService = new();
     private Employee newEmployee = new();
-    private ImageUploadModel imageUploadModel = new();
-    private ImageUploadModel bannerUploadModel = new();
-    private ImageUploadModel backgroundUploadModel = new();
     private List<WorkingHoursViewModel> workingHours = new();
     private string? statusMessage;
     private bool isSuccess;
     private string activeTab = "services";
 
-    // ... [Previous methods for LoadSalon, SetActiveTab etc remain same] ...
+    // Global Processing State
+    private bool isProcessing = false;
+    private string processingMessage = "İşlem yapılıyor...";
+
+    // Crop Modal States
+    private bool isCropModalVisible = false;
+    private string cropImageSourceUrl = "";
+    private double? cropAspectRatio = 1.0;
+    private string cropTarget = "employee"; // "employee", "logo", "banner", "background", "gallery"
+    private bool isCropInitializing = false;
+    private bool isCroppingInProgress = false;
 
     private void SetActiveTab(string tab)
     {
@@ -389,6 +448,15 @@
         if (salon != null)
         {
             InitializeWorkingHours();
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (isCropInitializing && isCropModalVisible)
+        {
+            isCropInitializing = false;
+            await JSRuntime.InvokeVoidAsync("bookingInterop.initCropper", "cropper-target-image", cropAspectRatio);
         }
     }
     
@@ -490,30 +558,29 @@
         catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
     }
 
-    // New method for Employee Image Selection
     private async Task OnEmployeeImageSelected(InputFileChangeEventArgs e)
     {
-        try
-        {
-            var file = e.File;
-            if (file != null)
-            {
-                var fileName = $"employee_{Guid.NewGuid()}{Path.GetExtension(file.Name)}";
-                var path = Path.Combine(Environment.WebRootPath, "images", "employees", fileName);
-                
-                var dir = Path.GetDirectoryName(path);
-                if (dir != null && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
+        await OpenCropModal(e.File, "employee", 1.0); // 1:1 aspect ratio for employee photo
+    }
 
-                await using var stream = new FileStream(path, FileMode.Create);
-                await file.OpenReadStream(5 * 1024 * 1024).CopyToAsync(stream); // 5MB limit
+    private async Task OnBackgroundFileSelected(InputFileChangeEventArgs e)
+    {
+        await OpenCropModal(e.File, "background", 0.5625); // 9:16 vertical ratio for mobile wallpaper style background
+    }
 
-                newEmployee.PictureUrl = $"/images/employees/{fileName}";
-            }
-        }
-        catch (Exception ex)
-        {
-             await ShowStatusMessage($"Resim yüklenirken hata: {ex.Message}", false);
-        }
+    private async Task OnLogoFileSelected(InputFileChangeEventArgs e)
+    {
+        await OpenCropModal(e.File, "logo", 1.0); // 1:1 aspect ratio for profile picture / logo
+    }
+
+    private async Task OnBannerFileSelected(InputFileChangeEventArgs e)
+    {
+        await OpenCropModal(e.File, "banner", 3.0); // 3:1 landscape ratio for banner
+    }
+
+    private async Task OnImageFileSelected(InputFileChangeEventArgs e)
+    {
+        await OpenCropModal(e.File, "gallery", null); // Free aspect ratio for gallery photos
     }
 
     private async Task AddEmployee()
@@ -586,33 +653,20 @@
         }
         catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
     }
-    
-    // Background Logic
-    private void OnBackgroundFileSelected(InputFileChangeEventArgs e) { backgroundUploadModel.File = e.File; }
 
-    private async Task HandleBackgroundUpload()
+    private async Task RemoveLogo()
     {
-        if (backgroundUploadModel.File is null || salon is null) return;
+        if (salon is null) return;
         try
         {
-            var fileName = $"bg_{salon.Id}_{Guid.NewGuid()}{Path.GetExtension(backgroundUploadModel.File.Name)}";
-            var path = Path.Combine(Environment.WebRootPath, "images", "salons", "backgrounds", fileName);
-            
-            var dir = Path.GetDirectoryName(path);
-            if (dir != null && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
-
-            await using var stream = new FileStream(path, FileMode.Create);
-            await backgroundUploadModel.File.OpenReadStream(20 * 1024 * 1024).CopyToAsync(stream); // 20MB limit
-            
             var s = await DbContext.Salons.FindAsync(salon.Id);
             if (s != null)
             {
-                s.BackgroundUrl = $"/images/salons/backgrounds/{fileName}";
+                s.LogoUrl = null;
                 await DbContext.SaveChangesAsync();
                 await LoadSalon();
-                await ShowStatusMessage("Arka plan görseli yüklendi.", true);
+                await ShowStatusMessage("Profil fotoğrafı kaldırıldı.", true);
             }
-            backgroundUploadModel = new();
         }
         catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
     }
@@ -634,41 +688,6 @@
         catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
     }
 
-    // Banner Logic
-    private void OnBannerFileSelected(InputFileChangeEventArgs e) { bannerUploadModel.File = e.File; }
-
-    private async Task HandleBannerUpload()
-    {
-        if (bannerUploadModel.File is null || salon is null) return;
-        try
-        {
-            var fileName = $"banner_{salon.Id}_{Guid.NewGuid()}{Path.GetExtension(bannerUploadModel.File.Name)}";
-            var path = Path.Combine(Environment.WebRootPath, "images", "salons", fileName); // Root of salons or banners subdir? Let's use root for simplicity or banners
-            // Using salons/banners/ for clean org
-            path = Path.Combine(Environment.WebRootPath, "images", "salons", "banners", fileName);
-            
-            var dir = Path.GetDirectoryName(path);
-            if (dir != null && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
-
-            await using var stream = new FileStream(path, FileMode.Create);
-            await bannerUploadModel.File.OpenReadStream(20 * 1024 * 1024).CopyToAsync(stream); // 20MB limit
-            
-            // Delete old banner (Optional, but good practice)
-            // For now, skip delete logic to avoid deleting shared files if any (unlikely with Guid)
-
-            var s = await DbContext.Salons.FindAsync(salon.Id);
-            if (s != null)
-            {
-                s.BannerUrl = $"/images/salons/banners/{fileName}";
-                await DbContext.SaveChangesAsync();
-                await LoadSalon();
-                await ShowStatusMessage("Banner yüklendi.", true);
-            }
-            bannerUploadModel = new();
-        }
-        catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
-    }
-
     private async Task RemoveBanner()
     {
         if (salon is null) return;
@@ -686,38 +705,203 @@
         catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
     }
 
-    // Gallery Logic
-    private void OnImageFileSelected(InputFileChangeEventArgs e) { imageUploadModel.File = e.File; }
-
-    private async Task HandleImageUpload()
+    private async Task DeleteSalonImage(int imageId)
     {
-        if (imageUploadModel.File is null || salon is null) return;
-        try
-        {
-            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(imageUploadModel.File.Name)}";
-            var path = Path.Combine(Environment.WebRootPath, "images", "salons", fileName);
-            
-            var dir = Path.GetDirectoryName(path);
-            if (dir != null && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
-
-            await using var stream = new FileStream(path, FileMode.Create);
-            await imageUploadModel.File.OpenReadStream(imageUploadModel.File.Size).CopyToAsync(stream);
-            
-            var newImage = new SalonImage { SalonId = salon.Id, ImageUrl = $"/images/salons/{fileName}" };
-            DbContext.SalonImages.Add(newImage);
-            await DbContext.SaveChangesAsync();
-            await LoadSalon();
-            await ShowStatusMessage("Fotoğraf yüklendi.", true);
-            imageUploadModel = new();
+        try 
+        { 
+            var img = await DbContext.SalonImages.FindAsync(imageId); 
+            if(img != null)
+            { 
+                DbContext.SalonImages.Remove(img); 
+                await DbContext.SaveChangesAsync(); 
+                await LoadSalon(); 
+                await ShowStatusMessage("Resim silindi.", true); 
+            } 
         }
         catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
     }
 
-    private async Task DeleteSalonImage(int imageId)
+    // Generic Crop helpers
+    private async Task OpenCropModal(IBrowserFile file, string target, double? aspectRatio)
     {
-        try { var img = await DbContext.SalonImages.FindAsync(imageId); if(img!=null){ DbContext.SalonImages.Remove(img); await DbContext.SaveChangesAsync(); await LoadSalon(); await ShowStatusMessage("Resim silindi.", true); } }
-        catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
+        if (file == null) return;
+        if (file.Size > 1 * 1024 * 1024)
+        {
+            await ShowStatusMessage("Hata: Yüklemek istediğiniz görsel en fazla 1 MB olmalıdır.", false);
+            return;
+        }
+
+        isProcessing = true;
+        processingMessage = "Görsel yükleniyor ve hazırlanıyor...";
+        StateHasChanged();
+
+        cropTarget = target;
+        cropAspectRatio = aspectRatio;
+
+        try
+        {
+            var buffer = new byte[file.Size];
+            using (var stream = file.OpenReadStream(1 * 1024 * 1024))
+            {
+                await stream.ReadExactlyAsync(buffer);
+            }
+            var base64 = Convert.ToBase64String(buffer);
+            var extension = Path.GetExtension(file.Name).Replace(".", "").ToLower();
+            if (extension == "jpg" || extension == "jpeg") extension = "jpeg";
+            else if (extension != "png" && extension != "gif" && extension != "webp") extension = "png"; // fallback
+            
+            cropImageSourceUrl = $"data:image/{extension};base64,{base64}";
+            isCropModalVisible = true;
+            isCropInitializing = true;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            await ShowStatusMessage($"Görsel okunurken hata oluştu: {ex.Message}", false);
+        }
+        finally
+        {
+            isProcessing = false;
+            StateHasChanged();
+        }
     }
 
-    public class ImageUploadModel { public IBrowserFile? File { get; set; } }
+    private async Task ConfirmCrop()
+    {
+        isCroppingInProgress = true;
+        isProcessing = true;
+        processingMessage = "Görsel işleniyor ve kaydediliyor...";
+        StateHasChanged();
+        try
+        {
+            int targetWidth = 400;
+            int targetHeight = 400;
+            if (cropTarget == "banner")
+            {
+                targetWidth = 1200;
+                targetHeight = 400;
+            }
+            else if (cropTarget == "background")
+            {
+                targetWidth = 1080;
+                targetHeight = 1920;
+            }
+            else if (cropTarget == "gallery")
+            {
+                targetWidth = 800;
+                targetHeight = 600;
+            }
+
+            var croppedDataUrl = await JSRuntime.InvokeAsync<string>("bookingInterop.getCroppedImage", targetWidth, targetHeight);
+            if (string.IsNullOrEmpty(croppedDataUrl))
+            {
+                await ShowStatusMessage("Görsel kırpılırken bir hata oluştu.", false);
+                return;
+            }
+
+            var base64Data = croppedDataUrl.Substring(croppedDataUrl.IndexOf(",") + 1);
+            var imageBytes = Convert.FromBase64String(base64Data);
+
+            var fileName = $"{cropTarget}_{Guid.NewGuid()}.jpg";
+            string relativePath = "";
+            string fullPath = "";
+
+            if (cropTarget == "employee")
+            {
+                relativePath = $"/images/employees/{fileName}";
+                fullPath = Path.Combine(Environment.WebRootPath, "images", "employees", fileName);
+            }
+            else if (cropTarget == "logo")
+            {
+                relativePath = $"/images/salons/logos/{fileName}";
+                fullPath = Path.Combine(Environment.WebRootPath, "images", "salons", "logos", fileName);
+            }
+            else if (cropTarget == "banner")
+            {
+                relativePath = $"/images/salons/banners/{fileName}";
+                fullPath = Path.Combine(Environment.WebRootPath, "images", "salons", "banners", fileName);
+            }
+            else if (cropTarget == "background")
+            {
+                relativePath = $"/images/salons/backgrounds/{fileName}";
+                fullPath = Path.Combine(Environment.WebRootPath, "images", "salons", "backgrounds", fileName);
+            }
+            else if (cropTarget == "gallery")
+            {
+                relativePath = $"/images/salons/{fileName}";
+                fullPath = Path.Combine(Environment.WebRootPath, "images", "salons", fileName);
+            }
+
+            var dir = Path.GetDirectoryName(fullPath);
+            if (dir != null && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
+
+            await File.WriteAllBytesAsync(fullPath, imageBytes);
+
+            if (cropTarget == "employee")
+            {
+                newEmployee.PictureUrl = relativePath;
+                await ShowStatusMessage("Uzman fotoğrafı başarıyla kırpıldı.", true);
+            }
+            else if (cropTarget == "logo" && salon != null)
+            {
+                var s = await DbContext.Salons.FindAsync(salon.Id);
+                if (s != null)
+                {
+                    s.LogoUrl = relativePath;
+                    await DbContext.SaveChangesAsync();
+                    await LoadSalon();
+                    await ShowStatusMessage("Profil fotoğrafı güncellendi.", true);
+                }
+            }
+            else if (cropTarget == "banner" && salon != null)
+            {
+                var s = await DbContext.Salons.FindAsync(salon.Id);
+                if (s != null)
+                {
+                    s.BannerUrl = relativePath;
+                    await DbContext.SaveChangesAsync();
+                    await LoadSalon();
+                    await ShowStatusMessage("Kapak fotoğrafı güncellendi.", true);
+                }
+            }
+            else if (cropTarget == "background" && salon != null)
+            {
+                var s = await DbContext.Salons.FindAsync(salon.Id);
+                if (s != null)
+                {
+                    s.BackgroundUrl = relativePath;
+                    await DbContext.SaveChangesAsync();
+                    await LoadSalon();
+                    await ShowStatusMessage("Arka plan görseli güncellendi.", true);
+                }
+            }
+            else if (cropTarget == "gallery" && salon != null)
+            {
+                var newImage = new SalonImage { SalonId = salon.Id, ImageUrl = relativePath };
+                DbContext.SalonImages.Add(newImage);
+                await DbContext.SaveChangesAsync();
+                await LoadSalon();
+                await ShowStatusMessage("Görsel galeriye eklendi.", true);
+            }
+        }
+        catch (Exception ex)
+        {
+            await ShowStatusMessage($"Kırpma işlemi başarısız oldu: {ex.Message}", false);
+        }
+        finally
+        {
+            isProcessing = false;
+            await CancelCrop();
+        }
+    }
+
+    private async Task CancelCrop()
+    {
+        isCropModalVisible = false;
+        cropImageSourceUrl = "";
+        isCropInitializing = false;
+        isCroppingInProgress = false;
+        isProcessing = false;
+        await JSRuntime.InvokeVoidAsync("bookingInterop.destroyCropper");
+    }
 }

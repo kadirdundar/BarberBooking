@@ -42,7 +42,7 @@
             
             <div class="sidebar-divider"></div>
 
-            <NavLink href="@($"/salon/{SalonId}")" class="sidebar-link text-gold-nav">
+            <NavLink href="@(string.IsNullOrEmpty(SalonNickName) ? $"/salon/{SalonId}" : $"/{SalonNickName}")" class="sidebar-link text-gold-nav">
                 <i class="fas fa-eye"></i>
                 <span>Müşteri Gözüyle</span>
             </NavLink>
@@ -83,6 +83,7 @@
     
     private int SalonId { get; set; }
     private string SalonName { get; set; } = "Yükleniyor...";
+    private string? SalonNickName { get; set; }
     
     protected override async Task OnParametersSetAsync()
     {
@@ -94,6 +95,7 @@
             if (salon != null)
             {
                 SalonName = salon.Name;
+                SalonNickName = salon.NickName;
             }
         }
     }

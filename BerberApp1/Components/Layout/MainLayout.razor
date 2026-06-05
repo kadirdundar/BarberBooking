@@ -48,7 +48,7 @@
         </header>
     }
 
-    <main class="main-container">
+    <main class="main-container @(IsFullWidthPage() ? "no-padding" : "")">
         @Body
     </main>
 
@@ -106,6 +106,21 @@
             relativePath = relativePath.Substring(0, queryIndex);
         }
         return relativePath.StartsWith("salon/") || 
+               relativePath.StartsWith("booking/") || 
+               relativePath.StartsWith("booking-confirmation");
+    }
+
+    private bool IsFullWidthPage()
+    {
+        var relativePath = NavigationManager.ToBaseRelativePath(NavigationManager.Uri).ToLower();
+        var queryIndex = relativePath.IndexOf('?');
+        if (queryIndex >= 0)
+        {
+            relativePath = relativePath.Substring(0, queryIndex);
+        }
+        return string.IsNullOrEmpty(relativePath) || 
+               relativePath == "business" || 
+               relativePath.StartsWith("salon/") || 
                relativePath.StartsWith("booking/") || 
                relativePath.StartsWith("booking-confirmation");
     }

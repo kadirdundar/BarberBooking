@@ -317,8 +317,6 @@
 /Users/kadir/Desktop/projeler/BarberBooking/BerberApp1/obj/Debug/net9.0/scopedcss/Components/VerticalStepper.razor.rz.scp.css
 /Users/kadir/Desktop/projeler/BarberBooking/BerberApp1/obj/Debug/net9.0/scopedcss/bundle/BerberApp1.styles.css
 /Users/kadir/Desktop/projeler/BarberBooking/BerberApp1/obj/Debug/net9.0/scopedcss/projectbundle/BerberApp1.bundle.scp.css
-/Users/kadir/Desktop/projeler/BarberBooking/BerberApp1/obj/Debug/net9.0/compressed/mqc9x62763-u87tfbxayk.gz
-/Users/kadir/Desktop/projeler/BarberBooking/BerberApp1/obj/Debug/net9.0/compressed/t1w7cxfbzb-rup3i7he4h.gz
 /Users/kadir/Desktop/projeler/BarberBooking/BerberApp1/obj/Debug/net9.0/staticwebassets.build.json
 /Users/kadir/Desktop/projeler/BarberBooking/BerberApp1/obj/Debug/net9.0/staticwebassets.build.json.cache
 /Users/kadir/Desktop/projeler/BarberBooking/BerberApp1/obj/Debug/net9.0/staticwebassets.development.json
@@ -367,5 +365,8 @@
 /Users/kadir/Desktop/projeler/BarberBooking/BerberApp1/bin/Debug/net9.0/runtimes/win/lib/net6.0/System.Runtime.Caching.dll
 /Users/kadir/Desktop/projeler/BarberBooking/BerberApp1/bin/Debug/net9.0/runtimes/win/lib/net6.0/System.Security.Cryptography.ProtectedData.dll
 /Users/kadir/Desktop/projeler/BarberBooking/BerberApp1/bin/Debug/net9.0/runtimes/win/lib/net6.0/System.Windows.Extensions.dll
-/Users/kadir/Desktop/projeler/BarberBooking/BerberApp1/obj/Debug/net9.0/compressed/u4ptrcu2nl-odr08bya2l.gz
-/Users/kadir/Desktop/projeler/BarberBooking/BerberApp1/obj/Debug/net9.0/compressed/f6nc8b14uf-odr08bya2l.gz
+/Users/kadir/Desktop/projeler/BarberBooking/BerberApp1/obj/Debug/net9.0/compressed/mqc9x62763-ezmfafjylc.gz
+/Users/kadir/Desktop/projeler/BarberBooking/BerberApp1/obj/Debug/net9.0/compressed/t1w7cxfbzb-zxsvzrutxm.gz
+/Users/kadir/Desktop/projeler/BarberBooking/BerberApp1/obj/Debug/net9.0/scopedcss/Components/Pages/RegisterSalon.razor.rz.scp.css
+/Users/kadir/Desktop/projeler/BarberBooking/BerberApp1/obj/Debug/net9.0/compressed/u4ptrcu2nl-wb66p1ivkb.gz
+/Users/kadir/Desktop/projeler/BarberBooking/BerberApp1/obj/Debug/net9.0/compressed/f6nc8b14uf-wb66p1ivkb.gz

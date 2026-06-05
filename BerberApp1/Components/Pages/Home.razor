@@ -99,7 +99,7 @@
                                 }
                                 
                                 <div class="card-footer">
-                                    <a href="@($"/salon/{salon.Id}")" class="btn-book">
+                                    <a href="@(string.IsNullOrEmpty(salon.NickName) ? $"/salon/{salon.Id}" : $"/{salon.NickName}")" class="btn-book">
                                         Randevu Al <i class="fas fa-chevron-right"></i>
                                     </a>
                                 </div>

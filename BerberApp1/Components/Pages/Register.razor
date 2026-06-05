@@ -20,7 +20,7 @@
         <div class="register-form">
             <h2>Hesap Oluşturun</h2>
             <p>Başlamak için sadece bir dakikanızı ayırın.</p>
-            <a href="api/auth/login?returnUrl=@(string.IsNullOrEmpty(SalonName) ? "/registersalon" : $"/registersalon?name={Uri.EscapeDataString(SalonName)}")" class="btn btn-google">
+            <a href="api/auth/login?returnUrl=@(GetReturnUrl())" class="btn btn-google">
                 <i class="fab fa-google"></i> Google ile Devam Et
             </a>
             <div class="login-prompt">
@@ -34,4 +34,23 @@
     [Parameter]
     [SupplyParameterFromQuery(Name = "salonName")]
     public string? SalonName { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "nickname")]
+    public string? NickName { get; set; }
+
+    private string GetReturnUrl()
+    {
+        var queryParams = new List<string>();
+        if (!string.IsNullOrEmpty(SalonName))
+        {
+            queryParams.Add($"name={Uri.EscapeDataString(SalonName)}");
+        }
+        if (!string.IsNullOrEmpty(NickName))
+        {
+            queryParams.Add($"nickname={Uri.EscapeDataString(NickName)}");
+        }
+        var queryString = queryParams.Any() ? "?" + string.Join("&", queryParams) : "";
+        return $"/registersalon{queryString}";
+    }
 }

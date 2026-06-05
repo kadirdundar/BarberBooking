@@ -152,6 +152,10 @@
     width: 100%;
 }
 
+.main-container.no-padding[b-djnzvyvq3b] {
+    padding: 0 !important;
+}
+
 /* Error UI */
 #blazor-error-ui[b-djnzvyvq3b] {
     background: linear-gradient(135deg, #e74c3c, #c0392b);
@@ -203,6 +207,18 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    .header-content[b-djnzvyvq3b] {
+        padding: 0.8rem 1rem;
+    }
+
+    .header-left[b-djnzvyvq3b] {
+        gap: 1rem;
+    }
+
+    .header-right[b-djnzvyvq3b] {
+        gap: 0.8rem;
+    }
+
     .nav-menu[b-djnzvyvq3b] {
         display: none;
         position: absolute;
@@ -227,7 +243,24 @@
     }
 
     .logo-text[b-djnzvyvq3b] {
-        font-size: 1.4rem;
+        font-size: 1.3rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo-icon[b-djnzvyvq3b] {
+        width: 38px;
+        height: 38px;
+        font-size: 1.2rem;
+    }
+    .logo[b-djnzvyvq3b] {
+        gap: 0.5rem;
+    }
+    .logo-text[b-djnzvyvq3b] {
+        font-size: 1.15rem;
+    }
+    .header-content[b-djnzvyvq3b] {
+        padding: 0.6rem 0.8rem;
     }
 }
 

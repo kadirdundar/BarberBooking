@@ -1,4 +1,5 @@
 @page "/salon/{SalonId:int}"
+@page "/{NickName}"
 @using BerberApp1.Data
 @using Microsoft.EntityFrameworkCore
 @using System.Linq
@@ -7,10 +8,20 @@
 @inject IConfiguration Configuration
 @inject NavigationManager NavigationManager
 
-@if (salon == null)
+@if (isLoading)
 {
-    <div class="loading-state">
+    <div class="loading-state" style="display: flex; justify-content: center; align-items: center; min-height: 50vh;">
         <div class="spinner-border text-gold" role="status"></div>
+    </div>
+}
+else if (salon == null)
+{
+    <div class="container text-center py-5" style="max-width: 600px; margin-top: 100px;">
+        <div class="card p-5 shadow-lg border-0 bg-dark text-white rounded-3">
+            <h2 class="text-gold mb-3" style="color: #c5a880;">İşletme Bulunamadı</h2>
+            <p class="text-muted">Aradığınız işletme bulunamadı veya taşınmış olabilir.</p>
+            <a href="/" class="btn btn-outline-light mt-3" style="border-color: #c5a880; color: #c5a880;">Ana Sayfaya Dön</a>
+        </div>
     </div>
 }
 else
@@ -186,7 +197,11 @@ else
                 <div class="avatar-container">
                     <div class="avatar-glow"></div>
                     <div class="salon-avatar">
-                        @if (salon.Images != null && salon.Images.Any())
+                        @if (!string.IsNullOrEmpty(salon.LogoUrl))
+                        {
+                            <img src="@salon.LogoUrl" alt="@salon.Name" class="avatar-img" />
+                        }
+                        else if (salon.Images != null && salon.Images.Any())
                         {
                             <img src="@salon.Images.First().ImageUrl" alt="@salon.Name" class="avatar-img" />
                         }
@@ -416,6 +431,9 @@ else
     [Parameter]
     public int SalonId { get; set; }
 
+    [Parameter]
+    public string? NickName { get; set; }
+
     private Salon? salon;
     private string activeTab = "services";
     private string currentImageUrl = "/images/home1.png"; // Default hero
@@ -423,18 +441,38 @@ else
     private bool isServicesOpen = false;
     private bool isInfoOpen = false;
     private bool isGalleryOpen = false;
+    private bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
+        isLoading = true;
         try
         {
-            salon = await DbContext.Salons
-                                 .AsNoTracking()
-                                 .Include(s => s.Services)
-                                 .Include(s => s.Employees)
-                                 .Include(s => s.WorkingHours)
-                                 .Include(s => s.Images)
-                                 .FirstOrDefaultAsync(s => s.Id == SalonId);
+            if (!string.IsNullOrEmpty(NickName))
+            {
+                var cleanNick = NickName.Trim().ToLowerInvariant();
+                salon = await DbContext.Salons
+                                     .AsNoTracking()
+                                     .Include(s => s.Services)
+                                     .Include(s => s.Employees)
+                                     .Include(s => s.WorkingHours)
+                                     .Include(s => s.Images)
+                                     .FirstOrDefaultAsync(s => s.NickName == cleanNick);
+                if (salon != null)
+                {
+                    SalonId = salon.Id;
+                }
+            }
+            else
+            {
+                salon = await DbContext.Salons
+                                     .AsNoTracking()
+                                     .Include(s => s.Services)
+                                     .Include(s => s.Employees)
+                                     .Include(s => s.WorkingHours)
+                                     .Include(s => s.Images)
+                                     .FirstOrDefaultAsync(s => s.Id == SalonId);
+            }
             
             if (salon != null)
             {
@@ -450,7 +488,11 @@ else
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error loading salon details for SalonId {SalonId}", SalonId);
+            Logger.LogError(ex, "Error loading salon details for SalonId {SalonId} or NickName {NickName}", SalonId, NickName);
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 

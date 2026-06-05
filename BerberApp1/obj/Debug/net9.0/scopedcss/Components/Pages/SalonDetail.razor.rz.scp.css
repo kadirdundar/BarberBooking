@@ -4,6 +4,13 @@
     /* Space for FAB */
     background: var(--bg-dark);
     min-height: 100vh;
+    min-height: 100dvh;
+}
+
+@media (max-width: 768px) {
+    .salon-detail-page[b-8dp92ld032] {
+        padding-bottom: 0;
+    }
 }
 
 /* Hero Section */
@@ -364,15 +371,18 @@
    ========================================================================== */
 .mobile-view[b-8dp92ld032] {
     background-color: #0f1115;
-    min-height: 100vh;
+    min-height: 100dvh;
+    height: 100dvh;
     position: relative;
     overflow-x: hidden;
+    overflow-y: auto;
     color: var(--text-primary);
     font-family: var(--font-main);
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 3rem 1.5rem 2rem 1.5rem;
+    justify-content: center;
+    padding: 1.5rem;
 }
 
 /* Dotted Grid Background */
@@ -464,7 +474,7 @@
 
 /* Partner Verified Badge */
 .partner-badge[b-8dp92ld032] {
-    margin-bottom: 2.5rem;
+    margin-bottom: 1.5rem;
 }
 
 .partner-badge .badge-text[b-8dp92ld032] {
@@ -490,7 +500,7 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    margin-bottom: 3rem;
+    margin-bottom: 2rem;
 }
 
 /* Linktree Button Style */

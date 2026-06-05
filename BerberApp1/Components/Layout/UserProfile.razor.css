@@ -1,6 +1,7 @@
 .auth-buttons {
     display: flex;
     gap: 10px;
+    flex-shrink: 0;
 }
 
 .auth-buttons .btn {
@@ -10,6 +11,17 @@
     border-radius: 30px !important;
     text-transform: none !important;
     letter-spacing: normal !important;
+    white-space: nowrap;
+}
+
+@media (max-width: 576px) {
+    .auth-buttons {
+        gap: 6px;
+    }
+    .auth-buttons .btn {
+        padding: 0.4rem 0.8rem !important;
+        font-size: 0.75rem !important;
+    }
 }
 
 .auth-buttons .btn-secondary {
