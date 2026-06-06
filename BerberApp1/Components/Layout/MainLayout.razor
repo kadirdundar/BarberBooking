@@ -17,16 +17,19 @@
                     </NavLink>
                     
                     <ul class="nav-menu @(mobileMenuOpen ? "show" : "")" id="navMenu">
-                        <li class="nav-item">
-                            <NavLink href="/" class="nav-link" Match="NavLinkMatch.All">
-                                Keşfet
-                            </NavLink>
-                        </li>
-                        <li class="nav-item">
-                            <NavLink href="/business" class="nav-link">
-                                İşletmeler İçin
-                            </NavLink>
-                        </li>
+                        @if (!UserSalonId.HasValue)
+                        {
+                            <li class="nav-item">
+                                <NavLink href="/" class="nav-link" Match="NavLinkMatch.All">
+                                    Keşfet
+                                </NavLink>
+                            </li>
+                            <li class="nav-item">
+                                <NavLink href="/business" class="nav-link">
+                                    İşletmeler İçin
+                                </NavLink>
+                            </li>
+                        }
                         @if (UserSalonId.HasValue)
                         {
                             <li class="nav-item">
