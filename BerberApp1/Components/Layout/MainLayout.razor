@@ -89,6 +89,7 @@
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
+        mobileMenuOpen = false;
         InvokeAsync(StateHasChanged);
     }
 
