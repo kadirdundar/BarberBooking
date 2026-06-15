@@ -67,10 +67,16 @@
                                         <InputText @bind-Value="newService.Name" class="form-control" placeholder="Hizmet Adı (Örn: Saç Kesimi)" />
                                     </div>
                                     <div class="form-group col-md-3">
-                                        <InputNumber @bind-Value="newService.Price" class="form-control" placeholder="Fiyat (TL)" />
+                                        <div class="input-group">
+                                            <span class="input-group-text">₺</span>
+                                            <InputNumber @bind-Value="newService.Price" class="form-control" placeholder="Fiyat" />
+                                        </div>
                                     </div>
                                     <div class="form-group col-md-2">
-                                        <InputNumber @bind-Value="newService.DurationInMinutes" class="form-control" placeholder="Süre (Dk)" />
+                                        <div class="input-group">
+                                            <InputNumber @bind-Value="newService.DurationInMinutes" class="form-control" placeholder="Süre" />
+                                            <span class="input-group-text">dk</span>
+                                        </div>
                                     </div>
                                     <div class="form-group col-md-2">
                                         <button type="submit" class="btn btn-primary w-100">Ekle</button>

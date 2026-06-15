@@ -1,4 +1,6 @@
 @page "/booking-confirmation"
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
 
 <div class="confirmation-container">
     <div class="confirmation-card fade-in">
@@ -9,10 +11,17 @@
         <p class="confirmation-message">Randevu bilgileriniz başarıyla sisteme kaydedilmiştir. <br/> Sizi ağırlamaktan mutluluk duyacağız.</p>
         
         <div class="action-buttons">
-            <a href="/" class="btn btn-primary">Ana Sayfaya Dön</a>
+            <button class="btn btn-primary" @onclick="GoToHome">Ana Sayfaya Dön</button>
              <button class="btn btn-outline-secondary" onclick="window.print()">
                 <i class="fas fa-print"></i> Yazdır
             </button>
         </div>
     </div>
 </div>
+
+@code {
+    private void GoToHome()
+    {
+        NavigationManager.NavigateTo("/");
+    }
+}

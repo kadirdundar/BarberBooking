@@ -3,10 +3,13 @@
 @using BerberApp1.Data
 @using Microsoft.EntityFrameworkCore
 @using Microsoft.JSInterop
+@using Microsoft.AspNetCore.Components.Authorization
 @inject ILogger<Booking> Logger
 @inject ApplicationDbContext DbContext
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
+@inject IConfiguration Configuration
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @rendermode InteractiveServer
 
 <div class="booking-wizard">
@@ -245,11 +248,54 @@
                      </div>
                 </div>
 
+                @if (!isUserAuthenticated)
+                {
+                    <div class="custom-alert-warning mx-auto mb-4" role="alert" style="max-width: 500px; margin: 0 auto 1.5rem;">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <div>
+                            Randevunuzu tamamlamak için lütfen Google hesabınızla giriş yapın. Seçtiğiniz randevu detayları korunacaktır.
+                        </div>
+                    </div>
+                }
+
+                @if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    <div class="custom-alert mx-auto mb-4" role="alert" style="max-width: 500px; margin: 0 auto 1.5rem;">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        <div>@errorMessage</div>
+                    </div>
+                }
+
                 <div class="wizard-actions">
                     <button class="btn btn-secondary" @onclick="() => GoToStep(3)">Geri</button>
-                    <button class="btn btn-primary btn-lg w-100" @onclick="FinalizeBooking" disabled="@(string.IsNullOrWhiteSpace(customerName) || string.IsNullOrWhiteSpace(customerPhone))">
-                        Randevuyu Onayla <i class="fas fa-check ml-2"></i>
-                    </button>
+                    @if (isUserAuthenticated)
+                    {
+                        <button class="btn btn-primary btn-lg w-100" @onclick="FinalizeBooking" disabled="@(string.IsNullOrWhiteSpace(customerName) || string.IsNullOrWhiteSpace(customerPhone) || isFinalizing)">
+                            @if (isFinalizing)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                <span>Randevu Oluşturuluyor...</span>
+                            }
+                            else
+                            {
+                                <span>Randevuyu Onayla <i class="fas fa-check ml-2"></i></span>
+                            }
+                        </button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-primary btn-lg w-100" @onclick="LoginAndSaveState" disabled="@(string.IsNullOrWhiteSpace(customerName) || string.IsNullOrWhiteSpace(customerPhone) || isRedirecting)">
+                            @if (isRedirecting)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                <span>Giriş Sayfasına Yönlendiriliyorsunuz...</span>
+                            }
+                            else
+                            {
+                                <span>Google ile Giriş Yap & Onayla <i class="fab fa-google ml-2"></i></span>
+                            }
+                        </button>
+                    }
                 </div>
             </div>
         }
@@ -296,8 +342,68 @@
     private string customerName = string.Empty;
     private string customerPhone = string.Empty;
 
+    private bool isUserAuthenticated = false;
+    private bool isRedirecting = false;
+    private bool isFinalizing = false;
+    private string errorMessage = string.Empty;
+    private bool isStateRestored = false;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (CurrentSalon != null && !isStateRestored)
+        {
+            isStateRestored = true;
+            try 
+            {
+                // Check if user is authenticated
+                var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+                var user = authState.User;
+                isUserAuthenticated = user.Identity?.IsAuthenticated ?? false;
+                if (isUserAuthenticated && string.IsNullOrEmpty(customerName))
+                {
+                    customerName = user.Identity?.Name ?? string.Empty;
+                }
+
+                // Check for saved session state
+                var savedStateJson = await JSRuntime.InvokeAsync<string>("bookingInterop.getSessionState", "booking_wizard_state");
+                if (!string.IsNullOrEmpty(savedStateJson))
+                {
+                    var savedState = System.Text.Json.JsonSerializer.Deserialize<BookingSessionState>(savedStateJson);
+                    if (savedState != null)
+                    {
+                        // Restore state
+                        if (savedState.SelectedServiceIds != null && savedState.SelectedServiceIds.Any())
+                        {
+                            selectedServices = services.Where(s => savedState.SelectedServiceIds.Contains(s.Id)).ToList();
+                        }
+                        
+                        selectedEmployeeId = savedState.SelectedEmployeeId;
+                        selectedDate = savedState.SelectedDate;
+                        selectedSlot = savedState.SelectedSlot;
+                        customerName = string.IsNullOrEmpty(customerName) ? savedState.CustomerName : customerName;
+                        customerPhone = savedState.CustomerPhone;
+                        currentStep = savedState.CurrentStep;
+
+                        // Clear the storage so we don't restore it on a fresh visit
+                        await JSRuntime.InvokeVoidAsync("bookingInterop.clearSessionState", "booking_wizard_state");
+
+                        // If restored to Step 3 or 4, generate slots
+                        if (currentStep >= 3)
+                        {
+                            await CheckDaysAvailability();
+                            await GenerateAvailableSlots(selectedDate);
+                        }
+                        
+                        StateHasChanged();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Error restoring booking session state");
+            }
+        }
+
         if (currentStep == 3 && !jsInteropReady)
         {
             jsInteropReady = true;
@@ -387,8 +493,15 @@
     {
          if (string.IsNullOrEmpty(selectedSlot) || CurrentSalon == null || !selectedServices.Any() || !selectedEmployeeId.HasValue)
         {
+            errorMessage = $"Randevu oluşturulamadı. Eksik Bilgi: Saat Dilimi={selectedSlot}, Salon={CurrentSalon?.Name ?? "Yok"}, Seçilen Hizmet={selectedServices.Count}, Uzman={selectedEmployeeId}";
+            isFinalizing = false;
+            StateHasChanged();
             return;
         }
+
+        isFinalizing = true;
+        errorMessage = string.Empty;
+        StateHasChanged();
 
         try
         {
@@ -417,6 +530,9 @@
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error creating appointment.");
+            errorMessage = "Randevu oluşturulurken bir hata oluştu. Lütfen tekrar deneyiniz.";
+            isFinalizing = false;
+            StateHasChanged();
         }
     }
 
@@ -596,5 +712,57 @@
     private async Task ScrollDateRight()
     {
         try { await JSRuntime.InvokeVoidAsync("bookingInterop.scroll", dateListElement, "right"); } catch {}
+    }
+
+    private async Task LoginAndSaveState()
+    {
+        if (string.IsNullOrWhiteSpace(customerPhone) || string.IsNullOrWhiteSpace(customerName))
+        {
+            errorMessage = "Lütfen adınızı ve telefon numaranızı giriniz.";
+            return;
+        }
+
+        isRedirecting = true;
+        errorMessage = string.Empty;
+        StateHasChanged();
+
+        try
+        {
+            var sessionState = new BookingSessionState
+            {
+                SelectedServiceIds = selectedServices.Select(s => s.Id).ToList(),
+                SelectedEmployeeId = selectedEmployeeId,
+                SelectedDate = selectedDate,
+                SelectedSlot = selectedSlot,
+                CurrentStep = currentStep,
+                CustomerName = customerName,
+                CustomerPhone = customerPhone
+            };
+
+            var json = System.Text.Json.JsonSerializer.Serialize(sessionState);
+            await JSRuntime.InvokeVoidAsync("bookingInterop.saveSessionState", "booking_wizard_state", json);
+            
+            // Redirect to google login controller endpoint
+            var returnUrl = $"/booking/{SalonId}";
+            NavigationManager.NavigateTo($"/api/auth/login?returnUrl={Uri.EscapeDataString(returnUrl)}", forceLoad: true);
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Giriş sayfasına yönlendirilirken hata oluştu: " + ex.Message;
+            Logger.LogError(ex, "Error during LoginAndSaveState");
+            isRedirecting = false;
+            StateHasChanged();
+        }
+    }
+
+    public class BookingSessionState
+    {
+        public List<int> SelectedServiceIds { get; set; } = new();
+        public int? SelectedEmployeeId { get; set; }
+        public DateTime SelectedDate { get; set; }
+        public string SelectedSlot { get; set; } = string.Empty;
+        public int CurrentStep { get; set; } = 1;
+        public string CustomerName { get; set; } = string.Empty;
+        public string CustomerPhone { get; set; } = string.Empty;
     }
 }

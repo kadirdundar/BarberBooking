@@ -520,3 +520,125 @@
         grid-template-columns: repeat(2, 1fr);
     }
 }
+
+/* Premium Modern Alert & Notification Styles */
+.custom-alert {
+    background: rgba(220, 53, 69, 0.08); /* Transparent premium red */
+    border: 1px solid rgba(220, 53, 69, 0.25);
+    border-radius: 12px;
+    color: #ff6b6b; /* Vibrant premium red */
+    padding: 1rem 1.25rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    box-shadow: 0 8px 32px 0 rgba(220, 53, 69, 0.05);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    animation: alertSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    text-align: left;
+}
+
+.custom-alert i {
+    font-size: 1.2rem;
+    margin-top: 2px;
+    color: #ff6b6b;
+    flex-shrink: 0;
+}
+
+.custom-alert-warning {
+    background: rgba(197, 160, 89, 0.08); /* Transparent gold */
+    border: 1px solid rgba(197, 160, 89, 0.25);
+    border-radius: 12px;
+    color: var(--primary-gold);
+    padding: 1rem 1.25rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    box-shadow: 0 8px 32px 0 rgba(197, 160, 89, 0.05);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    animation: alertSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    text-align: left;
+}
+
+.custom-alert-warning i {
+    font-size: 1.2rem;
+    margin-top: 2px;
+    color: var(--primary-gold);
+    flex-shrink: 0;
+}
+
+.custom-alert-warning hr {
+    border-top: 1px solid rgba(197, 160, 89, 0.2);
+    margin: 0.75rem 0;
+}
+
+.custom-alert-warning strong {
+    color: #fff;
+}
+
+@keyframes alertSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Custom styles for SMS inputs and animations */
+.sms-code-input-wrapper input {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff !important;
+    transition: all 0.25s ease;
+}
+
+.sms-code-input-wrapper input:focus {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: var(--primary-gold) !important;
+    box-shadow: 0 0 12px rgba(197, 160, 89, 0.25) !important;
+    outline: none;
+}
+
+/* Dark Theme Form Inputs & Text Muted Colors */
+.form-group label {
+    color: var(--text-secondary) !important;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.form-control {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+    border-radius: 8px !important;
+    padding: 0.75rem 1rem !important;
+    font-size: 0.95rem !important;
+    transition: all 0.25s ease !important;
+    width: 100%;
+}
+
+.form-control:focus {
+    background: rgba(255, 255, 255, 0.06) !important;
+    border-color: var(--primary-gold) !important;
+    box-shadow: 0 0 12px rgba(197, 160, 89, 0.25) !important;
+    outline: none !important;
+}
+
+.form-control::placeholder {
+    color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.text-muted {
+    color: var(--text-secondary) !important;
+}

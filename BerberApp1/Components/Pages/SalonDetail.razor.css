@@ -180,6 +180,40 @@
     color: var(--primary-gold);
 }
 
+.service-detail-card .duration {
+    font-size: 0.85rem;
+    color: var(--text-secondary) !important;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.service-detail-card .btn-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(212, 175, 55, 0.1);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    color: var(--primary-gold);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    padding: 0;
+    cursor: pointer;
+}
+
+.service-detail-card:hover .btn-icon {
+    background: var(--primary-gold);
+    color: #000;
+    border-color: var(--primary-gold);
+    box-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
+}
+
+.salon-detail-page .text-muted {
+    color: var(--text-secondary) !important;
+}
+
 /* Staff Grid */
 .staff-grid-detail {
     display: grid;

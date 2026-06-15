@@ -139,5 +139,14 @@ window.bookingInterop = {
             window.bookingInterop.cropperInstance.destroy();
             window.bookingInterop.cropperInstance = null;
         }
+    },
+    saveSessionState: function (key, stateJson) {
+        sessionStorage.setItem(key, stateJson);
+    },
+    getSessionState: function (key) {
+        return sessionStorage.getItem(key);
+    },
+    clearSessionState: function (key) {
+        sessionStorage.removeItem(key);
     }
 };
