@@ -1,0 +1,23 @@
+# Graphify outputs
+graphify-out/
+
+# IDE files
+.idea/
+.vs/
+*.suo
+*.user
+*.sln.docstates
+
+# Build outputs (.NET)
+bin/
+obj/
+[Bb]in/
+[Oo]bj/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Secrets / Firebase Credentials
+*firebase-adminsdk*.json
+**/goslotly-firebase-adminsdk-fbsvc-*.json

@@ -2,10 +2,12 @@
 @layout Layout.DashboardLayout
 @using BerberApp1.Data
 @using Microsoft.EntityFrameworkCore
+@using BerberApp1.Services
 @inject ApplicationDbContext DbContext
 @inject ILogger<SalonManagement> Logger
 @inject IWebHostEnvironment Environment
 @inject IJSRuntime JSRuntime
+@inject IFileStorageService FileStorageService
 
 <div class="salon-management-container fade-in">
     @if (salon == null)
@@ -611,7 +613,17 @@
         try
         {
             var emp = await DbContext.Employees.FindAsync(employeeId);
-            if(emp != null) { DbContext.Employees.Remove(emp); await DbContext.SaveChangesAsync(); await LoadSalon(); await ShowStatusMessage("Uzman silindi.", true); }
+            if (emp != null) 
+            { 
+                if (!string.IsNullOrEmpty(emp.PictureUrl))
+                {
+                    await FileStorageService.DeleteFileAsync(emp.PictureUrl);
+                }
+                DbContext.Employees.Remove(emp); 
+                await DbContext.SaveChangesAsync(); 
+                await LoadSalon(); 
+                await ShowStatusMessage("Uzman silindi.", true); 
+            }
         }
         catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
     }
@@ -668,6 +680,10 @@
             var s = await DbContext.Salons.FindAsync(salon.Id);
             if (s != null)
             {
+                if (!string.IsNullOrEmpty(s.LogoUrl))
+                {
+                    await FileStorageService.DeleteFileAsync(s.LogoUrl);
+                }
                 s.LogoUrl = null;
                 await DbContext.SaveChangesAsync();
                 await LoadSalon();
@@ -685,6 +701,10 @@
             var s = await DbContext.Salons.FindAsync(salon.Id);
             if (s != null)
             {
+                if (!string.IsNullOrEmpty(s.BackgroundUrl))
+                {
+                    await FileStorageService.DeleteFileAsync(s.BackgroundUrl);
+                }
                 s.BackgroundUrl = null;
                 await DbContext.SaveChangesAsync();
                 await LoadSalon();
@@ -702,6 +722,10 @@
             var s = await DbContext.Salons.FindAsync(salon.Id);
             if (s != null)
             {
+                if (!string.IsNullOrEmpty(s.BannerUrl))
+                {
+                    await FileStorageService.DeleteFileAsync(s.BannerUrl);
+                }
                 s.BannerUrl = null;
                 await DbContext.SaveChangesAsync();
                 await LoadSalon();
@@ -718,6 +742,10 @@
             var img = await DbContext.SalonImages.FindAsync(imageId); 
             if(img != null)
             { 
+                if (!string.IsNullOrEmpty(img.ImageUrl))
+                {
+                    await FileStorageService.DeleteFileAsync(img.ImageUrl);
+                }
                 DbContext.SalonImages.Remove(img); 
                 await DbContext.SaveChangesAsync(); 
                 await LoadSalon(); 
@@ -809,43 +837,21 @@
             var imageBytes = Convert.FromBase64String(base64Data);
 
             var fileName = $"{cropTarget}_{Guid.NewGuid()}.jpg";
-            string relativePath = "";
-            string fullPath = "";
+            var storagePath = $"{cropTarget}s/{fileName}";
+            if (cropTarget == "gallery")
+            {
+                storagePath = $"gallery/{fileName}";
+            }
+
+            var publicUrl = await FileStorageService.UploadFileAsync(imageBytes, storagePath, "image/jpeg");
 
             if (cropTarget == "employee")
             {
-                relativePath = $"/images/employees/{fileName}";
-                fullPath = Path.Combine(Environment.WebRootPath, "images", "employees", fileName);
-            }
-            else if (cropTarget == "logo")
-            {
-                relativePath = $"/images/salons/logos/{fileName}";
-                fullPath = Path.Combine(Environment.WebRootPath, "images", "salons", "logos", fileName);
-            }
-            else if (cropTarget == "banner")
-            {
-                relativePath = $"/images/salons/banners/{fileName}";
-                fullPath = Path.Combine(Environment.WebRootPath, "images", "salons", "banners", fileName);
-            }
-            else if (cropTarget == "background")
-            {
-                relativePath = $"/images/salons/backgrounds/{fileName}";
-                fullPath = Path.Combine(Environment.WebRootPath, "images", "salons", "backgrounds", fileName);
-            }
-            else if (cropTarget == "gallery")
-            {
-                relativePath = $"/images/salons/{fileName}";
-                fullPath = Path.Combine(Environment.WebRootPath, "images", "salons", fileName);
-            }
-
-            var dir = Path.GetDirectoryName(fullPath);
-            if (dir != null && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
-
-            await File.WriteAllBytesAsync(fullPath, imageBytes);
-
-            if (cropTarget == "employee")
-            {
-                newEmployee.PictureUrl = relativePath;
+                if (!string.IsNullOrEmpty(newEmployee.PictureUrl))
+                {
+                    await FileStorageService.DeleteFileAsync(newEmployee.PictureUrl);
+                }
+                newEmployee.PictureUrl = publicUrl;
                 await ShowStatusMessage("Uzman fotoğrafı başarıyla kırpıldı.", true);
             }
             else if (cropTarget == "logo" && salon != null)
@@ -853,7 +859,11 @@
                 var s = await DbContext.Salons.FindAsync(salon.Id);
                 if (s != null)
                 {
-                    s.LogoUrl = relativePath;
+                    if (!string.IsNullOrEmpty(s.LogoUrl))
+                    {
+                        await FileStorageService.DeleteFileAsync(s.LogoUrl);
+                    }
+                    s.LogoUrl = publicUrl;
                     await DbContext.SaveChangesAsync();
                     await LoadSalon();
                     await ShowStatusMessage("Profil fotoğrafı güncellendi.", true);
@@ -864,7 +874,11 @@
                 var s = await DbContext.Salons.FindAsync(salon.Id);
                 if (s != null)
                 {
-                    s.BannerUrl = relativePath;
+                    if (!string.IsNullOrEmpty(s.BannerUrl))
+                    {
+                        await FileStorageService.DeleteFileAsync(s.BannerUrl);
+                    }
+                    s.BannerUrl = publicUrl;
                     await DbContext.SaveChangesAsync();
                     await LoadSalon();
                     await ShowStatusMessage("Kapak fotoğrafı güncellendi.", true);
@@ -875,7 +889,11 @@
                 var s = await DbContext.Salons.FindAsync(salon.Id);
                 if (s != null)
                 {
-                    s.BackgroundUrl = relativePath;
+                    if (!string.IsNullOrEmpty(s.BackgroundUrl))
+                    {
+                        await FileStorageService.DeleteFileAsync(s.BackgroundUrl);
+                    }
+                    s.BackgroundUrl = publicUrl;
                     await DbContext.SaveChangesAsync();
                     await LoadSalon();
                     await ShowStatusMessage("Arka plan görseli güncellendi.", true);
@@ -883,7 +901,7 @@
             }
             else if (cropTarget == "gallery" && salon != null)
             {
-                var newImage = new SalonImage { SalonId = salon.Id, ImageUrl = relativePath };
+                var newImage = new SalonImage { SalonId = salon.Id, ImageUrl = publicUrl };
                 DbContext.SalonImages.Add(newImage);
                 await DbContext.SaveChangesAsync();
                 await LoadSalon();
