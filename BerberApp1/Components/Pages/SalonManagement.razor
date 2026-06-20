@@ -13,7 +13,9 @@
     @if (salon == null)
     {
         <div class="loading-state">
-            <div class="spinner-border text-gold" role="status"></div>
+            <div class="spinner-container">
+                <div class="luxury-spinner"></div>
+            </div>
             <p>İşletme bilgileri yükleniyor...</p>
         </div>
     }
@@ -519,6 +521,9 @@
     {
         if (salon is not null && !string.IsNullOrWhiteSpace(newService.Name))
         {
+            isProcessing = true;
+            processingMessage = "Hizmet ekleniyor...";
+            StateHasChanged();
             try
             {
                 newService.SalonId = salon.Id;
@@ -526,14 +531,22 @@
                 await DbContext.SaveChangesAsync();
                 newService = new();
                 await LoadSalon();
+                isProcessing = false;
                 await ShowStatusMessage("Hizmet eklendi.", true);
             }
-            catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
+            catch (Exception ex) 
+            { 
+                isProcessing = false;
+                await ShowStatusMessage($"Hata: {ex.Message}", false); 
+            }
         }
     }
     
     private async Task UpdateService(Service service)
     {
+        isProcessing = true;
+        processingMessage = "Hizmet güncelleniyor...";
+        StateHasChanged();
         try
         {
             var serviceToUpdate = await DbContext.Services.FindAsync(service.Id);
@@ -544,14 +557,26 @@
                 serviceToUpdate.DurationInMinutes = service.DurationInMinutes;
                 await DbContext.SaveChangesAsync();
                 await LoadSalon();
+                isProcessing = false;
                 await ShowStatusMessage("Hizmet güncellendi.", true);
             }
+            else
+            {
+                isProcessing = false;
+            }
         }
-        catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
+        catch (Exception ex) 
+        { 
+            isProcessing = false;
+            await ShowStatusMessage($"Hata: {ex.Message}", false); 
+        }
     }
 
     private async Task DeleteService(int serviceId)
     {
+        isProcessing = true;
+        processingMessage = "Hizmet siliniyor...";
+        StateHasChanged();
         try
         {
             var service = await DbContext.Services.FindAsync(serviceId);
@@ -560,10 +585,19 @@
                 DbContext.Services.Remove(service);
                 await DbContext.SaveChangesAsync();
                 await LoadSalon();
+                isProcessing = false;
                 await ShowStatusMessage("Hizmet silindi.", true);
             }
+            else
+            {
+                isProcessing = false;
+            }
         }
-        catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
+        catch (Exception ex) 
+        { 
+            isProcessing = false;
+            await ShowStatusMessage($"Hata: {ex.Message}", false); 
+        }
     }
 
     private async Task OnEmployeeImageSelected(InputFileChangeEventArgs e)
@@ -595,6 +629,9 @@
     {
         if (salon is not null && !string.IsNullOrWhiteSpace(newEmployee.Name))
         {
+            isProcessing = true;
+            processingMessage = "Uzman ekleniyor...";
+            StateHasChanged();
             try
             {
                 newEmployee.SalonId = salon.Id;
@@ -602,14 +639,22 @@
                 await DbContext.SaveChangesAsync();
                 newEmployee = new();
                 await LoadSalon();
+                isProcessing = false;
                 await ShowStatusMessage("Uzman eklendi.", true);
             }
-            catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
+            catch (Exception ex) 
+            { 
+                isProcessing = false;
+                await ShowStatusMessage($"Hata: {ex.Message}", false); 
+            }
         }
     }
 
     private async Task DeleteEmployee(int employeeId)
     {
+        isProcessing = true;
+        processingMessage = "Uzman siliniyor...";
+        StateHasChanged();
         try
         {
             var emp = await DbContext.Employees.FindAsync(employeeId);
@@ -622,15 +667,27 @@
                 DbContext.Employees.Remove(emp); 
                 await DbContext.SaveChangesAsync(); 
                 await LoadSalon(); 
+                isProcessing = false;
                 await ShowStatusMessage("Uzman silindi.", true); 
             }
+            else
+            {
+                isProcessing = false;
+            }
         }
-        catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
+        catch (Exception ex) 
+        { 
+            isProcessing = false;
+            await ShowStatusMessage($"Hata: {ex.Message}", false); 
+        }
     }
 
     private async Task UpdateWorkingHour(WorkingHoursViewModel vm)
     {
         if (salon is null) return;
+        isProcessing = true;
+        processingMessage = "Çalışma saatleri güncelleniyor...";
+        StateHasChanged();
         try
         {
             var workingHour = await DbContext.SalonWorkingHours.FirstOrDefaultAsync(wh => wh.SalonId == salon.Id && wh.DayOfWeek == vm.DayOfWeek);
@@ -645,14 +702,22 @@
             await DbContext.SaveChangesAsync();
             await LoadSalon(); // Refresh
             InitializeWorkingHours(); // Refresh VM
+            isProcessing = false;
             await ShowStatusMessage($"{vm.DayOfWeek} saatleri güncellendi.", true);
         }
-        catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
+        catch (Exception ex) 
+        { 
+            isProcessing = false;
+            await ShowStatusMessage($"Hata: {ex.Message}", false); 
+        }
     }
 
     private async Task UpdateSalonSettings()
     {
         if (salon is null) return;
+        isProcessing = true;
+        processingMessage = "Genel ayarlar kaydediliyor...";
+        StateHasChanged();
         try
         {
             var s = await DbContext.Salons.FindAsync(salon.Id);
@@ -666,15 +731,27 @@
                 s.WebsiteUrl = salon.WebsiteUrl;
                 await DbContext.SaveChangesAsync(); 
                 await LoadSalon(); 
+                isProcessing = false;
                 await ShowStatusMessage("Ayarlar kaydedildi.", true); 
             }
+            else
+            {
+                isProcessing = false;
+            }
         }
-        catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
+        catch (Exception ex) 
+        { 
+            isProcessing = false;
+            await ShowStatusMessage($"Hata: {ex.Message}", false); 
+        }
     }
 
     private async Task RemoveLogo()
     {
         if (salon is null) return;
+        isProcessing = true;
+        processingMessage = "Profil fotoğrafı kaldırılıyor...";
+        StateHasChanged();
         try
         {
             var s = await DbContext.Salons.FindAsync(salon.Id);
@@ -687,15 +764,27 @@
                 s.LogoUrl = null;
                 await DbContext.SaveChangesAsync();
                 await LoadSalon();
+                isProcessing = false;
                 await ShowStatusMessage("Profil fotoğrafı kaldırıldı.", true);
             }
+            else
+            {
+                isProcessing = false;
+            }
         }
-        catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
+        catch (Exception ex) 
+        { 
+            isProcessing = false;
+            await ShowStatusMessage($"Hata: {ex.Message}", false); 
+        }
     }
 
     private async Task RemoveBackground()
     {
         if (salon is null) return;
+        isProcessing = true;
+        processingMessage = "Arka plan görseli kaldırılıyor...";
+        StateHasChanged();
         try
         {
             var s = await DbContext.Salons.FindAsync(salon.Id);
@@ -708,15 +797,27 @@
                 s.BackgroundUrl = null;
                 await DbContext.SaveChangesAsync();
                 await LoadSalon();
+                isProcessing = false;
                 await ShowStatusMessage("Arka plan görseli kaldırıldı.", true);
             }
+            else
+            {
+                isProcessing = false;
+            }
         }
-        catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
+        catch (Exception ex) 
+        { 
+            isProcessing = false;
+            await ShowStatusMessage($"Hata: {ex.Message}", false); 
+        }
     }
 
     private async Task RemoveBanner()
     {
         if (salon is null) return;
+        isProcessing = true;
+        processingMessage = "Kapak fotoğrafı kaldırılıyor...";
+        StateHasChanged();
         try
         {
             var s = await DbContext.Salons.FindAsync(salon.Id);
@@ -729,14 +830,26 @@
                 s.BannerUrl = null;
                 await DbContext.SaveChangesAsync();
                 await LoadSalon();
+                isProcessing = false;
                 await ShowStatusMessage("Banner kaldırıldı.", true);
             }
+            else
+            {
+                isProcessing = false;
+            }
         }
-        catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
+        catch (Exception ex) 
+        { 
+            isProcessing = false;
+            await ShowStatusMessage($"Hata: {ex.Message}", false); 
+        }
     }
 
     private async Task DeleteSalonImage(int imageId)
     {
+        isProcessing = true;
+        processingMessage = "Görsel siliniyor...";
+        StateHasChanged();
         try 
         { 
             var img = await DbContext.SalonImages.FindAsync(imageId); 
@@ -749,10 +862,19 @@
                 DbContext.SalonImages.Remove(img); 
                 await DbContext.SaveChangesAsync(); 
                 await LoadSalon(); 
+                isProcessing = false;
                 await ShowStatusMessage("Resim silindi.", true); 
             } 
+            else
+            {
+                isProcessing = false;
+            }
         }
-        catch (Exception ex) { await ShowStatusMessage($"Hata: {ex.Message}", false); }
+        catch (Exception ex) 
+        { 
+            isProcessing = false;
+            await ShowStatusMessage($"Hata: {ex.Message}", false); 
+        }
     }
 
     // Generic Crop helpers

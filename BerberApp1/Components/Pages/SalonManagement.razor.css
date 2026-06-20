@@ -592,3 +592,50 @@ input:checked+.slider:before {
     from { transform: scale(0.9); opacity: 0; }
     to { transform: scale(1); opacity: 1; }
 }
+
+/* Initial Loading State */
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    width: 100%;
+    background-color: var(--bg-dark);
+    gap: 1.5rem;
+    text-align: center;
+    padding: 2rem;
+}
+
+.loading-state p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin: 0;
+    letter-spacing: 0.5px;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+/* Accessibility & Contrast Fixes */
+.text-muted {
+    color: rgba(255, 255, 255, 0.6) !important; /* Higher contrast light gray instead of Bootstrap's dark gray */
+}
+
+.form-control:disabled, 
+.form-control[readonly] {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: rgba(255, 255, 255, 0.5) !important;
+    cursor: not-allowed;
+}
+
+label {
+    color: var(--text-primary);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
